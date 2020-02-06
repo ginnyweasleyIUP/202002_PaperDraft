@@ -1,0 +1,260 @@
+---
+title: "STACYtsplot"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Summary
+
+This markdown helps you to construct STACYtsplots, which combine timeseries plots for multiple proxy, forcing, and simulation data. The following steps are included:
+1) Load packages
+2) Import data
+3) Plot configuration
+4) Step-by-step plotting [Needs to be in 1 chunk to plot to the same device]
+
+## 1) Load packages
+
+First we load several necessary packages:
+
+```{r packages,warning=FALSE,message=FALSE}
+
+library(zoo)
+library(TeachingDemos)
+library(nest)
+library(ncdf4)
+
+```
+
+
+## 2) Import data
+
+Next, proxy, forcing, and simulation data is imported. Feel free to add (and describe) new data.
+
+```{r import,warning=FALSE,message=FALSE}
+# Load data
+load("/home/ronweasley/Data/timeseries_deglac_comp.RData")
+load("/home/ronweasley/Data/full_image_fig1_proposal.RData")
+
+# PROXY DATA
+# NGRIP d18O
+ngrip <- TS$ngrip
+# EPICA d18O
+epica <- prxlist[[107]]
+# Sihailongwan arboreal pollen (unpublished!)
+load("/stacydata/data/squirrel/pollen/Sihailongwan/glacial_shl/data/moderndata.RData")
+pollen_tmp <- read.csv("/home/ronweasley/Data/SHLpollen.csv",header=TRUE,sep=";")
+ap <- pollen_tmp$AP
+ap <- ap[-which(is.na(ap))]
+nap <- pollen_tmp$NAP
+nap <- nap[-which(is.na(nap))]
+new_age <- pollen_tmp$age..neu.
+new_age <- new_age[-which(is.na(new_age))]
+#6 elements with non-unique ages: 380:384, 642:644
+ap[380] <- mean(ap[380:384]); ap[642] <- mean(ap[642:644])
+nap[380] <- mean(nap[380:384]); nap[642] <- mean(nap[642:644])
+ap <- ap[-c(381:384,643:644)]; nap <- nap[-c(381:384,643:644)]
+
+# SIMULATION DATA
+# BBC HadCM3
+sim_names <- paste(read.csv("/stacydata/data/BRIDGE/BRIDGE.csv",header=TRUE)$bbc_all_triff_rev_dyn04)[1:62]
+sim_dates <- c(seq(120,80,by=-4),seq(78,22,by=-2),seq(21,0,by=-1))
+nc <- nc_open("/stacywork/ronweasley/tmp/bridge_mean_ts.nc")
+bridge_ts <- ncvar_get(nc,"TS")
+bridge_time <- sim_dates
+# FAMOUS
+nc <- nc_open("/stacydata/data/FAMOUS/glacial_cycle/ALL-5G_24.cdf")
+famous_time <- ncvar_get(nc,"time")
+nc <- nc_open("/stacywork/ronweasley/tmp/famous_mean_ts.nc")
+famous_ts <- ncvar_get(nc,"surface_temperature")
+# LOVECLIM
+# TraCE-21ka
+nc <- nc_open("/stacydata/data/trace21ka/trace.01-36.22000BP.cam2.TS.22000BP_decavg_400BCE.nc")
+trace_time <- ncvar_get(nc,"time")
+nc <- nc_open("/stacywork/ronweasley/tmp/trace_mean_ts.nc")
+trace_ts <- ncvar_get(nc,"TS")
+
+# FORCING DATA
+# Summer insolation
+# Seasonality
+# CO2
+co2 <- TS$co2_orig_smooth
+co2 <- rev.zoo(co2)
+index(co2) <- sort(-index(co2))
+# Solar forcing
+
+# EVENTS
+# Marine isotope stages
+mis_transitions <- -MIS.trans
+# Holocene
+# LGM
+# Heinrich stadial events
+# Old:
+h_events <- HE.t # Before DO4, DO8, DO12, DO17
+# New (from Collins 2013, based on AICC2012)
+# 1  (15–18.5 ka),  2  (23.5–25.5 ka),  3(29–30.5 ka),  4  (38.5–40 ka)  and  5  (47–48.5 ka)
+hs_events <- t(array(c(15,18.5,23.5,25.5,29,30.5,38.5,40,47,48.5,60,61),dim=c(2,6)))
+hs_mid_points <- apply(hs_events,1,mean)
+# Greenland interstadials (DO events)
+gis_onsets <- Dtab$Age.ka.b.1950*1000
+gis_duration <-c(1,19,1,3,3,5,4,7,16,3,7,10,26,1,1,1,1,1,3,20,24)*100
+# Corrections
+gis_duration_new <- gis_duration
+gis_duration_new[14] <- 1000; gis_duration_new[15] <- 4700; gis_duration_new[16] <- 400; gis_duration_new[17] <- 1800; gis_duration_new[18] <- 800
+gis_onsets[22] <- 84200; gis_duration_new[22] <- 7000
+gis_onsets[23] <- 89500; gis_duration_new[23] <- 2400
+# Onset of Dansgaard-Oescher events
+do_event_onsets <- -DO.t
+# NGRIP temperature jumps in DO events, in [K]
+ngrip_do_temp_diff <- c(10.5,12.5,8.5,14.5,12.5,12.5,9.5,15.5,10,6.5,13.5,16.5,12.5,8.5,12.5,10,10,12.5,13.5,14,12.5,13.5)
+# Common era events?
+
+#/stacydata/squirrel/HollgmVar2020
+
+```
+
+## 3) Configure plot
+
+Then, we configure the plot by specifying age limits, the number of combined timeseries plots, colors of the timeseries, and font sizes. Feel free to add new color definitions for new timeseries.
+
+```{r configuration,warning=FALSE,message=FALSE}
+
+# Age limits
+xlimz<-c(-67000,500)
+
+# Number of timeseries in the plot
+num_ts <- 4
+# Set layout:
+
+# Set standard colors for the timeseries
+col_shl <- "darkgreen"
+col_famous <- "red3"
+col_bridge <- "brown"
+col_trace <- "orangered2"#"slategray"
+col_ngrip <- "black"
+col_epica <- "blue"
+col_co2 <- "orangered2"
+col_model <- "blue4"
+col_proxy <- "red3"
+col_hadcm3 <- "modelcolr"
+col_echam <- "dodgerblue"
+col_sealevel <-"slategray"
+col_insolation <- "springgreen4"
+col_txt <- "darkslategray"
+
+# Settings for size of axes, units, and names
+axisnumscex <- 1.5 #0.75
+axslinno <- 1.5 #0.75
+unitscex <- 1.5 #0.75
+unitslinno <- 6 #2.5
+namlin <- 1 #0.5
+namcex <- 1.75 #1
+
+```
+
+## 4) Step-by-step plotting
+
+Finally the plot is created step by step. Here, you need to add new code paragraphs for new datasets.
+
+```{r plotting,warning=FALSE,message=FALSE}
+#Start graphics device
+#Vector graphic:
+cairo_pdf(width=12,height=8,file="/home/ronweasley/Plots/timeseries_example.pdf")
+# Raster graphic:
+#png(width=12,height=8,units = "cm",file=paste(outputdir,"/Fig1_talk.png",sep=""),res=150)
+
+# Set margins, out margin, axes styles, standard text size, and line width
+par(mar=c(0,0,0,0),oma=c(2,19,6,21),xaxs="i",yaxs="i",cex=1,lwd=2)
+
+# The first row denotes the header (e.g. names of geologic periods), the remaining rows correspond to the individual timeseries plots
+layout(matrix(rep(1:(num_ts+1),each=2),num_ts+1,2,byrow=TRUE),heights=c(0.2,1,1,1,1))
+
+#HEADER
+# Start plot
+plot(xlimz,c(0,1),axes=FALSE,type="n",xlab="",ylab="")
+# Lines to mark Holocene and LGM
+arrows(x0=0,x1=-11300,y0=0.01,y1=0.01,code=3,angle=90,length=0.025,col=txtcol)
+arrows(x0=-19000,x1=-27000,y0=0.01,y1=0.01,code=3,angle=90,length=0.025,col=txtcol)
+# Text for MIS3, Holocene, and LGM
+text(MIS.t[3],rep(0.5,length(MIS.t[3])),MIS.n[3],col=txtcol,cex=1.5*namcex)
+text(mean(c(-12300,0)),0.5,"Holocene",col=txtcol,cex=1.5*namcex)
+text(mean(c(-27000,-19000)),0.5,"LGM",col=txtcol,cex=1.5*namcex)
+# Add top axis
+mtext(side=3,line=3.25,"time [kyrs BP]",cex=unitscex)
+tmp.y <- cnvrt.coords(x=NA,y=par('usr')[4])$dev$y
+axis(3,at=seq(-60,0,by=10)*1000,labels=FALSE);
+mtext(side=3,at=seq(-60,0,by=10)*1000,seq(60,0,by=-10),line=0.5,cex=axisnumscex)
+
+#SHL
+# y-axis extent:
+range_shl <- c(0,100)
+# Start plot
+plot(xlimz,range_shl,axes=FALSE,type="n",xlab="",ylab="")
+# Add full and filtered timeseries
+lines(-rev(foss.time),rev(ap),type="l",col=adjustcolor(col_shl,0.3))
+lines(-rev(foss.time),gaussdetr(zoo(rev(ap),order.by=-rev(foss.time)),tsc.in=2000)$Xsmooth,type="l",col=col_shl)
+# Add proxy name (on left side)
+mtext(side=2,expression(paste(plain(Sihailongwan)," ",plain(AP))),cex=namcex,line=namlin,las=1,col=col_shl)
+# Add units (on right side)
+mtext(side=4,"[%]",line=unitslinno,cex=unitscex,las=1,col=col_shl)
+# Add axis (on right side)
+axis(4,at=seq(0,100,by=25),labels=FALSE,col=col_shl)
+mtext(side=4,at=seq(0,100,by=25),seq(0,100,by=25),line=axslinno,las=1,cex=axisnumscex,col=col_shl)
+
+#EPICA
+epica <- zoo(rev(epica),order.by = -rev(index(epica)))
+rgepica<-range(epica[which(index(epica) <= 0 & index(epica) >= -67000)])
+plot(xlimz,rgepica,axes=FALSE,type="n",xlab="",ylab="")
+lines(epica,col=adjustcolor(col_epica,0.3))
+lines(gaussdetr(epica,tsc.in=2000)$Xsmooth,col=col_epica)
+xtkz <-axTicks(2)[seq(1,by=2,length(axTicks(2))-1)]
+axis(2,col=col_epica,at=xtkz,labels=FALSE)
+mtext(side=2,col=col_epica,at=xtkz,xtkz,line=axslinno,las=1,cex=axisnumscex)
+#mtext(side=2,expression(paste("\u0394",bgroup("[","\u2030" ,"]"))),cex=unitscex,col="black",line=unitslinno,las=1)
+mtext(side=2,expression(paste("[",delta^{plain(18)}, plain(O),"]")),cex=unitscex,col=col_epica,line=unitslinno,las=1)
+mtext(side=4,expression(plain(EPICA)^{12}),cex=namcex,col=col_epica,line=namlin,las=1)
+
+#NGRIP
+rgngrp<-range(ngrip[which(index(ngrip) <= 0 & index(ngrip) >= -67000)])
+plot(xlimz,rgngrp,axes=FALSE,type="n",xlab="",ylab="")
+lines(ngrip,col=adjustcolor(col_ngrip,0.3))
+lines(gaussdetr(ngrip,tsc.in=2000)$Xsmooth,col=col_ngrip)
+xtkz <-axTicks(2)[seq(1,by=2,length(axTicks(2))-1)]
+axis(4,col=col_ngrip,at=xtkz,labels=FALSE)
+mtext(side=4,col=col_ngrip,at=xtkz,xtkz,line=axslinno,las=1,cex=axisnumscex)
+mtext(side=4,expression(paste("[",delta^{plain(18)}, plain(O),"]")),cex=unitscex,col=col_ngrip,line=unitslinno,las=1)
+mtext(side=2,expression(plain(NGRIP)^{11}),cex=namcex,col="black",line=namlin,las=1)
+
+#SIMULATIONS
+tlims <- c(-6.5,0.5)#range(famous_ts-famous_ts[which.min(abs(famous_time))],trace_ts-trace_ts[which.min(abs(trace_time))],bridge_ts-bridge_ts[which.min(abs(bridge_time))],na.rm=TRUE)
+plot(xlimz,tlims,axes=FALSE,type="n",xlab="",ylab="")
+lines(famous_time*10,famous_ts-famous_ts[which.min(abs(famous_time))],type="l",ylim=c(-6.5,0.5),col=adjustcolor(col_famous,0.3))
+lines(trace_time*1000,trace_ts-trace_ts[which.min(abs(trace_time))],type="l",col=adjustcolor(col_trace,0.3))
+lines(famous_time*10,gaussdetr(zoo(famous_ts-famous_ts[which.min(abs(famous_time))],order.by=famous_time*10),tsc.in=2000)$Xsmooth,type="l",ylim=c(-6.5,0.5),xlim=c(-66,0),col=col_famous)
+lines(trace_time*1000,gaussdetr(zoo(trace_ts-trace_ts[which.min(abs(trace_time))],order.by=trace_time*1000),tsc.in=2000)$Xsmooth,type="l",col=col_trace)
+lines(-bridge_time*1000,bridge_ts-bridge_ts[which.min(abs(bridge_time))],type="l",col=col_bridge)
+units$tanom<-expression(bgroup("[", paste("",{}^{o}, plain(C)),"]"))
+mtext(side=2,units$tanom,line=unitslinno,cex=unitscex,las=1)
+axis(2,at=seq(-6,0,by=2),labels=FALSE);
+mtext(side=2,at=seq(-6,0,by=2),seq(-6,0,by=2),line=axslinno,las=1,cex=axisnumscex)
+mtext(side=4,expression(paste(plain(Global)," ",plain(temperature))),cex=namcex,col="black",line=namlin,las=1,padj=-1)
+mtext(side=4,expression("HadCM3"),cex=namcex,col=col_bridge,line=namlin,las=1,padj=0)
+mtext(side=4,expression("TraCE-21ka"),cex=namcex,col=col_trace,line=namlin,las=1,padj=1.5)
+mtext(side=4,expression("FAMOUS"),cex=namcex,col=col_famous,line=namlin,las=1,padj=3)
+
+#FORCINGS
+
+par(xpd=NA)
+tmp.y2 <- cnvrt.coords(x=NA, y=tmp.y, input='dev')$usr$y
+segments(c(min(xlimz),max(xlimz),min(xlimz),min(xlimz)),c(par('usr')[3],par('usr')[3],par('usr')[3],tmp.y2),c(par('usr')[1],par('usr')[2],max(xlimz),max(xlimz)),c(tmp.y2,tmp.y2,par('usr')[3],tmp.y2))
+segments(x0=MIS.trans[2:4],x1=MIS.trans[2:4],y1=par('usr')[3],y0=1*tmp.y2,lty=2,col="grey")
+
+dev.off()
+
+
+```
+
+
+
