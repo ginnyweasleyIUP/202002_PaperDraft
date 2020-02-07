@@ -8,13 +8,13 @@ library(tidyverse)
 ### load and transform data --------------------------------------###
 # load SISAL v2 csv files
 
-load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/02_SISAL/SISAL_v2_CARLA/", year_start, year_stop){
+load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/02_SISAL/SISAL_v2/", year_start, year_stop){
   prefix = ""
-  path = "/stacywork/ginnyweasley/02_SISAL/SISAL_v2_CARLA/"
+  path = "/stacywork/ginnyweasley/02_SISAL/SISAL_v2/"
   composite_link_entity <- read.csv(paste(path, prefix,'composite_link_entity.csv',sep = ''), header = T,stringsAsFactors = F)
-  d13C <- read.csv(paste(path, prefix,'d13C.csv',sep='') ,header = T, stringsAsFactors = F)
+  d13C <- read.csv(paste(path, prefix,'d13c.csv',sep='') ,header = T, stringsAsFactors = F)
   d13C <- plyr::rename(d13C, c("iso_std" = "iso_std_d13C"))
-  d18O <- read.csv(paste(path, prefix,'d18O.csv', sep =''),header = T, stringsAsFactors = F)
+  d18O <- read.csv(paste(path, prefix,'d18o.csv', sep =''),header = T, stringsAsFactors = F)
   d18O <- plyr::rename(d18O, c("iso_std" = "iso_std_d18O"))
   dating_lamina <- read.csv(paste(path, prefix,'dating_lamina.csv', sep = ''), header = T, stringsAsFactors = F)
   dating <- read.csv(paste(path, prefix,'dating.csv',sep = ''), header = T, stringsAsFactors = F)
@@ -24,6 +24,7 @@ load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/
   hiatus <- read.csv(paste(path, prefix,'hiatus.csv', sep =''), header = T, stringsAsFactors = F)
   notes <- read.csv(paste(path, prefix,'notes.csv', sep = ''), header = T, stringsAsFactors = F)
   original_chronology <- read.csv(paste(path, prefix,'original_chronology.csv', sep = ''), header = T, stringsAsFactors = F)
+  
   reference <- read.csv(paste(path, prefix,'reference.csv', sep = ''), header = T, stringsAsFactors = F)
   sample <- read.csv(paste(path, prefix,'sample.csv', sep = ''), header = T, stringsAsFactors = F)
   sisal_chronology <- read.csv(paste(path, prefix,'sisal_chronology.csv', sep = ''), header = T, stringsAsFactors = F)
@@ -36,8 +37,9 @@ load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/
   dating_tb <- left_join(dating, entity) %>% group_by(entity_id) %>%mutate(laminar_dated = if_else((entity_id %in% dating_lamina$entity_id), 'yes', 'no')) %>% 
     mutate_at(vars(dating_id, depth_dating, dating_thickness, X14C_correction, corr_age, corr_age_uncert_pos, corr_age_uncert_neg), as.numeric) %>%ungroup()
   sample_tb <- plyr::join_all(list(sample,hiatus, gap, original_chronology, sisal_chronology, d13C, d18O), by = 'sample_id', type = 'full', match = 'all') %>% 
-    mutate_at(vars(entity_id, sample_id, sample_thickness, depth_sample, interp_age, interp_age_uncert_pos, interp_age_uncert_neg, COPRA_age,
-                   COPRA_age_uncert_pos, COPRA_age_uncert_neg, linear_age, linear_age_uncert_pos, linear_age_uncert_neg, d13C_measurement,
+    mutate_at(vars(entity_id, sample_id, sample_thickness, depth_sample, interp_age, interp_age_uncert_pos, interp_age_uncert_neg, copRa_age,
+                   copRa_age_uncert_pos, copRa_age_uncert_neg, lin_interp_age, lin_interp_age_uncert_pos, lin_interp_age_uncert_neg, 
+                   lin_reg_age, lin_reg_age_uncert_pos, lin_reg_age_uncert_neg, d13C_measurement,
                    d13C_precision, d18O_measurement, d18O_precision), as.numeric)
 
 
@@ -132,11 +134,11 @@ load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/
 
 return(list(return_data, sample_min2, entities_past1000_dating, site_to_entity))
   
-#  remove(composite_link_entity, d13C, d18O, dating, dating_lamina, dating_tb, dating_tb_filtered, dating_tb_filtered_2, dating_tb_new, 
-#         eID_1, entities_mineralogy, entities_past1000, entity, entity_from_base, entity_link_reference, file_name, gap, hiatus, no_depth_sample, 
-#         no_sample_info, notes, nr_dates, only_h, original_chronology, reference, return_data, run, sample, sample_from_base, sample_min2, sample_tb, 
-#         sample_tb_new, sample_tb_new_filtered, sisal_chronology, site_min2, site_period, site_tb, site_tb_filtered, dating_join, 
-#         entities_dating, entities_past1000_dating, path, prefix, site, site_to_entity)
+ # remove(composite_link_entity, d13C, d18O, dating, dating_lamina, dating_tb, dating_tb_filtered, dating_tb_filtered_2, dating_tb_new,
+ #        eID_1, entities_mineralogy, entities_past1000, entity, entity_from_base, entity_link_reference, file_name, gap, hiatus, no_depth_sample,
+ #        no_sample_info, notes, nr_dates, only_h, original_chronology, reference, return_data, run, sample, sample_from_base, sample_min2, sample_tb,
+ #        sample_tb_new, sample_tb_new_filtered, sisal_chronology, site_min2, site_period, site_tb, site_tb_filtered, dating_join,
+ #        entities_dating, entities_past1000_dating, path, prefix, site, site_to_entity)
 
 }
 

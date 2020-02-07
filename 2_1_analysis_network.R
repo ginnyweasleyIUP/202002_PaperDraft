@@ -60,11 +60,11 @@ plot(hc)
 ANALYSIS$hc <- hc
 
 cluster <-cutree(hc,k=8)
-Point_Lyr <- list(
-  lat = lats,
-  long = longs,
-  value =cluster
-)
+#Point_Lyr <- list(
+#  lat = ANALYSIS$NETWORK$entity_meta$lat,
+#  long = ANALYSIS$NETWORK$entity_meta$long,
+#  value =cluster
+#)
 
 #map(database='world')
 #points(Point_Lyr$long,Point_Lyr$lat,col=Point_Lyr$value+1,pch=3)
@@ -81,6 +81,18 @@ for(ii in 1:sum(mask_spec)){
   ANALYSIS$NETWORK$entity_meta$cluster_id[ii] = cluster[ii]
 }
 
+rm(e.lat, e.long, entity, ii, dist, cluster, site)
+
+#################################################
+## CAVE CORRELATION #############################
+#################################################
+
+
+#gaussdetr(zoo(x = Timeseries$pages2k$value[850:2000],
+#              order.by = Timeseries$pages2k$time[850:2000]), tsc.in = 100)$Xsmooth
+
+
+#For cross-correlation we use the d18O measurements, as it does not include simulation data
 
 ## 2 1 site correlation 
 
@@ -94,6 +106,8 @@ site_list <- DATA_past1000$CAVES$entity_info %>% select(site_id, entity_id) %>%
 ANALYSIS$NETWORK$SITES <- list()
 ANALYSIS$NETWORK$SITES$mean <- numeric(length(site_list$site_id))
 ANALYSIS$NETWORK$SITES$range <- list()
+ANALYSIS$NETWORK$SITES$mean_100gauss <- numeric(length(site_list$site_id))
+ANALYSIS$NETWORK$SITES$range_100gauss <- list()
 counter = 1
 
 for(site in site_list$site_id){
@@ -106,6 +120,7 @@ for(site in site_list$site_id){
     filter(site_id == site) %>% select(entity_id)
   
   TS <- list()
+  TS_gauss <- list()
   
   for(entity in entity_list$entity_id){
     s <- DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]
@@ -114,31 +129,37 @@ for(site in site_list$site_id){
     s <- s %>% filter(!interp_age %in% double_time$interp_age) %>% filter(!is.na(d18O_measurement))
     
     TS[[paste0("Entity", entity)]] <- zoo(x = s$d18O_measurement, order.by = s$interp_age)
+    TS_gauss[[paste0("Entity", entity)]] <- gaussdetr(zoo(x = s$d18O_measurement, order.by = s$interp_age), tsc.in = 100)$Xsmooth
   }
   
   C<-matrix(NA,nrow=length(TS),ncol=length(TS))
   colnames(C)<-rownames(C)<-names(TS)
-  P <- C
+  C_gauss <- P_gauss <- P <- C
   
   for (i in 1:(length(TS)-1)){
     for (j in (i+1):length(TS)){
       temp<-nest::nexcf_ci(TS[[i]],TS[[j]],conflevel=0.1)
-      
+      temp_gauss<-nest::nexcf_ci(TS_gauss[[i]],TS_gauss[[j]],conflevel=0.1)
       C[i,j]<-temp$rxy
       P[i,j]<-P[j,i]<-temp$pval
       C[j,i]=C[i,j]
       rm(temp)
+      C_gauss[i,j]<-temp_gauss$rxy
+      P_gauss[i,j]<-P_gauss[j,i]<-temp_gauss$pval
+      C_gauss[j,i]=C_gauss[i,j]
+      rm(temp_gauss)
     }
   }
   #corrplot::corrplot(C)
-  
-  C_sig <- C
-  C_sig[P>0.1] <- NA
   
   ANALYSIS$NETWORK$SITES[[paste0("SITE", site)]]$C <- C
   ANALYSIS$NETWORK$SITES[[paste0("SITE", site)]]$P <- P
   ANALYSIS$NETWORK$SITES$mean[counter] <- mean(C, na.rm = T)
   ANALYSIS$NETWORK$SITES$range[counter] <- range(C, na.rm = T)
+  ANALYSIS$NETWORK$SITES[[paste0("SITE", site)]]$C_gauss <- C_gauss
+  ANALYSIS$NETWORK$SITES[[paste0("SITE", site)]]$P_gauss <- P_gauss
+  ANALYSIS$NETWORK$SITES$mean_100gauss[counter] <- mean(C_gauss, na.rm = T)
+  ANALYSIS$NETWORK$SITES$range_100gauss[counter] <- range(C_gauss, na.rm = T)
   counter = counter + 1
   
 }
@@ -152,6 +173,8 @@ gridbox_list <- ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id, entity_id) %
 ANALYSIS$NETWORK$GRIDBOX <- list()
 ANALYSIS$NETWORK$GRIDBOX$mean <- numeric(length(gridbox_list$gridbox_id))
 ANALYSIS$NETWORK$GRIDBOX$range <- list()
+ANALYSIS$NETWORK$GRIDBOX$mean_100gauss <- numeric(length(gridbox_list$gridbox_id))
+ANALYSIS$NETWORK$GRIDBOX$range_100gauss <- list()
 counter = 1
 
 for(gridbox in gridbox_list$gridbox_id){
@@ -163,6 +186,7 @@ for(gridbox in gridbox_list$gridbox_id){
   entity_list <- ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id, entity_id) %>% filter(gridbox_id == gridbox)
   
   TS <- list()
+  TS_gauss <- list()
   
   for(entity in entity_list$entity_id){
     s <- DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]
@@ -171,31 +195,36 @@ for(gridbox in gridbox_list$gridbox_id){
     s <- s %>% filter(!interp_age %in% double_time$interp_age) %>% filter(!is.na(d18O_measurement))
     
     TS[[paste0("Entity", entity)]] <- zoo(x = s$d18O_measurement, order.by = s$interp_age)
+    TS_gauss[[paste0("Entity", entity)]] <- gaussdetr(zoo(x = s$d18O_measurement, order.by = s$interp_age), tsc.in = 100)$Xsmooth
   }
   
   C<-matrix(NA,nrow=length(TS),ncol=length(TS))
   colnames(C)<-rownames(C)<-names(TS)
-  P <- C
+  C_gauss <- P_gauss <- P <- C
   
   for (i in 1:(length(TS)-1)){
     for (j in (i+1):length(TS)){
       temp<-nest::nexcf_ci(TS[[i]],TS[[j]],conflevel=0.1)
-      
+      temp_gauss<-nest::nexcf_ci(TS_gauss[[i]],TS_gauss[[j]],conflevel=0.1)
       C[i,j]<-temp$rxy
       P[i,j]<-P[j,i]<-temp$pval
       C[j,i]=C[i,j]
       rm(temp)
+      C_gauss[i,j]<-temp_gauss$rxy
+      P_gauss[i,j]<-P_gauss[j,i]<-temp_gauss$pval
+      C_gauss[j,i]=C_gauss[i,j]
+      rm(temp_gauss)
     }
   }
-  #corrplot::corrplot(C)
-  
-  C_sig <- C
-  C_sig[P>0.1] <- NA
-  
+
   ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX", gridbox)]]$C <- C
   ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX", gridbox)]]$P <- P
   ANALYSIS$NETWORK$GRIDBOX$mean[counter] <- mean(C, na.rm = T)
   ANALYSIS$NETWORK$GRIDBOX$range[counter] <- range(C, na.rm = T)
+  ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX", gridbox)]]$C_gauss <- C_gauss
+  ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX", gridbox)]]$P_gauss <- P_gauss
+  ANALYSIS$NETWORK$GRIDBOX$mean_100gauss[counter] <- mean(C_gauss, na.rm = T)
+  ANALYSIS$NETWORK$GRIDBOX$range_100gauss[counter] <- range(C_gauss, na.rm = T)
   counter = counter + 1
   
 }
@@ -209,6 +238,8 @@ cluster_list <- ANALYSIS$NETWORK$entity_meta %>% select(cluster_id, entity_id) %
 ANALYSIS$NETWORK$CLUSTER <- list()
 ANALYSIS$NETWORK$CLUSTER$mean <- numeric(length(cluster_list$cluster_id))
 ANALYSIS$NETWORK$CLUSTER$range <- list()
+ANALYSIS$NETWORK$CLUSTER$mean_100gauss <- numeric(length(cluster_list$cluster_id))
+ANALYSIS$NETWORK$CLUSTER$range_100gauss <- list()
 counter = 1
 
 for(cluster in cluster_list$cluster_id){
@@ -220,6 +251,7 @@ for(cluster in cluster_list$cluster_id){
   entity_list <- ANALYSIS$NETWORK$entity_meta %>% select(cluster_id, entity_id) %>% filter(cluster_id == cluster)
   
   TS <- list()
+  TS_gauss <- list()
   
   for(entity in entity_list$entity_id){
     s <- DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]
@@ -228,31 +260,37 @@ for(cluster in cluster_list$cluster_id){
     s <- s %>% filter(!interp_age %in% double_time$interp_age) %>% filter(!is.na(d18O_measurement))
     
     TS[[paste0("Entity", entity)]] <- zoo(x = s$d18O_measurement, order.by = s$interp_age)
+    TS_gauss[[paste0("Entity", entity)]] <- gaussdetr(zoo(x = s$d18O_measurement, order.by = s$interp_age), tsc.in = 100)$Xsmooth
   }
   
   C<-matrix(NA,nrow=length(TS),ncol=length(TS))
   colnames(C)<-rownames(C)<-names(TS)
-  P <- C
+  C_gauss <- P_gauss <- P <- C
   
   for (i in 1:(length(TS)-1)){
     for (j in (i+1):length(TS)){
       temp<-nest::nexcf_ci(TS[[i]],TS[[j]],conflevel=0.1)
-      
+      temp_gauss<-nest::nexcf_ci(TS_gauss[[i]],TS_gauss[[j]],conflevel=0.1)
       C[i,j]<-temp$rxy
       P[i,j]<-P[j,i]<-temp$pval
       C[j,i]=C[i,j]
       rm(temp)
+      C_gauss[i,j]<-temp_gauss$rxy
+      P_gauss[i,j]<-P_gauss[j,i]<-temp_gauss$pval
+      C_gauss[j,i]=C_gauss[i,j]
+      rm(temp_gauss)
     }
   }
-  #corrplot::corrplot(C)
   
-  C_sig <- C
-  C_sig[P>0.1] <- NA
   
   ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C <- C
   ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P <- P
   ANALYSIS$NETWORK$CLUSTER$mean[counter] <- mean(C, na.rm = T)
   ANALYSIS$NETWORK$CLUSTER$range[counter] <- range(C, na.rm = T)
+  ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C_gauss <- C_gauss
+  ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P_gauss <- P_gauss
+  ANALYSIS$NETWORK$CLUSTER$mean_100gauss[counter] <- mean(C_gauss, na.rm = T)
+  ANALYSIS$NETWORK$CLUSTER$range_100gauss[counter] <- range(C_gauss, na.rm = T)
   counter = counter + 1
   
 }
@@ -267,6 +305,7 @@ entity_list <- ANALYSIS$NETWORK$entity_meta$entity_id
 
   
 TS <- list()
+TS_gauss <- list()
   
 for(entity in entity_list){
   s <- DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]
@@ -275,145 +314,175 @@ for(entity in entity_list){
   s <- s %>% filter(!interp_age %in% double_time$interp_age) %>% filter(!is.na(d18O_measurement))
   
   TS[[paste0("Entity", entity)]] <- zoo(x = s$d18O_measurement, order.by = s$interp_age)
+  TS_gauss[[paste0("Entity", entity)]] <- gaussdetr(zoo(x = s$d18O_measurement, order.by = s$interp_age), tsc.in = 100)$Xsmooth
 }
   
 C<-matrix(NA,nrow=length(TS),ncol=length(TS))
 colnames(C)<-rownames(C)<-names(TS)
-P <- C
+C_gauss <- P_gauss <- P <- C
 
 for (i in 1:(length(TS)-1)){
-  print(i)
   for (j in (i+1):length(TS)){
     temp<-nest::nexcf_ci(TS[[i]],TS[[j]],conflevel=0.1)
-    
+    temp_gauss<-nest::nexcf_ci(TS_gauss[[i]],TS_gauss[[j]],conflevel=0.1)
     C[i,j]<-temp$rxy
     P[i,j]<-P[j,i]<-temp$pval
     C[j,i]=C[i,j]
     rm(temp)
+    C_gauss[i,j]<-temp_gauss$rxy
+    P_gauss[i,j]<-P_gauss[j,i]<-temp_gauss$pval
+    C_gauss[j,i]=C_gauss[i,j]
+    rm(temp_gauss)
   }
 }
-
-corrplot::corrplot(C[1:20, 1:20])
-
-C_sig <- C
-C_sig[P>0.1] <- NA
 
 ANALYSIS$NETWORK$GLOBAL$C <- C
 ANALYSIS$NETWORK$GLOBAL$P <- P
 ANALYSIS$NETWORK$GLOBAL$mean <- mean(C, na.rm = T)
 ANALYSIS$NETWORK$GLOBAL$range <- range(C, na.rm = T)
+ANALYSIS$NETWORK$GLOBAL$C_gauss <- C_gauss
+ANALYSIS$NETWORK$GLOBAL$P_gauss <- P_gauss
+ANALYSIS$NETWORK$GLOBAL$mean_100gauss <- mean(C, na.rm = T)
+ANALYSIS$NETWORK$GLOBAL$range_100gauss <- range(C, na.rm = T)
 
-remove(cluster, counter, e.lat, e.long, entity, gridbox, i, ii, j, site, TS, site_list, s, Point_Lyr, P, hc, gridbox_list, entity_list, double_time, cluster_list, C, C_sig, a)
+remove(cluster, counter, entity, gridbox, i, j, site, TS, site_list, s, P, hc, gridbox_list, entity_list, double_time, cluster_list, C)
 
 #################################################
 ## SIMULATION ###################################
 #################################################
 
-## 2 3 cluster correlation
-
-cluster_list <- ANALYSIS$NETWORK$entity_meta %>% select(cluster_id, entity_id) %>% group_by(cluster_id) %>% count() %>% filter(n>1)
-
-# Calculation
-
-ANALYSIS$NETWORK$CLUSTER_SIM <- list()
-ANALYSIS$NETWORK$CLUSTER_SIM$mean <- numeric(length(cluster_list$cluster_id))
-ANALYSIS$NETWORK$CLUSTER_SIM$range <- list()
-counter = 1
-
-for(cluster in cluster_list$cluster_id){
+for(run in c("a","b","c")){
+  ## 2 3 cluster correlation
   
-  print(paste("cluster", cluster))
+  cluster_list <- ANALYSIS$NETWORK$entity_meta %>% select(cluster_id, entity_id) %>% group_by(cluster_id) %>% count() %>% filter(n>1)
   
-  ANALYSIS$NETWORK$CLUSTER_SIM[[paste0("CLUSTER", cluster)]] <- list()
+  # Calculation
   
-  entity_list <- ANALYSIS$NETWORK$entity_meta %>% select(cluster_id, entity_id) %>% filter(cluster_id == cluster)
+  ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]] <- list()
+  ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]]$mean <- numeric(length(cluster_list$cluster_id))
+  ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]]$range <- list()
+  ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]]$mean_100gauss <- numeric(length(cluster_list$cluster_id))
+  ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]]$range_100gauss <- list()
+  counter = 1
+  
+  for(cluster in cluster_list$cluster_id){
+    
+    print(paste("cluster", cluster))
+    
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]][[paste0("CLUSTER", cluster)]] <- list()
+    
+    entity_list <- ANALYSIS$NETWORK$entity_meta %>% select(cluster_id, entity_id) %>% filter(cluster_id == cluster)
+    
+    TS <- list()
+    TS_gauss <- list()
+    
+    for(entity in entity_list$entity_id){
+      site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
+      TS[[paste0("Entity", entity)]] <- zoo(x = DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("ISOT_", run)]], 
+                                            order.by = seq(from = 1950-DATA_past1000$time[1], to = 1950-DATA_past1000$time[2], by = -1))
+      TS_gauss[[paste0("Entity", entity)]] <- gaussdetr(zoo(x = DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("ISOT_", run)]], 
+                                                      order.by = seq(from = 1950-DATA_past1000$time[1], to = 1950-DATA_past1000$time[2], by = -1)), tsc.in = 100)$Xsmooth
+    }
+    
+    C<-matrix(NA,nrow=length(TS),ncol=length(TS))
+    colnames(C)<-rownames(C)<-names(TS)
+    C_gauss <- P_gauss <- P <- C
+    
+    for (i in 1:(length(TS)-1)){
+      for (j in (i+1):length(TS)){
+        temp<-nest::nexcf_ci(TS[[i]],TS[[j]],conflevel=0.1)
+        temp_gauss<-nest::nexcf_ci(TS_gauss[[i]],TS_gauss[[j]],conflevel=0.1)
+        C[i,j]<-temp$rxy
+        P[i,j]<-P[j,i]<-temp$pval
+        C[j,i]=C[i,j]
+        rm(temp)
+        C_gauss[i,j]<-temp_gauss$rxy
+        P_gauss[i,j]<-P_gauss[j,i]<-temp_gauss$pval
+        C_gauss[j,i]=C_gauss[i,j]
+        rm(temp_gauss)
+      }
+    }
+    
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]][[paste0("CLUSTER", cluster)]]$C <- C
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]][[paste0("CLUSTER", cluster)]]$P <- P
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]]$mean[counter] <- mean(C, na.rm = T)
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]]$range[counter] <- range(C, na.rm = T)
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]][[paste0("CLUSTER", cluster)]]$C_gauss <- C_gauss
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]][[paste0("CLUSTER", cluster)]]$P_gauss <- P_gauss
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]]$mean_100gauss[counter] <- mean(C_gauss, na.rm = T)
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_",run)]]$range_100gauss[counter] <- range(C_gauss, na.rm = T)
+    counter = counter + 1
+    
+  }
+  
+  ## 2 4 global correlation
+  
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]] <- list()
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$mean <- list()
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$range <- list()
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$mean_100gauss <- list()
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$range_100gauss <- list()
+  
+  entity_list <- ANALYSIS$NETWORK$entity_meta$entity_id
+  
   
   TS <- list()
+  TS_gauss <- list()
   
-  for(entity in entity_list$entity_id){
+  for(entity in entity_list){
     site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
-    TS[[paste0("Entity", entity)]] <- zoo(x = DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ISOT, order.by = seq(from = 1100, to = -49, by = -1))
+    TS[[paste0("Entity", entity)]] <- zoo(x = DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("ISOT_", run)]], 
+                                          order.by = seq(from = 1950-DATA_past1000$time[1], to = 1950-DATA_past1000$time[2], by = -1))
+    TS_gauss[[paste0("Entity", entity)]] <- gaussdetr(zoo(x = DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("ISOT_", run)]], 
+                                                          order.by = seq(from = 1950-DATA_past1000$time[1], to = 1950-DATA_past1000$time[2], by = -1)), tsc.in = 100)$Xsmooth
   }
   
   C<-matrix(NA,nrow=length(TS),ncol=length(TS))
   colnames(C)<-rownames(C)<-names(TS)
-  P <- C
+  C_gauss <- P_gauss <- P <- C
   
   for (i in 1:(length(TS)-1)){
     for (j in (i+1):length(TS)){
       temp<-nest::nexcf_ci(TS[[i]],TS[[j]],conflevel=0.1)
-      
+      temp_gauss<-nest::nexcf_ci(TS_gauss[[i]],TS_gauss[[j]],conflevel=0.1)
       C[i,j]<-temp$rxy
       P[i,j]<-P[j,i]<-temp$pval
       C[j,i]=C[i,j]
       rm(temp)
+      C_gauss[i,j]<-temp_gauss$rxy
+      P_gauss[i,j]<-P_gauss[j,i]<-temp_gauss$pval
+      C_gauss[j,i]=C_gauss[i,j]
+      rm(temp_gauss)
     }
   }
-  #corrplot::corrplot(C)
   
-  C_sig <- C
-  C_sig[P>0.1] <- NA
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C <- C
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P <- P
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$mean <- mean(C, na.rm = T)
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$range <- range(C, na.rm = T)
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C_gauss <- C_gauss
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P_gauss <- P_gauss
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$mean_100gauss <- mean(C_gauss, na.rm = T)
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$range_100gauss <- range(C_gauss, na.rm = T)
   
-  ANALYSIS$NETWORK$CLUSTER_SIM[[paste0("CLUSTER", cluster)]]$C <- C
-  ANALYSIS$NETWORK$CLUSTER_SIM[[paste0("CLUSTER", cluster)]]$P <- P
-  ANALYSIS$NETWORK$CLUSTER_SIM$mean[counter] <- mean(C, na.rm = T)
-  ANALYSIS$NETWORK$CLUSTER_SIM$range[counter] <- range(C, na.rm = T)
-  counter = counter + 1
+  remove(cluster, counter, e.lat, e.long, entity, gridbox, i, ii, j, site, TS, site_list, s, Point_Lyr, P, hc, gridbox_list, entity_list, double_time, cluster_list, C, C_sig, a)
   
 }
 
-## 2 4 global correlation
-
-ANALYSIS$NETWORK$GLOBAL_SIM <- list()
-ANALYSIS$NETWORK$GLOBAL_SIM$mean <- list()
-ANALYSIS$NETWORK$GLOBAL_SIM$range <- list()
-
-entity_list <- ANALYSIS$NETWORK$entity_meta$entity_id
-
-
-TS <- list()
-
-for(entity in entity_list){
-  site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
-  TS[[paste0("Entity", entity)]] <- DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ISOT
-}
-
-C<-matrix(NA,nrow=length(TS),ncol=length(TS))
-colnames(C)<-rownames(C)<-names(TS)
-P <- C
-
-for (i in 1:(length(TS)-1)){
-  for (j in (i+1):length(TS)){
-    temp<- cor.test(TS[[i]],TS[[j]])
-    #temp$estimate[[1]]
-    #j = j+1
-    C[i,j]<-temp$estimate[[1]]
-    P[i,j]<-P[j,i]<-temp$p.value
-    C[j,i]=C[i,j]
-    rm(temp)
-  }
-}
-
-corrplot::corrplot(C[1:20,1:20])
-
-C_sig <- C
-C_sig[P>0.1] <- NA
-
-ANALYSIS$NETWORK$GLOBAL_SIM$C <- C
-ANALYSIS$NETWORK$GLOBAL_SIM$P <- P
-ANALYSIS$NETWORK$GLOBAL_SIM$mean <- mean(C, na.rm = T)
-ANALYSIS$NETWORK$GLOBAL_SIM$range <- range(C, na.rm = T)
-
-remove(cluster, counter, e.lat, e.long, entity, gridbox, i, ii, j, site, TS, site_list, s, Point_Lyr, P, hc, gridbox_list, entity_list, double_time, cluster_list, C, C_sig, a)
 
 
 #################################################
 ## SUMMARY ######################################
 #################################################
 
-table <- array(dim = c(11,8))
+table <- array(dim = c(11,26))
 
-colnames(table) <- c("group", "total", "raw_mean", "raw_upper", "raw_lower", "sim_mean", "sim_upper", "sim_lower")
+colnames(table) <- c("group", "total", 
+                     # 3              4               5             6                     7                   8
+                     "raw_mean",   "raw_upper",   "raw_lower",   "raw_mean_gauss",   "raw_upper_gauss",  "raw_lower_gauss", 
+                     "sim_mean_a", "sim_upper_a", "sim_lower_a", "sim_mean_a_gauss", "sim_upper_a_gauss", "sim_lower_a_gauss",
+                     "sim_mean_b", "sim_upper_b", "sim_lower_b", "sim_mean_b_gauss", "sim_upper_b_gauss", "sim_lower_b_gauss",
+                     "sim_mean_c", "sim_upper_c", "sim_lower_c", "sim_mean_c_gauss", "sim_upper_c_gauss", "sim_lower_c_gauss")
 rownames(table) <- c("site", "gridbox", 
                      "cluster1-India", "cluster2-SA", "cluster3-Europe", "cluster4-Afica", 
                      "cluster5_Asia", "cluster6-NA", "cluster7-Arabia" , "cluster8-NZ",
@@ -448,9 +517,19 @@ for(cluster in 1:8){
   table[2+cluster,3] <- mean(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)
   table[2+cluster,4] <- range(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[1]
   table[2+cluster,5] <- range(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[2]
-  table[2+cluster,6] <- mean(ANALYSIS$NETWORK$CLUSTER_SIM[[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM[[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)
-  table[2+cluster,7] <- range(ANALYSIS$NETWORK$CLUSTER_SIM[[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM[[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[1]
-  table[2+cluster,8] <- range(ANALYSIS$NETWORK$CLUSTER_SIM[[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM[[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[2] 
+  table[2+cluster,6] <- mean(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)
+  table[2+cluster,7] <- range(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)[1]
+  table[2+cluster,8] <- range(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)[2]
+  position <- list("a"<- c(9,10,11), "b"<- c(15,16,17), "c" <- c(21,22,23))
+  for(run in c("a", "b", "c")){
+    table[2+cluster,position[[run]][1]] <- mean(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)
+    table[2+cluster,position[[run]][2]] <- range(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[1]
+    table[2+cluster,position[[run]][3]] <- range(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[2]  
+    table[2+cluster,position[[run]][1]+1] <- mean(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)
+    table[2+cluster,position[[run]][2]+1] <- range(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)[1]
+    table[2+cluster,position[[run]][3]+1] <- range(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)[2]  
+  }
+
 }
 
 # Africa Sonderfall weil nur 2 drin:
@@ -459,55 +538,22 @@ for(cluster in 1:8){
 table[11,3] <- mean(ANALYSIS$NETWORK$GLOBAL$mean, na.rm = T)
 table[11,4] <- max(ANALYSIS$NETWORK$GLOBAL$range, na.rm = T)
 table[11,5] <- min(ANALYSIS$NETWORK$GLOBAL$range, na.rm = T)
-table[11,6] <- mean(ANALYSIS$NETWORK$GLOBAL_SIM$mean, na.rm = T)
-table[11,7] <- max(ANALYSIS$NETWORK$GLOBAL_SIM$range, na.rm = T)
-table[11,8] <- min(ANALYSIS$NETWORK$GLOBAL_SIM$range, na.rm = T)
+table[11,6] <- mean(ANALYSIS$NETWORK$GLOBAL$mean_gauss, na.rm = T)
+table[11,7] <- max(ANALYSIS$NETWORK$GLOBAL$range_gauss, na.rm = T)
+table[11,8] <- min(ANALYSIS$NETWORK$GLOBAL$range_gauss, na.rm = T)
+
+position <- list("a"<- c(9,10,11), "b"<- c(15,16,17), "c" <- c(21,22,23))
+for(run in c("a", "b", "c")){
+  table[11,position[[run]][1]] <- mean(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P<0.15], na.rm = T)
+  table[11,position[[run]][2]] <- range(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P<0.15], na.rm = T)[1]
+  table[11,position[[run]][3]] <- range(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P<0.15], na.rm = T)[2]
+  table[11,position[[run]][1]+1] <- mean(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C_gauss[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P_gauss<0.15], na.rm = T)
+  table[11,position[[run]][2]+1] <- range(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C_gauss[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P_gauss<0.15], na.rm = T)[1]
+  table[11,position[[run]][3]+1] <- range(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C_gauss[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P_gauss<0.15], na.rm = T)[2]  
+}
 
 table_round <- round(table, digits = 3)
 
 cairo_pdf(width=9,height=5,file="Plots/Paper_Plot_6_Network_b_table.pdf")
 gridExtra::grid.table(table_round)
 dev.off()
-
-# #################################################
-# ## TRY Principle Component Analysis for site 2 ##
-# #################################################
-# 
-# site = 2
-# entity_list = c(14,620,621,623)
-# time_start = -49
-# time_stop = 1100
-# dt <- list()
-# 
-# for(ii in 1:length(entity_list)){
-#   entity = entity_list[ii]
-#   if(PaleoSpec::FirstElement(DATA_past1000$CAVES$record_data[[paste0("ENTITY",entity)]]$interp_age)>time_start){
-#     time_start = PaleoSpec::FirstElement(DATA_past1000$CAVES$record_data[[paste0("ENTITY",entity)]]$interp_age)
-#   }
-#   if(PaleoSpec::LastElement(DATA_past1000$CAVES$record_data[[paste0("ENTITY",entity)]]$interp_age)<time_stop){
-#     time_stop = PaleoSpec::LastElement(DATA_past1000$CAVES$record_data[[paste0("ENTITY",entity)]]$interp_age)
-#   }
-#   
-#   dt = c(dt, mean(diff(DATA_past1000$CAVES$record_data[[paste0("ENTITY",entity)]]$interp_age)))
-#   
-# }
-# 
-# dt = mean(as.numeric(dt))
-# 
-# 
-# # Jetzt equidistant or blockaveraging?
-# 
-# TS <- array(dim = c(83,4))
-# 
-# for(ii in 1:4){
-#   entity = entity_list[ii]
-#   TS[,ii] = as.numeric(PaleoSpec::MakeEquidistant(t.x = DATA_past1000$CAVES$record_data[[paste0("ENTITY",entity)]]$interp_age, 
-#                                                              t.y = DATA_past1000$CAVES$record_data[[paste0("ENTITY",entity)]]$d18O_dw_eq,
-#                                                              time.target = time_target))
-#   
-# }
-# 
-# PC <- prcomp(TS)
-# 
-# sum(PC$rotation[,1])/sum(PC$rotation)
-# # but what does this tell me?

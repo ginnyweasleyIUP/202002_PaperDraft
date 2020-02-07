@@ -39,7 +39,7 @@ for(run in c("a","b","c")){
 }
 
 DATA_past1000$CAVES <- list()
-DATA_past1000$CAVES$site_info <- read.csv("/stacywork/ginnyweasley/02_SISAL/SISAL_v2_CARLA/site_countries.csv")
+DATA_past1000$CAVES$site_info <- read.csv("/stacywork/ginnyweasley/02_SISAL/SISAL_v2/site_countries.csv")
 DATA_past1000$CAVES$entity_info <- list()
 DATA_past1000$CAVES$record_data <- list()
 DATA_past1000$CAVES$sim_data_yearly <- list()
@@ -477,6 +477,20 @@ remove(entity, dw_eq_a, dw_eq_b, dw_eq_c, ii, site, data_rec, data_sim)
 
 DATA_past1000$CAVES$site_info <- DATA_past1000$CAVES$site_info %>% mutate(elevation = as.numeric(as.character(elevation)))
 remove(DATA_past1000_SIM_RAW)
+
+#################################################
+## MASKS ########################################
+#################################################
+
+mask_mean = logical(length = length(DATA_past1000$CAVES$entity_info$entity_id))
+mask_var  = logical(length = length(DATA_past1000$CAVES$entity_info$entity_id))
+mask_spec = logical(length = length(DATA_past1000$CAVES$entity_info$entity_id))
+
+for(entity in 1:length(DATA_past1000$CAVES$entity_info$entity_id)){
+  if(DATA_past1000$CAVES$entity_info$n[entity] > 10 & DATA_past1000$CAVES$entity_info$period[entity] > 600){mask_mean[entity] = T}
+  if(DATA_past1000$CAVES$entity_info$n[entity] > 20 & DATA_past1000$CAVES$entity_info$period[entity] > 600){mask_var[entity] = T}
+  if(DATA_past1000$CAVES$entity_info$n[entity] > 30 & DATA_past1000$CAVES$entity_info$period[entity] > 600){mask_spec[entity] = T}
+}
 
 #   #################################################
 #   ## 8.0) SIMULATION SEASONS ######################
