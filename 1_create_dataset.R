@@ -177,7 +177,7 @@ for(run in c("a", "b", "c")){
       ratios$E3*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E3_lon_pos, ratios$E3_lat_pos,] +
       ratios$E4*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E4_lon_pos, ratios$E4_lat_pos,]
     
-    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_",run)]] <- ratios$E1*DATA_past1000_SIM_RAW$PREC[[run]][ratios$E1_lon_pos, ratios$E1_lat_pos,] +
+    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_",run)]] <- ratios$E1*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E1_lon_pos, ratios$E1_lat_pos,] +
       ratios$E2*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E2_lon_pos, ratios$E2_lat_pos,] +
       ratios$E3*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E3_lon_pos, ratios$E3_lat_pos,] +
       ratios$E4*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E4_lon_pos, ratios$E4_lat_pos,]

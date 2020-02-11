@@ -24,8 +24,8 @@ library(latex2exp)
 
 ANALYSIS$SPECTRA <- list()
 ANALYSIS$SPECTRA$RECORDS <- list()
-ANALYSIS$SPECTRA$SIM_ds <- list("a" <- list(),"b" <- list(),"c" <- list())
-ANALYSIS$SPECTRA$SIM_full <- list("a" <- list(),"b" <- list(),"c" <- list())
+ANALYSIS$SPECTRA$SIM_ds <- list("a" = list(),"b" = list(),"c" = list())
+ANALYSIS$SPECTRA$SIM_full <- list("a" = list(),"b" = list(),"c" = list())
 ANALYSIS$SPECTRA$MEAN_SPEC <- list()
 ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH <- list()
 
@@ -104,13 +104,6 @@ for(run in c("a","b","c")){
     ISOT = list(), 
     ITPC = list()
   )
-  # colnames(data) = c("interp_age", 
-  #                    "TEMP_a", "PREC_a","ISOT_a", "ITPC_a", 
-  #                    "TEMP_b", "PREC_b","ISOT_b", "ITPC_b", 
-  #                    "TEMP_c", "PREC_c","ISOT_c", "ITPC_c")
-  # 
-  # DATA_past1000$CAVES$sim_data_downsampled[[nameE]] <- as.tibble(data)
-  
   
   for(ii in 1:length(ANALYSIS$SPECTRA$entities_spec_rec)){
     print(ii)
@@ -124,7 +117,7 @@ for(run in c("a","b","c")){
     stop_ts = floor((stop_ts-start_ts)/length)*length+start_ts
     #ISOT
     record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,
-                                         DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("ISOT", run)]],
+                                         DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("ISOT_", run)]],
                                          time.target = seq(from = start_ts, to = stop_ts, by = floor((stop_ts-start_ts)/length)))
     record = na.omit(record)
     data  = ts(data = record, start = start_ts, end   = stop_ts, deltat = floor((stop_ts-start_ts)/length))
@@ -133,7 +126,7 @@ for(run in c("a","b","c")){
     
     #ITPC
     record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,
-                                         DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("ITPC", run)]],
+                                         DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("ITPC_", run)]],
                                          time.target = seq(from = start_ts, to = stop_ts, by = floor((stop_ts-start_ts)/length)))
     record = na.omit(record)
     data  = ts(data = record, start = start_ts, end   = stop_ts, deltat = floor((stop_ts-start_ts)/length))
@@ -142,7 +135,7 @@ for(run in c("a","b","c")){
     
     #TEMP
     record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,
-                                         DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("TEMP", run)]],
+                                         DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("TEMP_", run)]],
                                          time.target = seq(from = start_ts, to = stop_ts, by = floor((stop_ts-start_ts)/length)))
     record = na.omit(record)
     data  = ts(data = record, start = start_ts, end   = stop_ts, deltat = floor((stop_ts-start_ts)/length))
@@ -151,7 +144,7 @@ for(run in c("a","b","c")){
     
     #PREC
     record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,
-                                         DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("PREC", run)]],
+                                         DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("PREC_", run)]],
                                          time.target = seq(from = start_ts, to = stop_ts, by = floor((stop_ts-start_ts)/length)))
     record = na.omit(record)
     data  = ts(data = record, start = start_ts, end   = stop_ts, deltat = floor((stop_ts-start_ts)/length))
@@ -160,16 +153,16 @@ for(run in c("a","b","c")){
     
   }
   
-  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_ds_temp_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$TEMP)
-  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_ds_prec_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$PREC)
-  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_ds_isot_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$ISOT)
-  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_ds_itpc_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$ITPC)
+  ANALYSIS$SPECTRA$MEAN_SPEC$TEMP$ds[[paste0("SIM_ds_TEMP_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$TEMP)
+  ANALYSIS$SPECTRA$MEAN_SPEC$PREC$ds[[paste0("SIM_ds_PREC_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$PREC)
+  ANALYSIS$SPECTRA$MEAN_SPEC$ISOT$ds[[paste0("SIM_ds_ISOT_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$ISOT)
+  ANALYSIS$SPECTRA$MEAN_SPEC$ITPC$ds[[paste0("SIM_ds_ITPC_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$ITPC)
   
-  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_ds_temp", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$TEMP, weights = entity_gridbox$weighing)
-  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_ds_prec", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$PREC, weights = entity_gridbox$weighing)
-  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_ds_isot", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$ISOT, weights = entity_gridbox$weighing)
-  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_ds_itpc", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$ITPC, weights = entity_gridbox$weighing)
-  
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$TEMP$ds[[paste0("SIM_ds_TEMP_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$TEMP, weights = entity_gridbox$weighing)
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$PREC$ds[[paste0("SIM_ds_PREC_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$PREC, weights = entity_gridbox$weighing)
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$ISOT$ds[[paste0("SIM_ds_ISOT_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$ISOT, weights = entity_gridbox$weighing)
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$ITPC$ds[[paste0("SIM_ds_ITPC_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_ds[[run]]$ITPC, weights = entity_gridbox$weighing)
+
   ## SIMULATION FULL 
   
   ANALYSIS$SPECTRA$SIM_full[[run]] <- list(
@@ -185,51 +178,66 @@ for(run in c("a","b","c")){
     site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
     name = paste0("ENTITY", entity)
     
-    record = na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("ISOT", run)]])
+    record = na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("ISOT_", run)]])
     data  = ts(data = rev(record), 
-               start = -49, 
-               end   = 1100, 
+               start = 1950-DATA_past1000$time[2], 
+               end   = 1950-DATA_past1000$time[1], 
                deltat = 1)
     
     ANALYSIS$SPECTRA$SIM_full[[run]]$ISOT[[name]] = SpecMTM(data)
     
-    record = na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("ITPC", run)]])
+    record = na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("ITPC_", run)]])
     data  = ts(data = rev(record), 
-               start = -49, 
-               end   = 1100, 
+               start = 1950-DATA_past1000$time[2], 
+               end   = 1950-DATA_past1000$time[1], 
                deltat = 1)
     
     ANALYSIS$SPECTRA$SIM_full[[run]]$ITPC[[name]] = SpecMTM(data)
     
-    record = na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("TEMP", run)]])
+    record = na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("TEMP_", run)]])
     data  = ts(data = rev(record), 
-               start = -49, 
-               end   = 1100, 
+               start = 1950-DATA_past1000$time[2], 
+               end   = 1950-DATA_past1000$time[1],
                deltat = 1)
     
     ANALYSIS$SPECTRA$SIM_full[[run]]$TEMP[[name]] = SpecMTM(data)
     
-    record = na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("PREC", run)]])
+    record = na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("PREC_", run)]])
     data  = ts(data = rev(record), 
-               start = -49, 
-               end   = 1100, 
+               start = 1950-DATA_past1000$time[2], 
+               end   = 1950-DATA_past1000$time[1], 
                deltat = 1)
     
     ANALYSIS$SPECTRA$SIM_full[[run]]$PREC[[name]] = SpecMTM(data)
     
   }
   
-  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_temp", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$TEMP)
-  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_prec", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$PREC)
-  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_isot", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$ISOT)
-  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_itpc", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$ITPC)
+  ANALYSIS$SPECTRA$MEAN_SPEC$TEMP$full[[paste0("SIM_full_TEMP_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$TEMP)
+  ANALYSIS$SPECTRA$MEAN_SPEC$PREC$full[[paste0("SIM_full_PREC_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$PREC)
+  ANALYSIS$SPECTRA$MEAN_SPEC$ISOT$full[[paste0("SIM_full_ISOT_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$ISOT)
+  ANALYSIS$SPECTRA$MEAN_SPEC$ITPC$full[[paste0("SIM_full_ITPC_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$ITPC)
   
-  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_temp", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$TEMP, weights = entity_gridbox$weighing)
-  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_prec", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$PREC, weights = entity_gridbox$weighing)
-  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_isot", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$ISOT, weights = entity_gridbox$weighing)
-  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_itpc", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$ITPC, weights = entity_gridbox$weighing)
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$TEMP$full[[paste0("SIM_full_TEMP_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$TEMP, weights = entity_gridbox$weighing)
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$PREC$full[[paste0("SIM_full_PREC_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$PREC, weights = entity_gridbox$weighing)
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$ISOT$full[[paste0("SIM_full_ISOT_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$ISOT, weights = entity_gridbox$weighing)
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$ITPC$full[[paste0("SIM_full_ITPC_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_full[[run]]$ITPC, weights = entity_gridbox$weighing)
 }
 
+##Mean
+for(var in c("TEMP", "PREC","ISOT","ITPC")){
+  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_ds_", var)]] <- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$ds[[paste0("SIM_ds_",var,"_a")]]$spec,
+                                                                            ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$ds[[paste0("SIM_ds_",var,"_b")]]$spec,
+                                                                            ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$ds[[paste0("SIM_ds_",var,"_c")]]$spec))
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_ds_", var)]] <- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$ds[[paste0("SIM_ds_",var,"_a")]]$spec,
+                                                                                  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$ds[[paste0("SIM_ds_",var,"_b")]]$spec,
+                                                                                  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$ds[[paste0("SIM_ds_",var,"_c")]]$spec))
+  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_", var)]] <- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$full[[paste0("SIM_full_",var,"_a")]]$spec,
+                                                                              ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$full[[paste0("SIM_full_",var,"_b")]]$spec,
+                                                                              ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$full[[paste0("SIM_full_",var,"_c")]]$spec))
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_", var)]] <- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$full[[paste0("SIM_full_",var,"_a")]]$spec,
+                                                                                    ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$full[[paste0("SIM_full_",var,"_b")]]$spec,
+                                                                                    ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$full[[paste0("SIM_full_",var,"_c")]]$spec))
+}
 
 #################################################
 ## Sim full FILTER Spectra ######################
@@ -255,122 +263,76 @@ for(ii in 1:length(ANALYSIS$SPECTRA$entities_spec_rec)){
   site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
   name = paste0("ENTITY", entity)
   
-  #TEMP
-  Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$TEMP), filter1)
-  data  = ts(data = rev(Results), start = (-49-10.0), end   = 1100, deltat = 1)
+  #full -> down
+  for(run in c("a", "b", "c")){
+    for(var in c("TEMP", "PREC","ISOT","ITPC")){
+      Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0(var,"_",run)]]), filter1)
+      data  = ts(data = rev(Results), start = 1950-DATA_past1000$time[2]-29, end   = 1950-DATA_past1000$time[1], deltat = 1)
+      
+      ANALYSIS$SPECTRA$SIM_filter_full_down[[var]][[run]][[name]] = SpecMTM(data)
+    }
+  }
   
-  ANALYSIS$SPECTRA$SIM_filter_full_down$TEMP[[name]] = SpecMTM(data)
+  #full-> rec
+  for(run in c("a", "b", "c")){
+    for(var in c("TEMP", "PREC","ISOT","ITPC")){
+      Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0(var,"_", run)]]), filter2)
+      data  = ts(data = rev(Results), start = 1950-DATA_past1000$time[2]-144, end   = 1950-DATA_past1000$time[1], deltat = 1)
+      
+      ANALYSIS$SPECTRA$SIM_filter_full_rec[[var]][[run]][[name]] = SpecMTM(data)
+    }
+  }
   
-  #PREC
-  Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$PREC), filter1)
-  data  = ts(data = rev(Results), start = (-49-10.0), end   = 1100, deltat = 1)
   
-  ANALYSIS$SPECTRA$SIM_filter_full_down$PREC[[name]] = SpecMTM(data)
-  
-  #ISOT
-  Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ISOT),filter1)
-  data  = ts(data = rev(Results), start = (-49-10.0), end   = 1100, deltat = 1)
-  
-  ANALYSIS$SPECTRA$SIM_filter_full_down$ISOT[[name]] = SpecMTM(data)
-  
-  #ITPC
-  Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC),filter1)
-  data  = ts(data = rev(Results), start = (-49-10.0), end   = 1100, deltat = 1)
-  
-  ANALYSIS$SPECTRA$SIM_filter_full_down$ITPC[[name]] = SpecMTM(data)
-    
-  
-  #full-< rec
-  #TEMP
-  Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$TEMP), filter2)
-  data  = ts(data = rev(Results), start = (-49-10.0), end   = 1100, deltat = 1)
-  
-  ANALYSIS$SPECTRA$SIM_filter_full_rec$TEMP[[name]] = SpecMTM(data)
-  
-  #PREC
-  Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$PREC), filter2)
-  data  = ts(data = rev(Results), start = (-49-10.0), end   = 1100, deltat = 1)
-  
-  ANALYSIS$SPECTRA$SIM_filter_full_rec$PREC[[name]] = SpecMTM(data)
-  
-  #ISOT
-  Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ISOT), filter2)
-  data  = ts(data = rev(Results), start = (-49-10.0), end   = 1100, deltat = 1)
-  
-  ANALYSIS$SPECTRA$SIM_filter_full_rec$ISOT[[name]] = SpecMTM(data)
-  
-  #ITPC
-  Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC), filter2)
-  data  = ts(data = rev(Results), start = (-49-10.0), end   = 1100, deltat = 1)
-  
-  ANALYSIS$SPECTRA$SIM_filter_full_rec$ITPC[[name]] = SpecMTM(data)
-  
-  #down-<rec
+  #down->rec
   start_ts = ceiling(head(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age, n = 1))
   length = length(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age)
   stop_ts = floor(tail(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age, n = 1))
   diff = floor((stop_ts-start_ts)/length)
   if(diff<1){diff = 1}
   
-  #TEMP
-  record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$TEMP,
-                                       time.target = seq(from = start_ts, to = stop_ts, by = diff))
-  Results <- easy_sensor_wm4(diff, na.omit(rev(record)), filter3)
-  data = ts(data = Results, start = start_ts-10, deltat = diff)
-  ANALYSIS$SPECTRA$SIM_filter_down_rec$TEMP[[name]] = SpecMTM(data)
-  
-  #PREC
-  record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$PREC,
-                                       time.target = seq(from = start_ts, to = stop_ts, by = diff))
-  Results <- easy_sensor_wm4(diff, na.omit(rev(record)), filter3)
-  data = ts(data = Results, start = start_ts-10, deltat = diff)
-  ANALYSIS$SPECTRA$SIM_filter_down_rec$PREC[[name]] = SpecMTM(data)
-  
-  #ISOT
-  record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ISOT,
-                                       time.target = seq(from = start_ts, to = stop_ts, by = diff))
-  Results <- easy_sensor_wm4(diff, na.omit(rev(record)), filter3)
-  data = ts(data = Results, start = start_ts-10, deltat = diff)
-  ANALYSIS$SPECTRA$SIM_filter_down_rec$ISOT[[name]] = SpecMTM(data)
-  
-  #ITPC
-  record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC,
-                                       time.target = seq(from = start_ts, to = stop_ts, by = diff))
-  Results <- easy_sensor_wm4(diff, na.omit(rev(record)), filter3)
-  data = ts(data = Results, start = start_ts-10, deltat = diff)
-  ANALYSIS$SPECTRA$SIM_filter_down_rec$ITPC[[name]] = SpecMTM(data)
-  
+  for(run in c("a", "b", "c")){
+    for(var in c("TEMP", "PREC","ISOT","ITPC")){
+      record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,
+                                           DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0(var,"_", run)]],
+                                           time.target = seq(from = start_ts, to = stop_ts, by = diff))
+      Results <- easy_sensor_wm4(diff, na.omit(rev(record)), filter3)
+      data = ts(data = Results, start = start_ts-length(Results)+length(record), deltat = diff)
+      ANALYSIS$SPECTRA$SIM_filter_down_rec[[var]][[run]][[name]] = SpecMTM(data)
+    }
+  }
 }
 
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_full_down_temp"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down$TEMP)
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_full_down_prec"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down$PREC)
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_full_down_isot"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down$ISOT)
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_full_down_itpc"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down$ITPC)
+for(var in c("TEMP", "PREC", "ISOT", "ITPC")){
+  for(run in c("a", "b", "c")){
+    ANALYSIS$SPECTRA$MEAN_SPEC[[var]][[paste0("full_down_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down[[var]][[run]])
+    ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]][[paste0("full_down_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down[[var]][[run]], weights = entity_gridbox$weighing)
+    ANALYSIS$SPECTRA$MEAN_SPEC[[var]][[paste0("full_rec_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec[[var]][[run]])
+    ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]][[paste0("full_rec_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec[[var]][[run]], weights = entity_gridbox$weighing)
+    ANALYSIS$SPECTRA$MEAN_SPEC[[var]][[paste0("down_rec_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec[[var]][[run]])
+    ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]][[paste0("down_rec_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec[[var]][[run]], weights = entity_gridbox$weighing)
+  }
+  
+  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_down_",var)]]<- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$full_down_a$spec, 
+                                                                                 ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$full_down_b$spec,
+                                                                                 ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$full_down_c$spec))
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_down_",var)]]<- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$full_down_a$spec,
+                                                                                       ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$full_down_b$spec,
+                                                                                       ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$full_down_c$spec))
+  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_rec_",var)]]<- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$full_rec_a$spec, 
+                                                                                 ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$full_rec_b$spec,
+                                                                                 ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$full_rec_c$spec))
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_rec_",var)]]<- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$full_rec_a$spec,
+                                                                                       ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$full_rec_b$spec,
+                                                                                       ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$full_rec_c$spec))
+  ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_down_rec_",var)]]<- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$down_rec_a$spec, 
+                                                                                ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$down_rec_b$spec,
+                                                                                ANALYSIS$SPECTRA$MEAN_SPEC[[var]]$down_rec_c$spec))
+  ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_down_rec_",var)]]<- MeanSpectrum(list(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$down_rec_a$spec,
+                                                                                      ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$down_rec_b$spec,
+                                                                                      ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]]$down_rec_c$spec))
+}
 
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_full_down_temp"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down$TEMP, weights = entity_gridbox$weighing)
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_full_down_prec"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down$PREC, weights = entity_gridbox$weighing)
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_full_down_isot"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down$ISOT, weights = entity_gridbox$weighing)
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_full_down_itpc"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down$ITPC, weights = entity_gridbox$weighing)
-
-
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_full_rec_temp"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec$TEMP)
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_full_rec_prec"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec$PREC)
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_full_rec_isot"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec$ISOT)
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_full_rec_itpc"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec$ITPC)
-
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_full_rec_temp"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec$TEMP, weights = entity_gridbox$weighing)
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_full_rec_prec"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec$PREC, weights = entity_gridbox$weighing)
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_full_rec_isot"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec$ISOT, weights = entity_gridbox$weighing)
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_full_rec_itpc"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_rec$ITPC, weights = entity_gridbox$weighing)
-
-
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_down_rec_temp"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec$TEMP)
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_down_rec_prec"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec$PREC)
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_down_rec_isot"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec$ISOT)
-ANALYSIS$SPECTRA$MEAN_SPEC[["SIM_down_rec_itpc"]]<- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec$ITPC)
-
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_down_rec_temp"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec$TEMP, weights = entity_gridbox$weighing)
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_down_rec_prec"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec$PREC, weights = entity_gridbox$weighing)
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_down_rec_isot"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec$ISOT, weights = entity_gridbox$weighing)
-ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[["SIM_down_rec_itpc"]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_down_rec$ITPC, weights = entity_gridbox$weighing)
-
+remove(dist_matrix, entities_spec, entity_gridbox, total_gb, total_lat, counter, data, diff, entity, filter1, filter2, filter3, gridbox,
+       ii, lat, lat_weight, length, length_cave, name,record, Results, run, site, start_ts, stop_ts, var, easy_sensor_wm4, filter_function3,
+       simpleawmean, simpleawsd)
