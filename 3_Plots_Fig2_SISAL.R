@@ -7,7 +7,7 @@
 ## SISAL Karst Plot
 
 #################################################
-
+PLOTTING_VARIABLES <- list()
 PLOTTING_VARIABLES$WIDTH = 8.3
 PLOTTING_VARIABLES$HEIGHT = 5.5
 
@@ -66,6 +66,6 @@ plot <- plot + theme(panel.border = element_blank()) #,legend.text = element_tex
 
 #plot
 plot %>% ggsave(filename = paste('Paper_Plot_2_SISAL_database', 'pdf', sep = '.'), plot = ., path = 'Plots', 
-                width = 2*PLOTTING_VARIABLES$WIDTH, height = 2*PLOTTING_VARIABLES$HEIGHT, units = 'cm', dpi = 'print', device = "pdf")
+                width = 2*PLOTTING_VARIABLES$WIDTH, height = 2*PLOTTING_VARIABLES$HEIGHT-2, units = 'cm', dpi = 'print', device = "pdf")
 
 remove(plot, NOT_SITES, USED_SITES_mean, USED_SITES_spec, USED_SITES_var, ALL_SITES, sites_mean, sites_spec, sites_var)

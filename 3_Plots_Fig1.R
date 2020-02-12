@@ -200,7 +200,7 @@ namcex <- 1.1 #1
 #Start graphics device
 #Vector graphic:
 #cairo_pdf(width=2*12,height=8,file="/home/ginnyweasley/07_R_Code/202001_PaperDraft/Plots/Paper_Plot_1_Timeseries.pdf")
-cairo_pdf(width=12,height=8,file="Plots/Paper_Plot_1_Timeseries.pdf")
+cairo_pdf(width=8,height=10,file="Plots/Paper_Plot_1_Timeseries.pdf")
 # Raster graphic:
 #png(width=12,height=8,units = "cm",file=paste(outputdir,"/Fig1_talk.png",sep=""),res=150)
 
@@ -309,8 +309,9 @@ range_volc = range(Timeseries$volcanic)
 plot(xlimz,range_volc,axes=FALSE,type="n",xlab="",ylab="")
 lines(Timeseries$volcanic,col=col_volc)
 axis(2,col=col_volc,at=c(0,0.2,0.4,0.6),labels=FALSE)
+text(x = 1980-1950-20, y = 0.25, "Mt Pinatubo", col = "black", cex = namcex)
 text(x = -100, y = 0.5, "Tambora", col = "black", cex = namcex)
-text(x = -630, y = 0.5, "Samalas", col = "black", cex = namcex)
+text(x = -620, y = 0.55, "Samalas", col = "black", cex = namcex)
 text(x = -485, y = 0.4, "1465 mystery", col = "black", cex = namcex)
 mtext(side=2,col=col_volc,at=c(0,0.2,0.4,0.6),c(0.0,0.2,0.4,0.6),line=axslinno,las=1,cex=axisnumscex)
 mtext(side=2,expression(paste("[",plain(AOD),"]")),cex=unitscex,col=col_volc,line=unitslinno,las=1)
@@ -343,7 +344,7 @@ axis(4,col=col_orbit,at=c(-0.5, 0, 0.5),labels=FALSE)
 mtext(side=4,col=col_orbit,at=c(-0.5, 0, 0.5),c(-0.5, 0, 0.5),line=axslinno,las=1,cex=axisnumscex)
 #mtext(side=4,,cex=unitscex,col=col_solar,line=unitslinno,las=1)
 mtext(side=2,"relative summer",cex=namcex,col=col_orbit,line=namlin,las=1, at = 0.5)
-mtext(side=2,"insolation",cex=namcex,col=col_orbit,line=namlin,las=1, at = 0)
+mtext(side=2,"insolation (65°N)",cex=namcex,col=col_orbit,line=namlin,las=1, at = 0)
 
 text(-1100, 0 , "F", cex = namcex+0.5, col = col_orbit)
 
@@ -353,6 +354,11 @@ par(xpd=NA)
 tmp.y2 <- TeachingDemos::cnvrt.coords(x=NA, y=tmp.y, input='dev')$usr$y
 segments(c(min(xlimz),max(xlimz),min(xlimz),min(xlimz)),c(par('usr')[3],par('usr')[3],par('usr')[3],tmp.y2),c(par('usr')[1],par('usr')[2],max(xlimz),max(xlimz)),c(tmp.y2,tmp.y2,par('usr')[3],tmp.y2))
 segments(x0=c(-1000, -500, 0),x1=c(-1000, -500, 0),y1=par('usr')[3],y0=1*tmp.y2,lty=2,col="grey")
+#segments(x0=c(-1050, -950, -850, -750, -650, -550, -450, -350, -250, -150, -50),x1=c(-1050, -950, -850, -750, -650, -550, -450, -350, -250, -150, -50),y1=par('usr')[3],y0=1*tmp.y2,lty=2,col="black")
+axis(1,at=seq(-1150,0,by=100),labels=FALSE);
+mtext(side=1,at=seq(-1050,50,by=500),seq(900,1900,by=500),line=1,cex=axisnumscex)
+mtext(side=1,line=2.2,"time [yrs CE]",cex=unitscex)
+
 
 dev.off()
 
@@ -360,3 +366,4 @@ dev.off()
 #rm(namcex, namlin, num_ts, range_co2, range_d18O, range_solar, range_temp, range_volc, tmp.y, tmp.y2, unitscex, unitslinno, xlimz)
 #rm(col_co2, col_d18O_240, col_orbit, range_orbit, col_d18O_242, col_hadcm3_d18O, col_hadcm3_temp, col_pages2k, col_solar, col_volc, axisnumscex, axslinno)
 #rm(INS, ORB, value, ii, insolation)
+
