@@ -72,9 +72,9 @@ for(run in c("a", "b", "c")){
   for(ii in 1:length(DATA_past1000$CAVES$entity_info$entity_id)){
     site = DATA_past1000$CAVES$entity_info$site_id[ii]
     entity = DATA_past1000$CAVES$entity_info$entity_id[ii]
-    ANALYSIS$VARIANCE$POINTS$CAVElyr[[run]]$lon[ii]   = DATA_past1000$CAVES$site_info$longitude[DATA_past1000$CAVES$site_info$site_id == site]
-    ANALYSIS$VARIANCE$POINTS$CAVElyr[[run]]$lat[ii]   = DATA_past1000$CAVES$site_info$latitude[DATA_past1000$CAVES$site_info$site_id == site]
-    ANALYSIS$VARIANCE$POINTS$CAVElyr[[run]]$value[ii] = var(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]][[paste0("d18O_dw_eq_",run)]], na.rm = T)
+    ANALYSIS$VARIANCE$POINTS$CAVElyr$lon[ii]   = DATA_past1000$CAVES$site_info$longitude[DATA_past1000$CAVES$site_info$site_id == site]
+    ANALYSIS$VARIANCE$POINTS$CAVElyr$lat[ii]   = DATA_past1000$CAVES$site_info$latitude[DATA_past1000$CAVES$site_info$site_id == site]
+    ANALYSIS$VARIANCE$POINTS$CAVElyr$value_record[ii] = var(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]][[paste0("d18O_dw_eq_",run)]], na.rm = T)
     #Temp
     # Take normalized Variances
     ANALYSIS$VARIANCE$POINTS$CAVElyr[[run]]$value_VR_temp[ii]    = var(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]][[paste0("d18O_dw_eq_",run)]], na.rm = T)/
@@ -90,7 +90,7 @@ for(run in c("a", "b", "c")){
     # ISOT
     ANALYSIS$VARIANCE$POINTS$CAVElyr[[run]]$value_VR_isot[ii]    = var(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]][[paste0("d18O_dw_eq_",run)]], na.rm = T)/
       var(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE",site)]][[paste0("ISOT_", run)]], na.rm = T)
-    ANALYSIS$VARIANCE$POINTS$CAVElyr[[run]]$value_VR_prec_ds[ii] = var(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]][[paste0("d18O_dw_eq_",run)]], na.rm = T)/
+    ANALYSIS$VARIANCE$POINTS$CAVElyr[[run]]$value_VR_isot_ds[ii] = var(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]][[paste0("d18O_dw_eq_",run)]], na.rm = T)/
       var(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("ISOT_", run)]], na.rm = T)
     # ITPC
     ANALYSIS$VARIANCE$POINTS$CAVElyr[[run]]$value_VR_itpc[ii]    = var(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]][[paste0("d18O_dw_eq_",run)]], na.rm = T)/

@@ -160,6 +160,8 @@ for(run in c("a","b", "c")){
   
   plot  %>% ggsave(filename = paste0('Paper_Plot_3_Mean_xnap',run, '.pdf'), plot = ., path = 'Plots', 
                    width = 2*12, height = 2*12/8.3*PLOTTING_VARIABLES$HEIGHT, units = 'cm', dpi = 'print', device = "pdf")
+  plot  %>% ggsave(filename = paste0('Paper_Plot_3_Mean_xnap',run, '.png'), plot = ., path = 'Plots', 
+                   width = 2*12, height = 2*12/8.3*PLOTTING_VARIABLES$HEIGHT, units = 'cm', dpi = 'print', device = "png")
 }
 
 # temp <- simpleawmean(DATA_past1000$SIM_mean$TEMP, seq(from = -90, to = 90, length.out = 73))
@@ -176,4 +178,5 @@ for(run in c("a","b", "c")){
 
 
 remove(plot_temp, plot_prec, plot_itpc, plot_slpr, Plot_lyr1, Plot_lyr3, plot, Point_Lyr)
+remove(temp_lyr, prec_lyr, slpr_lyr, itpc_lyr)
 
