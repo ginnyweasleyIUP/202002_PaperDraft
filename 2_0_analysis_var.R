@@ -5,7 +5,7 @@
 
 # neccessary analysis that is too big for the analysis in the plotting skripts
 
-ANALYSIS <- list()
+#ANALYSIS <- list()
 
 #################################################
 

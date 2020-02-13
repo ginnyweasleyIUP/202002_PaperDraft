@@ -83,8 +83,8 @@ for(run in c("a","b","c")){
 
 #lines(c(median(log10(PLOTTING_DATA$FIG4$VAR_RATIOS$VR_sim_temp)),median(log10(PLOTTING_DATA$FIG4$VAR_RATIOS$VR_sim_temp))), c(0, ))
 for(run in c("a","b","c")){
-  #pdf(file = paste0("Plots/Paper_Plot_4_Variance_2_histo_xnap",run,".pdf"), width = 2*6, height = 2*PLOTTING_VARIABLES$HEIGHT/1.5)
-  png(file = paste0("Plots/Paper_Plot_4_Variance_2_histo_xnap",run,".png"), width = 50*2*6, height = 50*2*PLOTTING_VARIABLES$HEIGHT/1.5)
+  pdf(file = paste0("Plots/Paper_Plot_4_Variance_2_histo_xnap",run,".pdf"), width = 2*6, height = 2*PLOTTING_VARIABLES$HEIGHT/1.5)
+  #png(file = paste0("Plots/Paper_Plot_4_Variance_2_histo_xnap",run,".png"), width = 50*2*6, height = 50*2*PLOTTING_VARIABLES$HEIGHT/1.5)
   par(mfrow=c(2,2),oma = c(1,3,0,0) + 0.1,mar = c(3,1,0,1) + 0.1, new = FALSE)
   
   hist(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_temp), 

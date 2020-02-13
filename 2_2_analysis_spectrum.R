@@ -40,7 +40,8 @@ for(ii in 1:length_cave){
   print(ii)
   entity = DATA_past1000$CAVES$entity_info$entity_id[ii]
   name = paste0("ENTITY", entity)
-  if(length(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age) > 8 & ii != 95 & ii != 53 & ii != 109 & mask_spec[ii]){
+  if(length(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age) > 8 & ii != 95 & ii != 53 & ii != 109 & mask_spec[ii] & ii != 85){
+    #85 -> eID351 der Quatsch macht allgemein
     entities_spec = c(entities_spec, entity)
     start_ts = ceiling(head(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age, n = 1))
     length = length(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age)

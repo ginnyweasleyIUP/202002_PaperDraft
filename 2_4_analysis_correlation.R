@@ -78,17 +78,17 @@ for(run in c("a","b","c")){
       double_time <- s %>% group_by(interp_age) %>% count() %>% filter(n>1)
       s <- s %>% filter(!interp_age %in% double_time$interp_age)
       if(length(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age)>4 & ii != 95 & ii != 53 & ii != 109){
-        record <- zoo(x = s$d18O_measurement, 
+        record <- zoo(x = s$d18O_measurement,
                       order.by = s$interp_age)
         sim <- DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]
         double_time <- sim %>% group_by(interp_age) %>% count() %>% filter(n>1)
         sim <- sim %>% filter(!interp_age %in% double_time$interp_age)
-        sim <- zoo(x = sim[[paste0(var,"_", run)]], 
+        sim <- zoo(x = sim[[paste0(var,"_", run)]],
                    order.by = sim$interp_age)
-        COR <- cor.test(record, sim)
-        
-        ANALYSIS$CORR$POINTS[[run]][[paste0("CORR_",var)]][ii] = COR$estimate[[1]]
-        ANALYSIS$CORR$POINTS[[run]][[paste0("p_",var)]][ii] = COR$p.value
+        COR <- nexcf_ci(record, sim)
+
+        ANALYSIS$CORR$POINTS[[run]][[paste0("CORR_",var)]][ii] = COR$rxy
+        ANALYSIS$CORR$POINTS[[run]][[paste0("p_",var)]][ii] = COR$pval
       }else{
         ANALYSIS$CORR$POINTS[[run]][[paste0("CORR_",var)]][ii] = NA
         ANALYSIS$CORR$POINTS[[run]][[paste0("p_",var)]][ii] = NA
@@ -96,12 +96,38 @@ for(run in c("a","b","c")){
     }
   }
 }
-# 
-# record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age,DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq,
-#                                      time.target = seq(from = head(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age, n = 1),
-#                                                        to = tail(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age, n = 1),
-#                                                        by = diff_dt))
-# COR <- cor.test(record, PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age, DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ISOT,
-#                                                    time.target = seq(from = FirstElement(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age),
-#                                                                      to = LastElement(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age),
-#                                                                      by = diff_dt)))
+
+
+## EQUIDISTANT OPTION
+# for(run in c("a","b","c")){
+#   print(run)
+#   ANALYSIS$CORR$POINTS[[run]] <- list()
+#   for(var in c("TEMP","PREC","ISOT","ITPC")){
+#     print(var)
+#     ANALYSIS$CORR$POINTS[[run]][[paste0("CORR_",var)]] <- numeric(length_cave)
+#     ANALYSIS$CORR$POINTS[[run]][[paste0("p_", var)]] <- numeric(length_cave)
+#     for(ii in 1:length_cave){
+#       entity <- DATA_past1000$CAVES$entity_info$entity_id[ii]
+#       site <- DATA_past1000$CAVES$entity_info$site_id[ii]
+#       ANALYSIS$CORR$POINTS$entity_id[ii] <- entity
+#       diff_dt = mean(diff(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age), na.rm = T)
+#       if(length(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age)>4 & ii != 95 & ii != 53 & ii != 109 & ii != 158){
+#         record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age,DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]][[paste0("d18O_dw_eq_",run)]],
+#                                              time.target = seq(from = head(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age, n = 1),
+#                                                                to = tail(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$interp_age, n = 1),
+#                                                                by = diff_dt))
+#         sim <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age, DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0("ISOT_",run)]],
+#                                           time.target = seq(from = FirstElement(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age),
+#                                                             to = LastElement(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age),
+#                                                             by = diff_dt))
+#         COR <- cor.test(record, sim)
+#         
+#         ANALYSIS$CORR$POINTS[[run]][[paste0("CORR_",var)]][ii] = COR$estimate[[1]]
+#         ANALYSIS$CORR$POINTS[[run]][[paste0("p_",var)]][ii] = COR$p.value
+#       }else{
+#         ANALYSIS$CORR$POINTS[[run]][[paste0("CORR_",var)]][ii] = NA
+#         ANALYSIS$CORR$POINTS[[run]][[paste0("p_",var)]][ii] = NA
+#       }
+#     }
+#   }
+# }

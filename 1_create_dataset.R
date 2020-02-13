@@ -302,46 +302,36 @@ for(run in c("a", "b", "c")){
     site_id = DATA_past1000$CAVES$site_info$site_id[ii]
     name = paste0("CAVE", site_id)
     
-    DATA_past1000$CAVES$sim_data_seasonal[[name]] = list(
-      SUMMER = list(temp_a_mean = numeric(diff(DATA_past1000$time)), prec_a_mean = numeric(diff(DATA_past1000$time)), isot_a_mean = numeric(diff(DATA_past1000$time)),
-                    temp_b_mean = numeric(diff(DATA_past1000$time)), prec_b_mean = numeric(diff(DATA_past1000$time)), isot_b_mean = numeric(diff(DATA_past1000$time)),
-                    temp_c_mean = numeric(diff(DATA_past1000$time)), prec_c_mean = numeric(diff(DATA_past1000$time)), isot_c_mean = numeric(diff(DATA_past1000$time))),
-      AUTUMN = list(temp_a_mean = numeric(diff(DATA_past1000$time)), prec_a_mean = numeric(diff(DATA_past1000$time)), isot_a_mean = numeric(diff(DATA_past1000$time)),
-                    temp_b_mean = numeric(diff(DATA_past1000$time)), prec_b_mean = numeric(diff(DATA_past1000$time)), isot_b_mean = numeric(diff(DATA_past1000$time)),
-                    temp_c_mean = numeric(diff(DATA_past1000$time)), prec_c_mean = numeric(diff(DATA_past1000$time)), isot_c_mean = numeric(diff(DATA_past1000$time))),
-      WINTER = list(temp_a_mean = numeric(diff(DATA_past1000$time)), prec_a_mean = numeric(diff(DATA_past1000$time)), isot_a_mean = numeric(diff(DATA_past1000$time)),
-                    temp_b_mean = numeric(diff(DATA_past1000$time)), prec_b_mean = numeric(diff(DATA_past1000$time)), isot_b_mean = numeric(diff(DATA_past1000$time)),
-                    temp_c_mean = numeric(diff(DATA_past1000$time)), prec_c_mean = numeric(diff(DATA_past1000$time)), isot_c_mean = numeric(diff(DATA_past1000$time))),
-      SPRING = list(temp_a_mean = numeric(diff(DATA_past1000$time)), prec_a_mean = numeric(diff(DATA_past1000$time)), isot_a_mean = numeric(diff(DATA_past1000$time)),
-                    temp_b_mean = numeric(diff(DATA_past1000$time)), prec_b_mean = numeric(diff(DATA_past1000$time)), isot_b_mean = numeric(diff(DATA_past1000$time)),
-                    temp_c_mean = numeric(diff(DATA_past1000$time)), prec_c_mean = numeric(diff(DATA_past1000$time)), isot_c_mean = numeric(diff(DATA_past1000$time)))
+    DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]] = list(
+      SUMMER = list(temp_mean = numeric(diff(DATA_past1000$time)), prec_mean = numeric(diff(DATA_past1000$time)), isot_mean = numeric(diff(DATA_past1000$time))),
+      AUTUMN = list(temp_mean = numeric(diff(DATA_past1000$time)), prec_mean = numeric(diff(DATA_past1000$time)), isot_mean = numeric(diff(DATA_past1000$time))),
+      WINTER = list(temp_mean = numeric(diff(DATA_past1000$time)), prec_mean = numeric(diff(DATA_past1000$time)), isot_mean = numeric(diff(DATA_past1000$time))),
+      SPRING = list(temp_mean = numeric(diff(DATA_past1000$time)), prec_mean = numeric(diff(DATA_past1000$time)), isot_mean = numeric(diff(DATA_past1000$time)))
     )
     
     
     for(year in 1:diff(DATA_past1000$time)){
       pos_start = 12*(year-1)+1
       pos_stop  = 12*(year-1)+12
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$SUMMER[[paste0("temp_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_", run)]][pos_start:pos_stop]*summer_mask, na.rm = T)
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$SUMMER[[paste0("prec_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_", run)]][pos_start:pos_stop]*summer_mask, na.rm = T)
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$SUMMER[[paste0("isot_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_", run)]][pos_start:pos_stop]*summer_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$SUMMER$temp_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_", run)]][pos_start:pos_stop]*summer_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$SUMMER$prec_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_", run)]][pos_start:pos_stop]*summer_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$SUMMER$isot_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_", run)]][pos_start:pos_stop]*summer_mask, na.rm = T)
       
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$AUTUMN[[paste0("temp_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_", run)]][pos_start:pos_stop]*autumn_mask, na.rm = T)
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$AUTUMN[[paste0("prec_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_", run)]][pos_start:pos_stop]*autumn_mask, na.rm = T)
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$AUTUMN[[paste0("isot_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_", run)]][pos_start:pos_stop]*autumn_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$AUTUMN$temp_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_", run)]][pos_start:pos_stop]*autumn_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$AUTUMN$prec_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_", run)]][pos_start:pos_stop]*autumn_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$AUTUMN$isot_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_", run)]][pos_start:pos_stop]*autumn_mask, na.rm = T)
       
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$WINTER[[paste0("temp_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_", run)]][pos_start:pos_stop]*winter_mask, na.rm = T)
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$WINTER[[paste0("prec_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_", run)]][pos_start:pos_stop]*winter_mask, na.rm = T)
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$WINTER[[paste0("isot_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_", run)]][pos_start:pos_stop]*winter_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$WINTER$temp_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_", run)]][pos_start:pos_stop]*winter_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$WINTER$prec_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_", run)]][pos_start:pos_stop]*winter_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$WINTER$isot_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_", run)]][pos_start:pos_stop]*winter_mask, na.rm = T)
       
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$SPRING[[paste0("temp_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_", run)]][pos_start:pos_stop]*spring_mask, na.rm = T)
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$SPRING[[paste0("prec_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_", run)]][pos_start:pos_stop]*spring_mask, na.rm = T)
-      DATA_past1000$CAVES$sim_data_seasonal[[name]]$SPRING[[paste0("isot_", run, "_mean")]][year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_", run)]][pos_start:pos_stop]*spring_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$SPRING$temp_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_", run)]][pos_start:pos_stop]*spring_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$SPRING$prec_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_", run)]][pos_start:pos_stop]*spring_mask, na.rm = T)
+      DATA_past1000$CAVES$sim_data_seasonal[[run]][[name]]$SPRING$isot_mean[year] <- mean(DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_", run)]][pos_start:pos_stop]*spring_mask, na.rm = T)
       
     }
   }
 }
-
-
 
 remove(ii, name, pos_start, pos_stop, year, site_id, run)
 
