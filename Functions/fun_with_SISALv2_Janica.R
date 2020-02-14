@@ -117,14 +117,15 @@ load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/
   entities_past1000_dating <- entities_dating %>% filter(entity_id %in% entities_past1000$entity_id)
   
   sample_min2 <- sample_tb_new_filtered %>% filter(entity_id %in% entities_past1000$entity_id) %>% distinct(entity_id, interp_age, d18O_measurement) %>% filter(interp_age<(1950-year_start) & interp_age > (1950-year_stop))
-  site_min2 <- site_tb_filtered %>% filter(entity_id %in% entities_past1000$entity_id) %>% distinct(site_id, entity_id, distance_entrance) %>% right_join(., sample_min2, by = "entity_id")
+  dating_all <- sample_tb_new_filtered %>% filter(entity_id %in% entities_past1000$entity_id) %>% distinct(entity_id, interp_age, lin_interp_age, lin_reg_age, Bchron_age, Bacon_age, OxCal_age, copRa_age, StalAge_age, d18O_measurement) %>% filter(interp_age<(1950-year_start) & interp_age > (1950-year_stop))
+  site_min2 <- site_tb_filtered %>% filter(entity_id %in% entities_past1000$entity_id) %>% distinct(site_id, entity_id, distance_entrance, cover_thickness) %>% right_join(., sample_min2, by = "entity_id")
   
   site_period <- site_min2 %>% group_by(entity_id) %>% 
     summarise(min_corr_age = round(min(interp_age, na.rm = T), digits = 2),
               max_corr_age = round(max(interp_age, na.rm = T), digits = 2)) %>% 
     mutate(period = max_corr_age -min_corr_age)
   
-  site_to_entity <- site_tb_filtered %>% filter(entity_id %in% entities_past1000$entity_id) %>%distinct(site_id, entity_id, distance_entrance, geology)
+  site_to_entity <- site_tb_filtered %>% filter(entity_id %in% entities_past1000$entity_id) %>%distinct(site_id, entity_id, distance_entrance, geology, cover_thickness)
   
   #new_data <- site_to_entity %>% filter(!entity_id %in% DATA_past1000$CAVES$entity_info$entity_id) %>% group_by(entity_id)
   #data <- dating_tb_filtered_2 %>% filter(entity_id == 48)
@@ -132,13 +133,13 @@ load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/
   return_data <- entities_past1000 %>% right_join(., site_period, by = "entity_id") %>% right_join(site_to_entity,., by = "entity_id")
 
 
-return(list(return_data, sample_min2, entities_past1000_dating, site_to_entity))
+return(list(return_data, sample_min2, entities_past1000_dating, site_to_entity, dating_all))
   
- # remove(composite_link_entity, d13C, d18O, dating, dating_lamina, dating_tb, dating_tb_filtered, dating_tb_filtered_2, dating_tb_new,
- #        eID_1, entities_mineralogy, entities_past1000, entity, entity_from_base, entity_link_reference, file_name, gap, hiatus, no_depth_sample,
- #        no_sample_info, notes, nr_dates, only_h, original_chronology, reference, return_data, run, sample, sample_from_base, sample_min2, sample_tb,
- #        sample_tb_new, sample_tb_new_filtered, sisal_chronology, site_min2, site_period, site_tb, site_tb_filtered, dating_join,
- #        entities_dating, entities_past1000_dating, path, prefix, site, site_to_entity)
+  # remove(composite_link_entity, d13C, d18O, dating, dating_lamina, dating_tb, dating_tb_filtered, dating_tb_filtered_2, dating_tb_new,
+  #       eID_1, entities_mineralogy, entities_past1000, entity, entity_from_base, entity_link_reference, file_name, gap, hiatus, no_depth_sample,
+  #       no_sample_info, notes, nr_dates, only_h, original_chronology, reference, return_data, run, sample, sample_from_base, sample_min2, sample_tb,
+  #       sample_tb_new, sample_tb_new_filtered, sisal_chronology, site_min2, site_period, site_tb, site_tb_filtered, dating_join,
+  #       entities_dating, entities_past1000_dating, path, prefix, site, site_to_entity)
 
 }
 

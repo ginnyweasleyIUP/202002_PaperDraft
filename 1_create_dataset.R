@@ -144,9 +144,10 @@ for (ii in DATA_past1000$CAVES$entity_info$entity_id){
   if(ii%%10 == 0){
     print(name)
   }
-    site <- DATA_past1000$CAVES$entity_info %>% filter(entity_id == ii) %>% distinct(site_id)
-  DATA_past1000$CAVES$record_data[[name]] <- data[[2]] %>% filter(entity_id == ii) %>% distinct(entity_id, mineralogy, arag_corr, interp_age, d18O_measurement) %>%
-    mutate(site_id = (site$site_id))
+  #site <- DATA_past1000$CAVES$entity_info %>% filter(entity_id == ii) %>% distinct(site_id)
+  #DATA_past1000$CAVES$record_data[[name]] <- data[[2]] %>% filter(entity_id == ii) %>% distinct(entity_id, mineralogy, arag_corr, interp_age, d18O_measurement) %>%
+  #  mutate(site_id = (site$site_id))
+  DATA_past1000$CAVES$record_data[[name]]$chron <- as.tibble(data[[5]] %>% filter(entity_id == ii))
 }
 
 remove(data, site, ii, name, load_sisal_data_janica)
