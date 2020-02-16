@@ -23,6 +23,8 @@ library(dplyr)
 library(stacy.hadcm.tools)
 library(PaleoSpec)
 library(nest)
+library(tidyverse)
+
 
 #################################################
 ##0.1) Set Data-Structure?#######################
@@ -141,12 +143,13 @@ DATA_past1000$CAVES$site_to_entity <- data[[4]]
 DATA_past1000$CAVES$site_info <- DATA_past1000$CAVES$site_info %>% filter(site_id %in% DATA_past1000$CAVES$entity_info$site_id)
 for (ii in DATA_past1000$CAVES$entity_info$entity_id){
   name = paste0("ENTITY", ii)
-  if(ii%%10 == 0){
-    print(name)
-  }
+  #if(ii%%10 == 0){
+  print(name)
+  #}
   #site <- DATA_past1000$CAVES$entity_info %>% filter(entity_id == ii) %>% distinct(site_id)
   #DATA_past1000$CAVES$record_data[[name]] <- data[[2]] %>% filter(entity_id == ii) %>% distinct(entity_id, mineralogy, arag_corr, interp_age, d18O_measurement) %>%
   #  mutate(site_id = (site$site_id))
+  if(ii == 144 | ii == 226){next}
   DATA_past1000$CAVES$record_data[[name]]$chron <- as.tibble(data[[5]] %>% filter(entity_id == ii))
 }
 

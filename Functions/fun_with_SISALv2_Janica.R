@@ -8,9 +8,10 @@ library(tidyverse)
 ### load and transform data --------------------------------------###
 # load SISAL v2 csv files
 
-load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/02_SISAL/SISAL_v2/", year_start, year_stop){
+load_sisal_data_janica <- function(prefix = "", year_start, year_stop){
   prefix = ""
   path = "/stacywork/ginnyweasley/02_SISAL/SISAL_v2/"
+  #path = "/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/02_SISAL/SISAL_v2/"
   composite_link_entity <- read.csv(paste(path, prefix,'composite_link_entity.csv',sep = ''), header = T,stringsAsFactors = F)
   d13C <- read.csv(paste(path, prefix,'d13c.csv',sep='') ,header = T, stringsAsFactors = F)
   d13C <- plyr::rename(d13C, c("iso_std" = "iso_std_d13C"))
@@ -67,6 +68,8 @@ load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/
 
   # load entity object and assign name for, e.g. entity_id = 1
   eID_1 <- get(load('/stacywork/ginnyweasley/02_SISAL/SISAL_v2_CARLA/1-BT-1'))
+  #eID_1 <- get(load('/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/02_SISAL/SISAL_v2_CARLA/1-BT-1'))
+  
 
 
   ## filter dating table
@@ -118,6 +121,10 @@ load_sisal_data_janica <- function(prefix = "", path = "/stacywork/ginnyweasley/
   
   sample_min2 <- sample_tb_new_filtered %>% filter(entity_id %in% entities_past1000$entity_id) %>% distinct(entity_id, interp_age, d18O_measurement) %>% filter(interp_age<(1950-year_start) & interp_age > (1950-year_stop))
   dating_all <- sample_tb_new_filtered %>% filter(entity_id %in% entities_past1000$entity_id) %>% distinct(entity_id, interp_age, lin_interp_age, lin_reg_age, Bchron_age, Bacon_age, OxCal_age, copRa_age, StalAge_age, d18O_measurement) %>% filter(interp_age<(1950-year_start) & interp_age > (1950-year_stop))
+  dating_all$Bchron_age <- as.numeric(dating_all$Bchron_age)
+  dating_all$Bacon_age <- as.numeric(dating_all$Bacon_age)
+  dating_all$OxCal_age <- as.numeric(dating_all$OxCal_age)
+  dating_all$StalAge_age <- as.numeric(dating_all$StalAge_age)
   site_min2 <- site_tb_filtered %>% filter(entity_id %in% entities_past1000$entity_id) %>% distinct(site_id, entity_id, distance_entrance, cover_thickness) %>% right_join(., sample_min2, by = "entity_id")
   
   site_period <- site_min2 %>% group_by(entity_id) %>% 

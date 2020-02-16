@@ -40,7 +40,7 @@ networkmap_simple3(CMAT = ANALYSIS$NETWORK$GLOBAL$C,
 
 ###################################################################################################
 
-source("Functions/networkmap_simple3.R")
+source("Functions/Plotting/networkmap_simple3.R")
 
 plot_dist <- ANALYSIS$NETWORK$DIST
 plot_dist[lower.tri(ANALYSIS$NETWORK$DIST)] = NA
@@ -69,6 +69,10 @@ for(run in c("a","b","c")){
   plot_c_rec[lower.tri(ANALYSIS$NETWORK$GLOBAL$C)] = NA
   lowess_c_rec <- as.vector(ANALYSIS$NETWORK$GLOBAL$C[upper.tri(ANALYSIS$NETWORK$GLOBAL$C)])
   lowess_c_rec_sorted <- lowess_c_rec[o]
+  plot_c_rec_max <- ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max
+  plot_c_rec_max[lower.tri(ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max)] = NA
+  lowess_c_rec_max <- as.vector(ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max[upper.tri(ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max)])
+  lowess_c_rec_max_sorted <- lowess_c_rec_max[o]
   
   lo <- loess(lowess_c_rec_sorted ~ lowess_dist_sorted)
   
@@ -142,8 +146,11 @@ for(run in c("a","b","c")){
   }
   lo <- loess(lowess_c_rec_sorted ~ lowess_dist_sorted, span = 0.2)
   lines(lo$x, lo$fitted, lwd = 4, col = "#B2182B")
+  lo <- loess(lowess_c_rec_max_sorted ~ lowess_dist_sorted, span = 0.2)
+  lines(lo$x, lo$fitted, lwd = 4, col = "darkblue")
   mtext("Distance between pairs (km)", side= 1, line = 2)
   mtext("D", side = 3, adj = 0, cex = namcex)
+  legend("topright", legend = c("original chron", "sisal chron."), col = c("#B2182B", "darkblue"), lty = c(1,1), lwd = c(4,4))
   
   
   dev.off()

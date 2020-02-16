@@ -473,17 +473,101 @@ for(run in c("a","b","c")){
 remove(C_gauss, P_gauss, TS_gauss)
 
 #################################################
+## CHRONOLOGY SENSITIVITY #######################
+#################################################
+
+ANALYSIS$NETWORK$GLOBAL_CHRONO <- list()
+
+entity_list <- ANALYSIS$NETWORK$entity_meta$entity_id
+
+for(chronology in c("interp_age", "lin_interp_age", "lin_reg_age", "Bchron_age", "Bacon_age", "OxCal_age", "copRa_age", "StalAge_age")){
+  print(chronology)
+  TS <- list()
+  
+  for(entity in entity_list){
+    if(all(is.na(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$chron[[chronology]]))){
+      TS[[paste0("Entity", entity)]] <- NA
+      next
+      }
+    if(entity == 226){next}
+    s <- list()
+    s$time <- DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$chron[[chronology]]
+    s$value <- DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$chron$d18O_measurement
+    # zoo cannot handle objects where order.by has two elements which is why they are sorted out here (no better option found)
+    double_time <- as.tibble(s) %>% group_by(time) %>% count() %>% filter(n>1)
+    s <- as.tibble(s) %>% filter(!time %in% double_time$time) %>% filter(!is.na(value)) %>% filter(!is.na(time))
+    
+    TS[[paste0("Entity", entity)]] <- zoo(x = s$value, order.by = s$time)
+    rm(s, double_time)
+  }
+  
+  C<-matrix(NA,nrow=length(TS),ncol=length(TS))
+  colnames(C)<-rownames(C)<-names(TS)
+  P <- C
+  
+  for (i in 1:(length(TS)-1)){
+    print(i)
+    for (j in (i+1):length(TS)){
+      if(is.na(TS[[i]]) | is.na(TS[[j]])){
+        C[i,j] <- NA
+        P[i,j] <- NA
+      }
+      temp<-nest::nexcf_ci(TS[[i]],TS[[j]],conflevel=0.1)
+      C[i,j]<-temp$rxy
+      P[i,j]<-P[j,i]<-temp$pval
+      C[j,i]=C[i,j]
+      rm(temp)
+    }
+  }
+  
+  ANALYSIS$NETWORK$GLOBAL_CHRONO[[paste0(chronology,"_C")]] <- C
+  ANALYSIS$NETWORK$GLOBAL_CHRONO[[paste0(chronology,"_P")]] <- P
+  
+}
+
+# Compare and choose highest
+
+C<-matrix(NA,nrow=length(TS),ncol=length(TS))
+colnames(C)<-rownames(C)<-names(TS)
+
+mat_comp <- ANALYSIS$NETWORK$GLOBAL_CHRONO
+mat_comp$interp_age_C[mat_comp$interp_age_P>0.1] = NA
+mat_comp$lin_interp_age_C[mat_comp$lin_interp_age_P>0.1] = NA
+mat_comp$lin_reg_age_C[mat_comp$lin_reg_age_P>0.1] = NA
+mat_comp$Bchron_age_C[mat_comp$Bchron_age_C>0.1] = NA
+mat_comp$Bacon_age_C[mat_comp$Bacon_age_C>0.1] = NA
+mat_comp$OxCal_age_C[mat_comp$OxCal_age_C>0.1] = NA
+mat_comp$copRa_age_C[mat_comp$copRa_age_P>0.1] = NA
+mat_comp$StalAge_age_C[mat_comp$StalAge_age_P>0.1] = NA
+
+for (i in 1:(length(TS)-1)){
+  for (j in (i+1):length(TS)){
+    if(all(is.na(c(mat_comp$interp_age_C[i,j], mat_comp$lin_interp_age_C[i,j], mat_comp$lin_reg_age_C[i,j], mat_comp$Bchron_age_C[i,j],
+                   mat_comp$Bacon_age_C[i,j], mat_comp$OxCal_age_C[i,j], mat_comp$copRa_age_C[i,j], mat_comp$StalAge_age_C[i,j])))){
+      C[i,j] = NA
+    } else{
+      temp <- c(mat_comp$interp_age_C[i,j], mat_comp$lin_interp_age_C[i,j], mat_comp$lin_reg_age_C[i,j], mat_comp$Bchron_age_C[i,j],
+                mat_comp$Bacon_age_C[i,j], mat_comp$OxCal_age_C[i,j], mat_comp$copRa_age_C[i,j], mat_comp$StalAge_age_C[i,j])
+      index = which.max(abs(temp))
+      C[i,j] <- temp[index]
+    }
+    C[j,i] <- C[i,j]
+  }
+}
+
+ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max <- C
+
+
+#################################################
 ## SUMMARY ######################################
 #################################################
 
-table <- array(dim = c(11,26))
+table <- array(dim = c(11,14))
 
 colnames(table) <- c("group", "total", 
                      # 3              4               5             6                     7                   8
-                     "raw_mean",   "raw_upper",   "raw_lower",   "raw_mean_gauss",   "raw_upper_gauss",  "raw_lower_gauss", 
-                     "sim_mean_a", "sim_upper_a", "sim_lower_a", "sim_mean_a_gauss", "sim_upper_a_gauss", "sim_lower_a_gauss",
-                     "sim_mean_b", "sim_upper_b", "sim_lower_b", "sim_mean_b_gauss", "sim_upper_b_gauss", "sim_lower_b_gauss",
-                     "sim_mean_c", "sim_upper_c", "sim_lower_c", "sim_mean_c_gauss", "sim_upper_c_gauss", "sim_lower_c_gauss")
+                     "raw_mean", "raw_95%", "raw_5%", "raw_mean_gauss", "raw_95%_gauss", "raw_5%_gauss", 
+                     "sim_mean", "sim_95%", "sim_5%", "sim_mean_gauss", "sim_95%_gauss", "sim_5%_gauss")
 rownames(table) <- c("site", "gridbox", 
                      "cluster1-India", "cluster2-SA", "cluster3-Europe", "cluster4-Afica", 
                      "cluster5_Asia", "cluster6-NA", "cluster7-Arabia" , "cluster8-NZ",
@@ -503,58 +587,105 @@ table[9,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 7) %>% coun
 table[10,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 8) %>% count())$n
 table[11,2] <- length(ANALYSIS$NETWORK$entity_meta$entity_id)
 
-# site
-table[1,3] <- mean(ANALYSIS$NETWORK$SITES$mean)
-table[1,4] <- max(as.numeric(ANALYSIS$NETWORK$SITES$range))
-table[1,5] <- min(as.numeric(ANALYSIS$NETWORK$SITES$range))
+# site ##########################################
+site_corr <- list()
+site_list <- DATA_past1000$CAVES$entity_info %>% select(site_id, entity_id) %>%
+  filter(entity_id %in% ANALYSIS$NETWORK$entity_meta$entity_id) %>% group_by(site_id) %>% count() %>% filter(n>1)
+for(site in site_list$site_id){
+  site_corr <- c(site_corr, ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$C[ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$P<0.1])
+}
+site_corr = as.numeric(site_corr)
+table[1,3] <- mean(site_corr, na.rm = T)
+table[1,4] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[20]
+table[1,5] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[2]
+site_corr= list()
+for(site in site_list$site_id){
+  site_corr <- c(site_corr, ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$C_gauss[ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$P_gauss<0.1])
+}
+site_corr = as.numeric(site_corr)
+table[1,6] <- mean(site_corr, na.rm = T)
+table[1,7] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[20]
+table[1,8] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[2]
 
-# gridbox
-table[2,3] <- mean(ANALYSIS$NETWORK$GRIDBOX$mean)
-table[2,4] <- max(as.numeric(ANALYSIS$NETWORK$GRIDBOX$range))
-table[2,5] <- min(as.numeric(ANALYSIS$NETWORK$GRIDBOX$range))
+# gridbox #######################################
+corr <- list()
+list <- ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id, entity_id) %>% group_by(gridbox_id) %>% count() %>% filter(n>1)
+for(gridbox in list$gridbox_id){
+  corr <- c(corr, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P<0.1])
+}
+corr = as.numeric(corr)
+
+table[2,3] <- mean(corr, na.rm = T)
+table[2,4] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+table[2,5] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+
+corr = list()
+for(gridbox in list$gridbox_id){
+  corr <- c(corr, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C_gauss[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P_gauss<0.1])
+}
+corr = as.numeric(corr)
+
+table[2,6] <- mean(corr, na.rm = T)
+table[2,7] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+table[2,8] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
 
 #cluster
 for(cluster in 1:8){
-  table[2+cluster,3] <- mean(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)
-  table[2+cluster,4] <- range(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[1]
-  table[2+cluster,5] <- range(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[2]
-  table[2+cluster,6] <- mean(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)
-  table[2+cluster,7] <- range(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)[1]
-  table[2+cluster,8] <- range(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)[2]
-  position <- list("a"= c(9,10,11), "b"= c(15,16,17), "c" = c(21,22,23))
-  for(run in c("a", "b", "c")){
-    table[2+cluster,position[[run]][1]] <- mean(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)
-    table[2+cluster,position[[run]][2]] <- range(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[1]
-    table[2+cluster,position[[run]][3]] <- range(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P<0.15], na.rm = T)[2]  
-    table[2+cluster,position[[run]][1]+3] <- mean(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)
-    table[2+cluster,position[[run]][2]+3] <- range(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)[1]
-    table[2+cluster,position[[run]][3]+3] <- range(ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$C_gauss[ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_", run)]][[paste0("CLUSTER", cluster)]]$P_gauss<0.15], na.rm = T)[2]  
-  }
-
+  corr = as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P<0.1])
+  
+  table[2+cluster,3] <- mean(corr, na.rm = T)
+  table[2+cluster,4] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+  table[2+cluster,5] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+  
+  corr = as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P_gauss<0.1])
+  table[2+cluster,6] <- mean(corr, na.rm = T)
+  table[2+cluster,7] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+  table[2+cluster,8] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+  
+  corr = as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P<0.1],
+                      ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P<0.1],
+                      ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P<0.1]))
+  
+  table[2+cluster,9] <- mean(corr, na.rm = T)
+  table[2+cluster,10] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+  table[2+cluster,11] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+  
+  corr = as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
+                      ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
+                      ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P_gauss<0.1]))
+  table[2+cluster,12] <- mean(corr, na.rm = T)
+  table[2+cluster,13] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+  table[2+cluster,14] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
 }
 
-# Africa Sonderfall weil nur 2 drin:
+# Africa Sonderfall weil nur 2 drin
+
+corr = as.numeric(ANALYSIS$NETWORK$GLOBAL$C[ANALYSIS$NETWORK$GLOBAL$P<0.1])
+table[11,3] <- mean(corr, na.rm = T)
+table[11,4] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+table[11,5] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+corr = as.numeric(ANALYSIS$NETWORK$GLOBAL$C_gauss[ANALYSIS$NETWORK$GLOBAL$P_gauss<0.1])
+table[11,6] <- mean(corr, na.rm = T)
+table[11,7] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+table[11,8] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+
+corr = as.numeric(c(ANALYSIS$NETWORK$GLOBAL_SIM_a$C[ANALYSIS$NETWORK$GLOBAL_SIM_a$P<0.1], 
+                    ANALYSIS$NETWORK$GLOBAL_SIM_b$C[ANALYSIS$NETWORK$GLOBAL_SIM_b$P<0.1],
+                    ANALYSIS$NETWORK$GLOBAL_SIM_c$C[ANALYSIS$NETWORK$GLOBAL_SIM_c$P<0.1]))
+table[11,9] <- mean(corr, na.rm = T)
+table[11,10] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+table[11,11] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+corr = as.numeric(c(ANALYSIS$NETWORK$GLOBAL_SIM_a$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_a$P_gauss<0.1], 
+                    ANALYSIS$NETWORK$GLOBAL_SIM_b$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_b$P_gauss<0.1],
+                    ANALYSIS$NETWORK$GLOBAL_SIM_c$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_c$P_gauss<0.1]))
+table[11,12] <- mean(corr, na.rm = T)
+table[11,13] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+table[11,14] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
 
 
-table[11,3] <- mean(ANALYSIS$NETWORK$GLOBAL$mean, na.rm = T)
-table[11,4] <- max(ANALYSIS$NETWORK$GLOBAL$range, na.rm = T)
-table[11,5] <- min(ANALYSIS$NETWORK$GLOBAL$range, na.rm = T)
-table[11,6] <- mean(ANALYSIS$NETWORK$GLOBAL$mean_100gauss, na.rm = T)
-table[11,7] <- max(ANALYSIS$NETWORK$GLOBAL$range_100gauss, na.rm = T)
-table[11,8] <- min(ANALYSIS$NETWORK$GLOBAL$range_100gauss, na.rm = T)
-
-position <- list("a"= c(9,10,11), "b"= c(15,16,17), "c" = c(21,22,23))
-for(run in c("a", "b", "c")){
-  table[11,position[[run]][1]] <- mean(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P<0.15], na.rm = T)
-  table[11,position[[run]][2]] <- range(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P<0.15], na.rm = T)[1]
-  table[11,position[[run]][3]] <- range(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P<0.15], na.rm = T)[2]
-  table[11,position[[run]][1]+3] <- mean(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C_gauss[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P_gauss<0.15], na.rm = T)
-  table[11,position[[run]][2]+3] <- range(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C_gauss[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P_gauss<0.15], na.rm = T)[1]
-  table[11,position[[run]][3]+3] <- range(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C_gauss[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P_gauss<0.15], na.rm = T)[2]  
-}
 
 table_round <- round(table, digits = 3)
 
-cairo_pdf(width=9,height=5,file="Plots/Paper_Plot_6_Network_b_table.pdf")
+cairo_pdf(width=17,height=5,file="Plots/Paper_Plot_6_Network_b_table.pdf")
 gridExtra::grid.table(table_round)
 dev.off()
