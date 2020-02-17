@@ -133,10 +133,10 @@ for(run in c("a", "b","c")){
     
     
     noPts <- dim(network_lyr_rec)[1]
-    rbPal <- colorRampPalette(c("blue", "grey", "red"))
+    col = rev(RColorBrewer::brewer.pal(10, 'RdBu'))
     #col = rev(RColorBrewer::brewer.pal(10, 'RdBu'))
-    COLZ <- array(rev((RColorBrewer::brewer.pal(9, 'RdBu')))[as.numeric(cut(c(-1, 1, c(network_lyr_rec)), 
-                                                                       breaks = 9))][-c(1:2)], dim = dim(network_lyr_rec))
+    COLZ_rec <- matrix(col[round((network_lyr_rec+1)*5)+1], ncol = dim(network_lyr_rec)[1])
+    COLZ_sim <- matrix(col[round((network_lyr_sim+1)*5)+1], ncol = dim(network_lyr_rec)[1])
     ##PLOT #################################
     for(plot in 1:1){
       cairo_pdf(width=12,height=5,file=paste0("Plots/Appendix/Network_",run,"/Paper_Plot_6_Network_",cluster,".pdf"))
@@ -148,12 +148,11 @@ for(run in c("a", "b","c")){
       for (i in 1:(noPts - 1)) {
         for (j in (i + 1):(noPts)) {
           if (!is.na(network_lyr_sim[i, j])) {
-            lines(c(point_lyr$long[i], point_lyr$long[j]), c(point_lyr$lat[i], point_lyr$lat[j]), col = COLZ[i,j], lwd = 8*abs(network_lyr_sim[i,j]))
+            lines(c(point_lyr$long[i], point_lyr$long[j]), c(point_lyr$lat[i], point_lyr$lat[j]), col = COLZ_sim[i,j], lwd = 8*abs(network_lyr_sim[i,j]))
           }
         }
       }
-      symbols(x = point_lyr$long, y = point_lyr$lat, circles = numeric(length(TS_rec))+1, inches = 1/30, 
-              bg = "black" , fg = "black", add = TRUE)
+      points(x = point_lyr$long, y = point_lyr$lat, pch = 21, cex = 1.5)
       abline(v = seq(from = 0, to = 180, by = 3.75), col = "grey")
       abline(v = seq(from = 0, to = -180, by = -3.75), col = "grey")
       abline(h = seq(from = 90, to = 0, by = -2.5), col = "grey")
@@ -189,12 +188,11 @@ for(run in c("a", "b","c")){
       for (i in 1:(noPts - 1)) {
         for (j in (i + 1):(noPts)) {
           if (!is.na(network_lyr_rec[i, j])) {
-            lines(c(point_lyr$long[i], point_lyr$long[j]), c(point_lyr$lat[i], point_lyr$lat[j]), col = COLZ[i,j], lwd = 8*abs(network_lyr_rec[i,j]))
+            lines(c(point_lyr$long[i], point_lyr$long[j]), c(point_lyr$lat[i], point_lyr$lat[j]), col = COLZ_rec[i,j] , lwd = 8*abs(network_lyr_rec[i,j]))
           }
         }
       }
-      symbols(x = point_lyr$long, y = point_lyr$lat, circles = numeric(length(TS_rec))+1, inches = 1/30, 
-              bg = "black" , fg = "black", add = TRUE)
+      points(x = point_lyr$long, y = point_lyr$lat, pch = 21, cex = 1.5)
       abline(v = seq(from = 0, to = 180, by = 3.75), col = "grey")
       abline(v = seq(from = 0, to = -180, by = -3.75), col = "grey")
       abline(h = seq(from = 90, to = 0, by = -2.5), col = "grey")

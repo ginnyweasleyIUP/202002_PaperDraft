@@ -155,3 +155,12 @@ for(run in c("a","b","c")){
   
   dev.off()
 }
+
+rm(C, C_rec, C_REC_p, C_sim, C_SIM_p, boxes_rec, boxes_sim, COLZ)
+rm(lo, mat_comp, network_corplot, network_lyr_rec, network_lyr_sim, network_p, network_sim, order, P, P_rec, P_sim, PLOT, plot_c_rec, plot_c_rec_max)
+rm(plot_dist, Plot_Lyr, point_lyr, ptlyr_shina, ptlyr_china_p, ptlyr_rest, ptlyr_rest_p, s, sim_p)
+rm(site_list, temp_sim, TEST, TS, TS_rec, TS_sim, chronology, cluster, corr, counter, entity_list, gridbox, i, ii, index, j, lats, line_x, line_y, link_density)
+rm(longs, lowess_c_rec, lowess_c_rec_max, lowess_c_rec_max_sorted, lowess_c_rec_sorted, lowess_c_sim, lowess_c_sim_sorted, lowess_dist, lowess_dist_sorted)
+rm(namcex, name, noPts, o, o_rec, o_sim, plot, scaling, seasons, season_num, site_corr, spacing, test, title, var, year_start, year_stop)
+rm(box_corr, box_map, data, dating_all, double_time, list, map_window, names_move_plot_c_sim, plot_data, ptlyr_china)
+rm(plot_c_sim, names_move)
