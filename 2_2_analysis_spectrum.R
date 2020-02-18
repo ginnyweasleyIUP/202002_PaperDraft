@@ -254,9 +254,10 @@ ANALYSIS$SPECTRA$SIM_filter_full_down <- list(TEMP = list(), PREC = list(), ISOT
 ANALYSIS$SPECTRA$SIM_filter_full_rec <- list(TEMP = list(), PREC = list(), ISOT = list(), ITPC = list())
 ANALYSIS$SPECTRA$SIM_filter_down_rec <- list(TEMP = list(), PREC = list(), ISOT = list(), ITPC = list())
 
-filter1 = 2.0
-filter2 = 20.0
-filter3 = 10.0
+filter <- list(
+  ISOT = c(2.0, 20.0, 10.0),
+  ITPC = c(3.0, 12.0, 4.0)
+)
 
 for(ii in 1:length(ANALYSIS$SPECTRA$entities_spec_rec)){
   print(ii)
@@ -266,8 +267,8 @@ for(ii in 1:length(ANALYSIS$SPECTRA$entities_spec_rec)){
   
   #full -> down
   for(run in c("a", "b", "c")){
-    for(var in c("TEMP", "PREC","ISOT","ITPC")){
-      Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0(var,"_",run)]]), filter1)
+    for(var in c("ISOT","ITPC")){
+      Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0(var,"_",run)]]), filter[[var]][1])
       data  = ts(data = rev(Results), start = 1950-DATA_past1000$time[2]-29, end   = 1950-DATA_past1000$time[1], deltat = 1)
       
       ANALYSIS$SPECTRA$SIM_filter_full_down[[var]][[run]][[name]] = SpecMTM(data)
@@ -276,8 +277,8 @@ for(ii in 1:length(ANALYSIS$SPECTRA$entities_spec_rec)){
   
   #full-> rec
   for(run in c("a", "b", "c")){
-    for(var in c("TEMP", "PREC","ISOT","ITPC")){
-      Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0(var,"_", run)]]), filter2)
+    for(var in c("ISOT","ITPC")){
+      Results <- easy_sensor_wm4(1.0, na.omit(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0(var,"_", run)]]), filter[[var]][2])
       data  = ts(data = rev(Results), start = 1950-DATA_past1000$time[2]-144, end   = 1950-DATA_past1000$time[1], deltat = 1)
       
       ANALYSIS$SPECTRA$SIM_filter_full_rec[[var]][[run]][[name]] = SpecMTM(data)
@@ -293,18 +294,18 @@ for(ii in 1:length(ANALYSIS$SPECTRA$entities_spec_rec)){
   if(diff<1){diff = 1}
   
   for(run in c("a", "b", "c")){
-    for(var in c("TEMP", "PREC","ISOT","ITPC")){
+    for(var in c("ISOT","ITPC")){
       record <- PaleoSpec::MakeEquidistant(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$interp_age,
                                            DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]][[paste0(var,"_", run)]],
                                            time.target = seq(from = start_ts, to = stop_ts, by = diff))
-      Results <- easy_sensor_wm4(diff, na.omit(rev(record)), filter3)
+      Results <- easy_sensor_wm4(diff, na.omit(rev(record)), filter[[var]][3])
       data = ts(data = Results, start = start_ts-length(Results)+length(record), deltat = diff)
       ANALYSIS$SPECTRA$SIM_filter_down_rec[[var]][[run]][[name]] = SpecMTM(data)
     }
   }
 }
 
-for(var in c("TEMP", "PREC", "ISOT", "ITPC")){
+for(var in c("ISOT", "ITPC")){
   for(run in c("a", "b", "c")){
     ANALYSIS$SPECTRA$MEAN_SPEC[[var]][[paste0("full_down_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down[[var]][[run]])
     ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[var]][[paste0("full_down_", run)]] <- MeanSpectrum(ANALYSIS$SPECTRA$SIM_filter_full_down[[var]][[run]], weights = entity_gridbox$weighing)
