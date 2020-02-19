@@ -35,9 +35,9 @@ karst_map_plot <- function(USED_SITES_spec,
                size = (pt_size), alpha = 0.7, show.legend = c(shape =TRUE)) +
     geom_point(data = USED_SITES_mean_p, aes(x = long, y = lat, shape = "3", color = '3'),# shape = 17,
                size = (pt_size), alpha = 0.7, show.legend = c(shape =TRUE)) +
-    scale_color_manual(name = "SISAL v2 sites", labels = c("600y last mill, d18O res >30", "600y last mill, d18O res >20", "600y last mill, d18O res >10", "other"), 
+    scale_color_manual(name = "SISAL v2 sites", labels = c("d18O res > 30n", "d18O res > 20n", "d18O res > 10n", "other"), 
                         values = c('#DD2525', '#F98D11', '#8D0DC4', '#000000')) +
-    scale_shape_manual(name = "SISAL v2 sites", labels = c("600y last mill, d18O res >30", "600y last mill, d18O res >20", "600y last mill, d18O res >10", "other"), 
+    scale_shape_manual(name = "SISAL v2 sites", labels = c("d18O res > 30n", "d18O res > 20n", "d18O res > 10n", "other"), 
                        values = c(17, 17, 17, 20)) +
     #geom_polygon(data = coastline_map2, aes(x=long, y=lat, group = group), color = 'black',  size = 0.2, fill = NA, alpha = 0.8) +
     theme(legend.position = c(0.02, 0.02),

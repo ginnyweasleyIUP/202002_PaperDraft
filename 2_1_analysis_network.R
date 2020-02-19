@@ -473,6 +473,110 @@ for(run in c("a","b","c")){
 remove(C_gauss, P_gauss, TS_gauss)
 
 #################################################
+## DOWNSAMPLED ##################################
+
+for(run in c("a","b","c")){
+  ## 2 3 cluster correlation
+  
+  cluster_list <- ANALYSIS$NETWORK$entity_meta %>% select(cluster_id, entity_id) %>% group_by(cluster_id) %>% count() %>% filter(n>1)
+  
+  # Calculation
+  
+  ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_ds",run)]] <- list()
+  ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_ds",run)]]$mean <- numeric(length(cluster_list$cluster_id))
+  ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_ds",run)]]$range <- list()
+
+  counter = 1
+  
+  for(cluster in cluster_list$cluster_id){
+    
+    print(paste("cluster", cluster))
+    
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_ds",run)]][[paste0("CLUSTER", cluster)]] <- list()
+    
+    entity_list <- ANALYSIS$NETWORK$entity_meta %>% select(cluster_id, entity_id) %>% filter(cluster_id == cluster)
+    
+    TS <- list()
+
+    for(entity in entity_list$entity_id){
+      s <- DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]
+      # zoo cannot handle objects where order.by has two elements which is why they are sorted out here (no better option found)
+      double_time <- s %>% group_by(interp_age) %>% count() %>% filter(n>1)
+      s <- s %>% filter(!interp_age %in% double_time$interp_age)
+      
+      TS[[paste0("Entity", entity)]] <- zoo(x = s[[paste0("ISOT_", run)]], order.by = s$interp_age)
+    }
+    
+    C<-matrix(NA,nrow=length(TS),ncol=length(TS))
+    colnames(C)<-rownames(C)<-names(TS)
+    C_gauss <- P_gauss <- P <- C
+    
+    for (i in 1:(length(TS)-1)){
+      for (j in (i+1):length(TS)){
+        temp<-nest::nexcf_ci(TS[[i]],TS[[j]],conflevel=0.1)
+        C[i,j]<-temp$rxy
+        P[i,j]<-P[j,i]<-temp$pval
+        C[j,i]=C[i,j]
+        rm(temp)
+      }
+    }
+    
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_ds",run)]][[paste0("CLUSTER", cluster)]]$C <- C
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_ds",run)]][[paste0("CLUSTER", cluster)]]$P <- P
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_ds",run)]]$mean[counter] <- mean(C, na.rm = T)
+    ANALYSIS$NETWORK[[paste0("CLUSTER_SIM_ds",run)]]$range[counter] <- range(C, na.rm = T)
+    counter = counter + 1
+    
+  }
+  
+  ## 2 4 global correlation
+  
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_ds",run)]] <- list()
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_ds",run)]]$mean <- list()
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_ds",run)]]$range <- list()
+
+  entity_list <- ANALYSIS$NETWORK$entity_meta$entity_id
+  
+  
+  TS <- list()
+  
+  for(entity in entity_list){
+    s <- DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]
+    # zoo cannot handle objects where order.by has two elements which is why they are sorted out here (no better option found)
+    double_time <- s %>% group_by(interp_age) %>% count() %>% filter(n>1)
+    s <- s %>% filter(!interp_age %in% double_time$interp_age)
+    
+    TS[[paste0("Entity", entity)]] <- zoo(x = s[[paste0("ISOT_", run)]], order.by = s$interp_age)
+   
+  }
+  
+  C<-matrix(NA,nrow=length(TS),ncol=length(TS))
+  colnames(C)<-rownames(C)<-names(TS)
+  C_gauss <- P_gauss <- P <- C
+  
+  for (i in 1:(length(TS)-1)){
+    print(i)
+    for (j in (i+1):length(TS)){
+      temp<-nest::nexcf_ci(TS[[i]],TS[[j]],conflevel=0.1)
+      C[i,j]<-temp$rxy
+      P[i,j]<-P[j,i]<-temp$pval
+      C[j,i]=C[i,j]
+      rm(temp)
+    }
+  }
+  
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_ds",run)]]$C <- C
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_ds",run)]]$P <- P
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_ds",run)]]$mean <- mean(C, na.rm = T)
+  ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_ds",run)]]$range <- range(C, na.rm = T)
+
+  remove(cluster, counter, e.lat, e.long, entity, gridbox, i, ii, j, site, TS, site_list, s, Point_Lyr, P, hc, gridbox_list, entity_list, double_time, cluster_list, C, C_sig, a)
+  
+}
+
+remove(C_gauss, P_gauss, TS_gauss)
+
+#################################################
 ## CHRONOLOGY SENSITIVITY #######################
 #################################################
 

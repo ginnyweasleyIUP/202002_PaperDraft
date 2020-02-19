@@ -142,7 +142,9 @@ STACYmap_isot <- function(gridlyr = NULL,
                      rotate = FALSE,
                      box = TRUE,
                      breaks_isot = list(),
-                     labels_isot = list()) {
+                     labels_isot = list(),
+                     min_grid = NULL,
+                     max_grid = NULL) {
   # TODO enable lapply -> option to pass multiple gridlyr, plgnlyr, ptlyr as a list
   # TODO enable colourbar
   # TODO datum
@@ -336,6 +338,10 @@ STACYmap_isot <- function(gridlyr = NULL,
       grid = c(min(ptlyr$layer), max(ptlyr$layer))
     )
   }
+  if(!is.null(min_grid)&!is.null(max_grid)){
+    lims <-list(grid = c(min_grid, max_grid))  
+  }
+  
   
   ## plotting
   map_plot <- ggplot()
@@ -502,7 +508,7 @@ STACYmap_isot <- function(gridlyr = NULL,
       map_plot <- map_plot + 
         geom_point(data = ptlyr,
                    mapping = aes(x = long, y = lat, fill = layer, size = !!sym(ptlyr_size_var), shape = !!sym(ptlyr_shape_var)),  
-                   alpha = I(0.7), stroke = GLOBAL_STACY_OPTIONS$GLOBAL_POINT_STROKE,
+                   alpha = I(0.8), stroke = GLOBAL_STACY_OPTIONS$GLOBAL_POINT_STROKE,
                    show.legend = c(fill = {if (is.null(gridlyr) | splcol) {TRUE} else {FALSE}}, size = TRUE)) + 
         scale_shape_manual(values = c(23, 22, 24, 21, 0:20), 
                            guide = guide_legend(nrow = 2, direction = 'horizontal', title.vjust = GLOBAL_STACY_OPTIONS$GLOBAL_LEG_TITLE_VJUST,

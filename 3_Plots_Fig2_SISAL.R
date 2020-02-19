@@ -57,7 +57,7 @@ GLOBAL_STACY_OPTIONS$GLOBAL_FONT_SIZE = 10
 plot <- karst_map_plot(USED_SITES_spec = USED_SITES_spec,
                        USED_SITES_var = USED_SITES_var,
                        USED_SITES_mean = USED_SITES_mean,
-                       NOT_SITES = NOT_SITES, pt_size = 3) + 
+                       NOT_SITES = NOT_SITES, pt_size = 2.5) + 
   #theme(legend.position = "bottom", legend.direction = "horizontal")#c(0.0, 0.02))
   theme(legend.position = c(-0.01, 0), legend.justification = c(0, 0), legend.box = 'vertical',
         axis.text = element_blank())

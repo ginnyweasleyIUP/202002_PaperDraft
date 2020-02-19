@@ -30,7 +30,7 @@ library(rgdal)
 ## PLOTTING #####################################
 
 source("Functions/Plotting/STACYmap_5.R")
-#source("Functions/STACYmap_5_1_NAgrid.R")
+#source("Functions/Plotting/STACYmap_5_1_NAgrid.R")
 source("Functions/Plotting/STACYmap_5_2_logscale.R")
 source("Functions/aw_mean.R")
 
@@ -55,7 +55,7 @@ for(run in c("a","b", "c")){
           legend.text = element_text(size = 8)) 
   
   prec_lyr <- apply(DATA_past1000[[paste0("SIM_yearly_",run)]]$PREC, c(1,2), mean, na.rm = T)
-  plot_prec <- STACYmap(gridlyr = 8.6148e4*rbind(prec_lyr[49:96,1:73],prec_lry[1:48,1:73]),
+  plot_prec <- STACYmap(gridlyr = 8.6148e4*rbind(prec_lyr[49:96,1:73],prec_lyr[1:48,1:73]),
                         #zoom = c(-180, -60, 180, 73),
                         legend_names = list(grid = "Precipitation (mm/day)"),
                         graticules = TRUE,
@@ -64,17 +64,6 @@ for(run in c("a","b", "c")){
           legend.background = element_blank(),
           axis.text = element_blank(),
           legend.text = element_text(size = 8)) 
-  
-  slpr_lyr <- apply(DATA_past1000[[paste0("SIM_yearly_",run)]]$SLPR, c(1,2), mean, na.rm = T)
-  plot_slpr <- STACYmap(gridlyr = rbind(slpr_lyr[49:96,1:73],slpr_lyr[1:48,1:73]),
-                        #zoom = c(-180, -60, 180, 73),
-                        legend_names = list(grid = "Sea level pressure (mbar)"),
-                        graticules = TRUE,
-                        colorscheme = PLOTTING_VARIABLES$COLORS$SLPR) +
-    theme(panel.border = element_blank(),
-          legend.background = element_blank(),
-          axis.text = element_blank(),
-          legend.text = element_text(size = 8))
   
   PLOTTING_DATA$FIG3$CAVElyr_isot <- data.frame(
     lon = numeric(length(DATA_past1000$CAVES$entity_info$entity_id)),
@@ -99,7 +88,61 @@ for(run in c("a","b", "c")){
   
   remove(entity, site, ii)
   
+  #ISOT
+  isot_lyr <- apply(DATA_past1000[[paste0("SIM_yearly_",run)]]$ISOT, c(1,2), mean, na.rm = T)
+  Plot_lyr1 <-rbind(isot_lyr[49:96,1:73],isot_lyr[1:48,1:73])
   
+  Plot_lyr3 <- Plot_lyr1
+  Plot_lyr3[is.na(Plot_lyr3)] = 1000
+  Plot_lyr3[Plot_lyr3>0] <- Plot_lyr3[Plot_lyr3>0]+1 
+  Plot_lyr3[Plot_lyr3<0] <- Plot_lyr3[Plot_lyr3<0]-1
+  Plot_lyr3[Plot_lyr3>0] <- log10(Plot_lyr3[Plot_lyr3>0])
+  Plot_lyr3[Plot_lyr3<0] <- - log10(abs(Plot_lyr3[Plot_lyr3<0]))
+  Plot_lyr3[abs(Plot_lyr3)>5] <- NA
+  Plot_lyr3[,1] <- NA
+  Plot_lyr3[,73] <- NA
+  #Plot_lyr3[,1:6] <- NA
+  #Plot_lyr3[,60:73] <- NA
+  #Plot_lyr1[,1:6] <- NA
+  #Plot_lyr1[,60:73] <- NA
+  
+  
+  Point_Lyr <- data.frame(
+    lon = PLOTTING_DATA$FIG3$CAVElyr_isot_used$lon,
+    lat = PLOTTING_DATA$FIG3$CAVElyr_isot_used$lat,
+    value = - log10(abs(PLOTTING_DATA$FIG3$CAVElyr_isot_used$value -1))
+  )
+  
+  Point_Lyr$value[[57]] <- log10(PLOTTING_DATA$FIG3$CAVElyr_isot_used$value[[57]]+1)
+  
+  # Plot_lyr1[Plot_lyr1 < -17] = -17 -0.1*Plot_lyr1
+  # Plot_lyr2 <-rbind(DATA_past1000$SIM_mean$ISOT[49:96,1:73],DATA_past1000$SIM_mean$ISOT[1:48,1:73])
+  # Plot_lyr2[Plot_lyr2 > -17] = NA
+  # Plot_lyr2[Plot_lyr2 < -17] = -17
+  
+  allmax = - min(Plot_lyr3, na.rm = T)
+  allmax_real = - min(Plot_lyr1, na.rm = T)
+  
+  GLOBAL_STACY_OPTIONS$GLOBAL_POINT_SIZE = 4
+  
+  plot_isot <- STACYmap_isot(gridlyr = Plot_lyr3,
+                             ptlyr = Point_Lyr,
+                             legend_names = list(grid = "d18O (%)"),
+                             graticules = TRUE,
+                             colorscheme = rev(RColorBrewer::brewer.pal(11, 'BrBG'))[c(1:8,10)],
+                             #colorscheme = PLOTTING_VARIABLES$COLORS$SLPR,
+                             breaks_isot = c(-log10(71),-log10(11),-log10(6), -log10(2), 0, log10(2), log10(6)),
+                             labels_isot = c(-70, -10,-5, -1, 0, 1, 5),
+                             min_grid = -log10(71), max_grid = log10(12)) +
+    theme(panel.border = element_blank(),
+          legend.background = element_blank(),
+          axis.text = element_blank(),
+          text = element_text(size = 8)) 
+  
+  plot_isot
+  
+  
+  # ITPC
   itpc_lyr <- apply(DATA_past1000[[paste0("SIM_yearly_",run)]]$ITPC, c(1,2), mean, na.rm = T)
   Plot_lyr1 <-rbind(itpc_lyr[49:96,1:73],itpc_lyr[1:48,1:73])
   
@@ -140,22 +183,23 @@ for(run in c("a","b", "c")){
                              ptlyr = Point_Lyr,
                              legend_names = list(grid = "Prec-weighted d18O (%)"),
                              graticules = TRUE,
-                             colorscheme = RColorBrewer::brewer.pal(9, 'BrBG'),
-                             centercolor = 0, 
-                             breaks_isot = c(-allmax,-log10(11), -log10(2), 0, log10(2), log10(11), allmax),
-                             labels_isot = c(round(-allmax_real), -10, -1, 0, 1, 10, round(allmax_real))) +
+                             colorscheme = rev(RColorBrewer::brewer.pal(11, 'BrBG'))[c(1:8,10)],
+                             #colorscheme = PLOTTING_VARIABLES$COLORS$SLPR,
+                             breaks_isot = c(-log10(71),-log10(11),-log10(6), -log10(2), 0, log10(2), log10(6)),
+                             labels_isot = c(-70, -10,-5, -1, 0, 1, 5),
+                             min_grid = -log10(71), max_grid = log10(12)) +
     theme(panel.border = element_blank(),
           legend.background = element_blank(),
           axis.text = element_blank(),
-          text = element_text(size = 8)) 
+          text = element_text(size = 8))
   
-  plot_itpc
+  #plot_itpc
   
   #plot_isot %>% ggsave(filename = "Nadine_hadcm3_pmil_d18Oinprecip.pdf", path = "Plots", width = PLOTTING_VARIABLES$WIDTH, height = PLOTTING_VARIABLES$HEIGHT, units = "cm", dpi = 'print')
   
   library(ggpubr)
-  plot <- ggarrange(plot_temp, plot_prec, plot_slpr, plot_itpc,
-                    labels = c("A", "B", "C", "D"),
+  plot <- ggarrange(plot_temp, plot_prec, plot_isot, plot_itpc,
+                    labels = c("(a)", "(b)", "(c)", "(d)"),
                     ncol = 2, nrow = 2)
   
   plot  %>% ggsave(filename = paste0('Paper_Plot_3_Mean_xnap',run, '.pdf'), plot = ., path = 'Plots', 
@@ -179,4 +223,3 @@ for(run in c("a","b", "c")){
 
 remove(plot_temp, plot_prec, plot_itpc, plot_slpr, Plot_lyr1, Plot_lyr3, plot, Point_Lyr)
 remove(temp_lyr, prec_lyr, slpr_lyr, itpc_lyr)
-

@@ -79,49 +79,53 @@ for(run in c("a","b","c")){
   boxes_sim <- list()
   boxes_rec <- list()
   
-  for(ii in 1:10){
-    boxes_sim[[paste0(ii*2000)]] <- na.omit(as.numeric(plot_c_sim[plot_dist<ii*2000 & plot_dist>(ii-1)*2000]))
-    boxes_rec[[paste0(ii*2000)]] <- na.omit(as.numeric(plot_c_rec[plot_dist<ii*2000 & plot_dist>(ii-1)*2000]))
+  for(ii in 1:20){
+    boxes_sim[[paste0(ii*1000)]] <- na.omit(as.numeric(plot_c_sim[plot_dist<ii*1000 & plot_dist>(ii-1)*1000]))
+    boxes_rec[[paste0(ii*1000)]] <- na.omit(as.numeric(plot_c_rec[plot_dist<ii*1000 & plot_dist>(ii-1)*1000]))
   }
   
   scaling = 1.5
   spacing = 0.7
   namcex = 1
+  colorbar_length = 0.7
 
   # vielleicht erst die stärksten Links aussuchen udn dann unsignifikante raus schmeißen! Damit die gleiche Anzahl an Links da ist!
+  rbPal <- colorRampPalette(c("#2166ac", "grey", "#b2182b"))
+  COLZ <- array(rbPal(9))
   
   
-  
-  #pdf(file = paste0("Plots/Paper_Plot_6_Network_a_xnap",run,".pdf"), height= PLOTTING_VARIABLES$HEIGHT, width = PLOTTING_VARIABLES$WIDTH)
-  png(file = paste0("Plots/Paper_Plot_6_Network_a_xnap",run,".png"), height= 100*PLOTTING_VARIABLES$HEIGHT, width = 100*PLOTTING_VARIABLES$WIDTH)
-  par(mfrow=c(2,2), mai = c(rep(spacing, 4)), mar = c(3,3,2,0.5))
+  pdf(file = paste0("Plots/Paper_Plot_6_Network_a_xnap",run,".pdf"), height= PLOTTING_VARIABLES$HEIGHT, width = PLOTTING_VARIABLES$WIDTH)
+  #png(file = paste0("Plots/Paper_Plot_6_Network_a_xnap",run,".png"), height= 100*PLOTTING_VARIABLES$HEIGHT, width = 100*PLOTTING_VARIABLES$WIDTH)
+  par(mfrow=c(2,2), mai = c(rep(spacing, 4)), mar = c(1.5,2.5,0,0.5), oma = c(2,0.5,0.5,0.5))
   #SIM MAP
   networkmap_simple3(CMAT = C_SIM_p, 
                      lat = lats, 
                      lon = longs, 
                      title = "",
                      thresh = 0.1)
-  mtext("Corr HadCM3, p<0.1, c>0.1", side = 3, cex = namcex)
-  mtext("A", side = 3, adj = 0, cex = namcex)
+  fields::colorbar.plot(x = 190,y = 10, col = rev(COLZ), 
+                        strip = c(1,0.75, 0.5, 0.25,0,-0.25, -0.5, -0.75,-1), horizontal = F, strip.length = colorbar_length, strip.width = 0.04)
+  axis(4,at=seq(80,-60,by=-2*140/8),labels=FALSE)
+  mtext("HadCM3", side = 1, cex = namcex, line = -2, font = 2)
+  mtext("(a)", side = 3, adj = 0, cex = namcex, line = -1.5, at = -185)
   #SIM Cor-Dist
-  plot(plot_dist, plot_c_sim, 
+  plot(plot_dist[seq(1,length(plot_dist), by = 2)], plot_c_sim[seq(1,length(plot_c_sim), by = 2)], 
        ylim = c(-1,1),
        xlim = c(0,20000),
        ylab = "",
        xlab = "", 
        cex = 1, 
        lwd = 0.5, 
-       panel.first = grid(), col = "grey", type = "n", xaxt = "n")
-  for(ii in 1:10){
-    boxplot(boxes_sim[[paste0(ii*2000)]], add = TRUE, at = c(ii*2000-1000),boxwex = 1000, names = "n")  
+       panel.first = grid(), col = adjustcolor("grey", alpha.f = 0.7), xaxt = "n")
+  for(ii in 1:20){
+    boxplot(boxes_sim[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n")  
   }
   
   lo <- loess(lowess_c_sim_sorted ~ lowess_dist_sorted, span = 0.2)
   
   lines(lo$x, lo$fitted, lwd = 4, col = "#B2182B")
   #lines(lowess(lowess_dist_sorted,lowess_c_sim_sorted, f=0.1), lwd = 4, col = "#B2182B")
-  mtext("Distance between pairs (km)", side= 1, line = 2)
-  mtext("B", side = 3, adj = 0, cex = namcex)
+  mtext("(b)", side = 3, adj = 0, cex = namcex, line = -1.5, at = 1000)
   
   #SISAL MAP
   networkmap_simple3(CMAT = C_REC_p, 
@@ -129,29 +133,32 @@ for(run in c("a","b","c")){
                      lon = longs,
                      title = "",
                      thresh = 0.1)
-  mtext("Corr SISAL , p<0.1, c>0.1", side = 3, cex = namcex)
-  mtext("C", side = 3, adj = 0, cex = namcex)
+  fields::colorbar.plot(x = 190,y = 10, col = rev(COLZ), 
+                        strip = c(1,0.75, 0.5, 0.25,0,-0.25, -0.5, -0.75,-1), horizontal = F, strip.length = colorbar_length, strip.width = 0.04)
+  axis(4,at=seq(80,-60,by=-2*140/8),labels=FALSE)
+  mtext("SISAL", side = 1, cex = namcex, line = -2, font = 2)
+  mtext("(c)", side = 3, adj = 0, cex = namcex, line = -1.5, at = -185)
   
   #SISAL Cor-Dist
-  plot(plot_dist, plot_c_rec, 
+  plot(plot_dist[seq(1,length(plot_dist), by = 2)], plot_c_rec[seq(1,length(plot_c_rec), by = 2)], 
        ylim = c(-1,1),
        xlim = c(0,20000),
        ylab = "",
        xlab = "", 
        cex = 1, 
        lwd = 1, 
-       panel.first = grid(), col = "grey", type = "n")
-  for(ii in 1:10){
-    boxplot(boxes_rec[[paste0(ii*2000)]], add = TRUE, at = c(ii*2000-1000),boxwex = 1000, names = "n")  
+       panel.first = grid(), col = adjustcolor("grey", alpha.f = 0.7))
+  for(ii in 1:20){
+    boxplot(boxes_rec[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n")  
   }
   lo <- loess(lowess_c_rec_sorted ~ lowess_dist_sorted, span = 0.2)
   lines(lo$x, lo$fitted, lwd = 4, col = "#B2182B")
   lo <- loess(lowess_c_rec_max_sorted ~ lowess_dist_sorted, span = 0.2)
   lines(lo$x, lo$fitted, lwd = 4, col = "darkblue")
   mtext("Distance between pairs (km)", side= 1, line = 2)
-  mtext("D", side = 3, adj = 0, cex = namcex)
-  legend("topright", legend = c("original chron", "sisal chron."), col = c("#B2182B", "darkblue"), lty = c(1,1), lwd = c(4,4))
-  
+  mtext("(d)", side = 3, adj = 0, cex = namcex, line = -1.5, at = 0)
+  text(20000, 0.9, "original chron.", col = "#B2182B", adj = 1, font = 2)
+  text(20000, 0.77, "sisal chron.", col = "darkblue", adj = 1, font = 2)
   
   dev.off()
 }

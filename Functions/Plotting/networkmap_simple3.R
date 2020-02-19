@@ -1,6 +1,6 @@
 networkmap_simple3 <- function (CMAT, lat, lon, weights = rep(1, dim(CMAT)[1]), thresh = NULL, title) {
   noPts <- dim(CMAT)[1]
-  rbPal <- colorRampPalette(c("blue", "grey", "red"))
+  rbPal <- colorRampPalette(c("#2166ac", "grey", "#b2182b"))
   COLZ <- array(rbPal(9)[as.numeric(cut(c(-1, 1, c(CMAT)), 
                                         breaks = 9))][-c(1:2)], dim = dim(CMAT))
   if (is.numeric(thresh) && (thresh > 0) && (thresh < 1)) {
