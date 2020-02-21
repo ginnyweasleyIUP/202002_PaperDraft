@@ -668,8 +668,8 @@ ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max <- C
 
 line_names = 2
 
-par(mar = c(3,10,4,2))
-plot(c(-1,1), c(1,11), type = "n", axes = FALSE, xlab = "", ylab = "" )
+par(mar = c(3,10,2,2))
+plot(c(-1,1), c(1,21), type = "n", axes = FALSE, xlab = "", ylab = "" )
 abline(v=0)
 ## SITES
 site_corr <- list(full = list(), gauss = list())
@@ -682,11 +682,11 @@ for(site in site_list$site_id){
 site_corr$full = as.numeric(site_corr$full)
 site_corr$gauss = as.numeric(site_corr$gauss)
 
-boxplot(site_corr$full, add = TRUE, at = 11 ,boxwex = 1, names = "n", horizontal = T) 
-boxplot(site_corr$gauss, add = TRUE, at = 10.75, boxwex = 0.5, names = "n", horizontal = T, col = "grey")
+boxplot(site_corr$full, add = TRUE, at = 21 ,boxwex = 1, names = "n", horizontal = T) 
+boxplot(site_corr$gauss, add = TRUE, at = 20.75, boxwex = 0.5, names = "n", horizontal = T, col = "grey")
 
 #mtext(side=2,"GMST",                cex = unitscex,    line = unitslinno, las = 1, col = "black", at = 1)
-mtext(side = 2, "sites 74 (12)", cex = 1, line = line_names, las = 1, col = "black", at = 11)
+mtext(side = 2, "sites 74 (12)", cex = 1, line = line_names, las = 1, col = "black", at = 21)
 ##GRIGBOX
 
 corr <- list(full = list(), gauss = list())
@@ -698,11 +698,22 @@ for(gridbox in list$gridbox_id){
 corr$full = as.numeric(corr$full)
 corr$gauss = as.numeric(corr$gauss)
 
-boxplot(corr$full, add = TRUE, at = 10 ,boxwex = 1, names = "n", horizontal = T) 
-boxplot(corr$gauss, add = TRUE, at = 9.75, boxwex = 0.5, names = "n", horizontal = T, col = "grey")
+boxplot(corr$full, add = TRUE, at = 20 ,boxwex = 1, names = "n", horizontal = T) 
+boxplot(corr$gauss, add = TRUE, at = 19.75, boxwex = 0.5, names = "n", horizontal = T, col = "grey")
 
 #mtext(side=2,"GMST",                cex = unitscex,    line = unitslinno, las = 1, col = "black", at = 1)
-mtext(side = 2, "gridbox 62 (18)", cex = 1, line = line_names, las = 1, col = "black", at = 10)
+mtext(side = 2, "gridbox 62 (18)", cex = 1, line = line_names, las = 1, col = "black", at = 20)
+
+position <- list(cluster1 = c(17, 16.75, 16, 15.75)+1,
+                 cluster2 = c(15, 14.75, 14, 13.75)+1,
+                 cluster3 = c(13, 12.75, 12, 11.75)+1,
+                 cluster4 = c(11, 10.75, 10, 9.75)+1,
+                 cluster5 = c(9, 8.75, 8, 7.75)+1,
+                 cluster6 = c(7, 6.75, 6, 5.75)+1,
+                 cluster7 = c(5, 4.75, 4, 3.75)+1,
+                 cluster8 = c(3, 2.75, 2, 1.75)+1)
+text <- list(cluster1 = "India", cluster2 = "SouthAm", cluster3 = "Europe", cluster4 = "Africa", 
+             cluster5 = "Asia", cluster6 = "NorthAm", cluster7 = "Arabia", cluster8 = "NZ")
 
 ## CLUSTER
 for(cluster in 1:8){
@@ -715,14 +726,32 @@ for(cluster in 1:8){
                                              ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
                                              ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P_gauss<0.1]))))
 
-  boxplot(corr$full, add = TRUE, at = 9 ,boxwex = 1, names = "n", horizontal = T) 
-  boxplot(corr$gauss, add = TRUE, at = 8.75, boxwex = 0.5, names = "n", horizontal = T, col = "grey")
-  boxplot(corr$full_sim, add = TRUE, at = 8.25 ,boxwex = 1, names = "n", horizontal = T, col = "darkgreen") 
-  boxplot(corr$gauss_sim, add = TRUE, at = 8, boxwex = 0.5, names = "n", horizontal = T, col = adjustcolor("darkgreen", alpha.f = 0.5))
+  boxplot(corr$full, add = TRUE, at = position[[cluster]][1] ,boxwex = 1, names = "n", horizontal = T) 
+  boxplot(corr$gauss, add = TRUE, at = position[[cluster]][2] , boxwex = 0.5, names = "n", horizontal = T, col = "grey")
+  boxplot(corr$full_sim, add = TRUE, at = position[[cluster]][3]  ,boxwex = 1, names = "n", horizontal = T, col = "darkgreen") 
+  boxplot(corr$gauss_sim, add = TRUE, at = position[[cluster]][4] , boxwex = 0.5, names = "n", horizontal = T, col = adjustcolor("darkgreen", alpha.f = 0.5))
   
-  mtext(side = 2, "cluster 1 (India)", cex = 1, line = line_names, las = 1, col = "black", at = 9)
+  mtext(side = 2, paste0("cluster ",cluster,"(",text[[cluster]],")"), cex = 1, line = line_names, las = 1, col = "black", at = position[[cluster]][1])
 
 }
+
+##Global
+
+corr$full = as.numeric(as.numeric(ANALYSIS$NETWORK$GLOBAL$C[ANALYSIS$NETWORK$GLOBAL$P<0.1]))
+corr$gauss = as.numeric(as.numeric(ANALYSIS$NETWORK$GLOBAL$C_gauss[ANALYSIS$NETWORK$GLOBAL$P_gauss<0.1]))
+corr$full_sim = as.numeric(ANALYSIS$NETWORK$GLOBAL_SIM_a$C[ANALYSIS$NETWORK$GLOBAL_SIM_a$P<0.1], 
+                           ANALYSIS$NETWORK$GLOBAL_SIM_b$C[ANALYSIS$NETWORK$GLOBAL_SIM_b$P<0.1],
+                           ANALYSIS$NETWORK$GLOBAL_SIM_c$C[ANALYSIS$NETWORK$GLOBAL_SIM_c$P<0.1])
+corr$gauss_sim = as.numeric(ANALYSIS$NETWORK$GLOBAL_SIM_a$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_a$P_gauss<0.1], 
+                            ANALYSIS$NETWORK$GLOBAL_SIM_b$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_b$P_gauss<0.1],
+                            ANALYSIS$NETWORK$GLOBAL_SIM_c$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_c$P_gauss<0.1])
+
+boxplot(corr$full, add = TRUE, at = 2 ,boxwex = 1, names = "n", horizontal = T) 
+boxplot(corr$gauss, add = TRUE, at = 1.75 , boxwex = 0.5, names = "n", horizontal = T, col = "grey")
+boxplot(corr$full_sim, add = TRUE, at = 1,boxwex = 1, names = "n", horizontal = T, col = "darkgreen") 
+boxplot(corr$gauss_sim, add = TRUE, at = 0.75 , boxwex = 0.5, names = "n", horizontal = T, col = adjustcolor("darkgreen", alpha.f = 0.5))
+
+mtext(side = 2, "global", cex = 1, line = line_names, las = 1, col = "black", at = 2)
 
 # # start############################################
 # table <- array(dim = c(11,14))
