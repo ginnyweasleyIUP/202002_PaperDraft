@@ -666,130 +666,189 @@ ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max <- C
 ## SUMMARY ######################################
 #################################################
 
-table <- array(dim = c(11,14))
+line_names = 2
 
-colnames(table) <- c("group", "total", 
-                     # 3              4               5             6                     7                   8
-                     "raw_mean", "raw_95%", "raw_5%", "raw_mean_gauss", "raw_95%_gauss", "raw_5%_gauss", 
-                     "sim_mean", "sim_95%", "sim_5%", "sim_mean_gauss", "sim_95%_gauss", "sim_5%_gauss")
-rownames(table) <- c("site", "gridbox", 
-                     "cluster1-India", "cluster2-SA", "cluster3-Europe", "cluster4-Afica", 
-                     "cluster5_Asia", "cluster6-NA", "cluster7-Arabia" , "cluster8-NZ",
-                     "global")
-
-table[1,2] <- dim(ANALYSIS$NETWORK$entity_meta %>% select(site_id) %>% group_by(site_id) %>% count())[1]
-table[1,1] <- dim(ANALYSIS$NETWORK$entity_meta %>% select(site_id) %>% group_by(site_id) %>% count() %>% filter(n>1))[1]
-table[2,2] <- dim(ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id) %>% group_by(gridbox_id) %>% count())[1]
-table[2,1] <- dim(ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id) %>% group_by(gridbox_id) %>% count() %>% filter(n>1))[1]
-table[3,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 1) %>% count())$n
-table[4,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 2) %>% count())$n
-table[5,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 3) %>% count())$n
-table[6,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 4) %>% count())$n
-table[7,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 5) %>% count())$n
-table[8,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 6) %>% count())$n
-table[9,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 7) %>% count())$n
-table[10,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 8) %>% count())$n
-table[11,2] <- length(ANALYSIS$NETWORK$entity_meta$entity_id)
-
-# site ##########################################
-site_corr <- list()
+par(mar = c(3,10,4,2))
+plot(c(-1,1), c(1,11), type = "n", axes = FALSE, xlab = "", ylab = "" )
+abline(v=0)
+## SITES
+site_corr <- list(full = list(), gauss = list())
 site_list <- DATA_past1000$CAVES$entity_info %>% select(site_id, entity_id) %>%
   filter(entity_id %in% ANALYSIS$NETWORK$entity_meta$entity_id) %>% group_by(site_id) %>% count() %>% filter(n>1)
 for(site in site_list$site_id){
-  site_corr <- c(site_corr, ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$C[ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$P<0.1])
+  site_corr$full <- c(site_corr$full, ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$C[ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$P<0.1])
+  site_corr$gauss <- c(site_corr$gauss, ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$C_gauss[ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$P_gauss<0.1])
 }
-site_corr = as.numeric(site_corr)
-table[1,3] <- mean(site_corr, na.rm = T)
-table[1,4] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[20]
-table[1,5] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[2]
-site_corr= list()
-for(site in site_list$site_id){
-  site_corr <- c(site_corr, ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$C_gauss[ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$P_gauss<0.1])
-}
-site_corr = as.numeric(site_corr)
-table[1,6] <- mean(site_corr, na.rm = T)
-table[1,7] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[20]
-table[1,8] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[2]
+site_corr$full = as.numeric(site_corr$full)
+site_corr$gauss = as.numeric(site_corr$gauss)
 
-# gridbox #######################################
-corr <- list()
+boxplot(site_corr$full, add = TRUE, at = 11 ,boxwex = 1, names = "n", horizontal = T) 
+boxplot(site_corr$gauss, add = TRUE, at = 10.75, boxwex = 0.5, names = "n", horizontal = T, col = "grey")
+
+#mtext(side=2,"GMST",                cex = unitscex,    line = unitslinno, las = 1, col = "black", at = 1)
+mtext(side = 2, "sites 74 (12)", cex = 1, line = line_names, las = 1, col = "black", at = 11)
+##GRIGBOX
+
+corr <- list(full = list(), gauss = list())
 list <- ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id, entity_id) %>% group_by(gridbox_id) %>% count() %>% filter(n>1)
 for(gridbox in list$gridbox_id){
-  corr <- c(corr, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P<0.1])
+  corr$full <- c(corr$full, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P<0.1])
+  corr$gauss <- c(corr$full, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C_gauss[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P_gauss<0.1])
 }
-corr = as.numeric(corr)
+corr$full = as.numeric(corr$full)
+corr$gauss = as.numeric(corr$gauss)
 
-table[2,3] <- mean(corr, na.rm = T)
-table[2,4] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-table[2,5] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+boxplot(corr$full, add = TRUE, at = 10 ,boxwex = 1, names = "n", horizontal = T) 
+boxplot(corr$gauss, add = TRUE, at = 9.75, boxwex = 0.5, names = "n", horizontal = T, col = "grey")
 
-corr = list()
-for(gridbox in list$gridbox_id){
-  corr <- c(corr, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C_gauss[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P_gauss<0.1])
-}
-corr = as.numeric(corr)
+#mtext(side=2,"GMST",                cex = unitscex,    line = unitslinno, las = 1, col = "black", at = 1)
+mtext(side = 2, "gridbox 62 (18)", cex = 1, line = line_names, las = 1, col = "black", at = 10)
 
-table[2,6] <- mean(corr, na.rm = T)
-table[2,7] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-table[2,8] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
-
-#cluster
+## CLUSTER
 for(cluster in 1:8){
-  corr = as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P<0.1])
+  corr <- list(full = as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P<0.1]), 
+               gauss = list(as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P_gauss<0.1])),
+               full_sim = list(as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P<0.1],
+                                            ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P<0.1],
+                                            ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P<0.1]))), 
+               gauss_sim = list(as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
+                                             ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
+                                             ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P_gauss<0.1]))))
+
+  boxplot(corr$full, add = TRUE, at = 9 ,boxwex = 1, names = "n", horizontal = T) 
+  boxplot(corr$gauss, add = TRUE, at = 8.75, boxwex = 0.5, names = "n", horizontal = T, col = "grey")
+  boxplot(corr$full_sim, add = TRUE, at = 8.25 ,boxwex = 1, names = "n", horizontal = T, col = "darkgreen") 
+  boxplot(corr$gauss_sim, add = TRUE, at = 8, boxwex = 0.5, names = "n", horizontal = T, col = adjustcolor("darkgreen", alpha.f = 0.5))
   
-  table[2+cluster,3] <- mean(corr, na.rm = T)
-  table[2+cluster,4] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-  table[2+cluster,5] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
-  
-  corr = as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P_gauss<0.1])
-  table[2+cluster,6] <- mean(corr, na.rm = T)
-  table[2+cluster,7] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-  table[2+cluster,8] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
-  
-  corr = as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P<0.1],
-                      ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P<0.1],
-                      ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P<0.1]))
-  
-  table[2+cluster,9] <- mean(corr, na.rm = T)
-  table[2+cluster,10] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-  table[2+cluster,11] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
-  
-  corr = as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
-                      ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
-                      ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P_gauss<0.1]))
-  table[2+cluster,12] <- mean(corr, na.rm = T)
-  table[2+cluster,13] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-  table[2+cluster,14] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+  mtext(side = 2, "cluster 1 (India)", cex = 1, line = line_names, las = 1, col = "black", at = 9)
+
 }
 
-# Africa Sonderfall weil nur 2 drin
-
-corr = as.numeric(ANALYSIS$NETWORK$GLOBAL$C[ANALYSIS$NETWORK$GLOBAL$P<0.1])
-table[11,3] <- mean(corr, na.rm = T)
-table[11,4] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-table[11,5] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
-corr = as.numeric(ANALYSIS$NETWORK$GLOBAL$C_gauss[ANALYSIS$NETWORK$GLOBAL$P_gauss<0.1])
-table[11,6] <- mean(corr, na.rm = T)
-table[11,7] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-table[11,8] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
-
-corr = as.numeric(c(ANALYSIS$NETWORK$GLOBAL_SIM_a$C[ANALYSIS$NETWORK$GLOBAL_SIM_a$P<0.1], 
-                    ANALYSIS$NETWORK$GLOBAL_SIM_b$C[ANALYSIS$NETWORK$GLOBAL_SIM_b$P<0.1],
-                    ANALYSIS$NETWORK$GLOBAL_SIM_c$C[ANALYSIS$NETWORK$GLOBAL_SIM_c$P<0.1]))
-table[11,9] <- mean(corr, na.rm = T)
-table[11,10] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-table[11,11] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
-corr = as.numeric(c(ANALYSIS$NETWORK$GLOBAL_SIM_a$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_a$P_gauss<0.1], 
-                    ANALYSIS$NETWORK$GLOBAL_SIM_b$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_b$P_gauss<0.1],
-                    ANALYSIS$NETWORK$GLOBAL_SIM_c$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_c$P_gauss<0.1]))
-table[11,12] <- mean(corr, na.rm = T)
-table[11,13] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
-table[11,14] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
-
-
-
-table_round <- round(table, digits = 3)
-
-cairo_pdf(width=17,height=5,file="Plots/Paper_Plot_6_Network_b_table.pdf")
-gridExtra::grid.table(table_round)
-dev.off()
+# # start############################################
+# table <- array(dim = c(11,14))
+# 
+# colnames(table) <- c("group", "total", 
+#                      # 3              4               5             6                     7                   8
+#                      "raw_mean", "raw_95%", "raw_5%", "raw_mean_gauss", "raw_95%_gauss", "raw_5%_gauss", 
+#                      "sim_mean", "sim_95%", "sim_5%", "sim_mean_gauss", "sim_95%_gauss", "sim_5%_gauss")
+# rownames(table) <- c("site", "gridbox", 
+#                      "cluster1-India", "cluster2-SA", "cluster3-Europe", "cluster4-Afica", 
+#                      "cluster5_Asia", "cluster6-NA", "cluster7-Arabia" , "cluster8-NZ",
+#                      "global")
+# 
+# table[1,2] <- dim(ANALYSIS$NETWORK$entity_meta %>% select(site_id) %>% group_by(site_id) %>% count())[1]
+# table[1,1] <- dim(ANALYSIS$NETWORK$entity_meta %>% select(site_id) %>% group_by(site_id) %>% count() %>% filter(n>1))[1]
+# table[2,2] <- dim(ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id) %>% group_by(gridbox_id) %>% count())[1]
+# table[2,1] <- dim(ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id) %>% group_by(gridbox_id) %>% count() %>% filter(n>1))[1]
+# table[3,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 1) %>% count())$n
+# table[4,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 2) %>% count())$n
+# table[5,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 3) %>% count())$n
+# table[6,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 4) %>% count())$n
+# table[7,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 5) %>% count())$n
+# table[8,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 6) %>% count())$n
+# table[9,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 7) %>% count())$n
+# table[10,2] <- (ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == 8) %>% count())$n
+# table[11,2] <- length(ANALYSIS$NETWORK$entity_meta$entity_id)
+# 
+# # site ##########################################
+# site_corr <- list()
+# site_list <- DATA_past1000$CAVES$entity_info %>% select(site_id, entity_id) %>%
+#   filter(entity_id %in% ANALYSIS$NETWORK$entity_meta$entity_id) %>% group_by(site_id) %>% count() %>% filter(n>1)
+# for(site in site_list$site_id){
+#   site_corr <- c(site_corr, ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$C[ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$P<0.1])
+# }
+# site_corr = as.numeric(site_corr)
+# table[1,3] <- mean(site_corr, na.rm = T)
+# table[1,4] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[20]
+# table[1,5] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[2]
+# site_corr= list()
+# for(site in site_list$site_id){
+#   site_corr <- c(site_corr, ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$C_gauss[ANALYSIS$NETWORK$SITES[[paste0("SITE",site)]]$P_gauss<0.1])
+# }
+# site_corr = as.numeric(site_corr)
+# table[1,6] <- mean(site_corr, na.rm = T)
+# table[1,7] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[20]
+# table[1,8] <- quantile(site_corr, na.rm = T, probs = seq(0,1,0.05))[2]
+# 
+# # gridbox #######################################
+# corr <- list()
+# list <- ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id, entity_id) %>% group_by(gridbox_id) %>% count() %>% filter(n>1)
+# for(gridbox in list$gridbox_id){
+#   corr <- c(corr, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P<0.1])
+# }
+# corr = as.numeric(corr)
+# 
+# table[2,3] <- mean(corr, na.rm = T)
+# table[2,4] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+# table[2,5] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+# 
+# corr = list()
+# for(gridbox in list$gridbox_id){
+#   corr <- c(corr, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C_gauss[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P_gauss<0.1])
+# }
+# corr = as.numeric(corr)
+# 
+# table[2,6] <- mean(corr, na.rm = T)
+# table[2,7] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+# table[2,8] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+# 
+# # cluster #####################################
+# for(cluster in 1:8){
+#   corr = as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P<0.1])
+#   
+#   table[2+cluster,3] <- mean(corr, na.rm = T)
+#   table[2+cluster,4] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+#   table[2+cluster,5] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+#   
+#   corr = as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P_gauss<0.1])
+#   table[2+cluster,6] <- mean(corr, na.rm = T)
+#   table[2+cluster,7] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+#   table[2+cluster,8] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+#   
+#   corr = as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P<0.1],
+#                       ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P<0.1],
+#                       ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P<0.1]))
+#   
+#   table[2+cluster,9] <- mean(corr, na.rm = T)
+#   table[2+cluster,10] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+#   table[2+cluster,11] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+#   
+#   corr = as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
+#                       ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
+#                       ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P_gauss<0.1]))
+#   table[2+cluster,12] <- mean(corr, na.rm = T)
+#   table[2+cluster,13] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+#   table[2+cluster,14] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+# }
+# 
+# # Africa Sonderfall weil nur 2 drin
+# 
+# corr = as.numeric(ANALYSIS$NETWORK$GLOBAL$C[ANALYSIS$NETWORK$GLOBAL$P<0.1])
+# table[11,3] <- mean(corr, na.rm = T)
+# table[11,4] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+# table[11,5] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+# corr = as.numeric(ANALYSIS$NETWORK$GLOBAL$C_gauss[ANALYSIS$NETWORK$GLOBAL$P_gauss<0.1])
+# table[11,6] <- mean(corr, na.rm = T)
+# table[11,7] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+# table[11,8] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+# 
+# corr = as.numeric(c(ANALYSIS$NETWORK$GLOBAL_SIM_a$C[ANALYSIS$NETWORK$GLOBAL_SIM_a$P<0.1], 
+#                     ANALYSIS$NETWORK$GLOBAL_SIM_b$C[ANALYSIS$NETWORK$GLOBAL_SIM_b$P<0.1],
+#                     ANALYSIS$NETWORK$GLOBAL_SIM_c$C[ANALYSIS$NETWORK$GLOBAL_SIM_c$P<0.1]))
+# table[11,9] <- mean(corr, na.rm = T)
+# table[11,10] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+# table[11,11] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+# corr = as.numeric(c(ANALYSIS$NETWORK$GLOBAL_SIM_a$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_a$P_gauss<0.1], 
+#                     ANALYSIS$NETWORK$GLOBAL_SIM_b$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_b$P_gauss<0.1],
+#                     ANALYSIS$NETWORK$GLOBAL_SIM_c$C_gauss[ANALYSIS$NETWORK$GLOBAL_SIM_c$P_gauss<0.1]))
+# table[11,12] <- mean(corr, na.rm = T)
+# table[11,13] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[20]
+# table[11,14] <- quantile(corr, na.rm = T, probs = seq(0,1,0.05))[2]
+# 
+# 
+# 
+# table_round <- round(table, digits = 3)
+# 
+# cairo_pdf(width=17,height=5,file="Plots/Paper_Plot_6_Network_b_table.pdf")
+# gridExtra::grid.table(table_round)
+# dev.off()
