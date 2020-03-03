@@ -176,27 +176,25 @@ for(run in c("a", "b", "c")){
     ratios <- extract_gridboxes(lon_cave, lat_cave)
     
     name <- paste0("CAVE",site_id)
-    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_",run)]] <- ratios$E1*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E1_lon_pos, ratios$E1_lat_pos,] +
-      ratios$E2*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E2_lon_pos, ratios$E2_lat_pos,] +
-      ratios$E3*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E3_lon_pos, ratios$E3_lat_pos,] +
-      ratios$E4*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E4_lon_pos, ratios$E4_lat_pos,]
+    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("TEMP_",run)]] <- rowSums(cbind(ratios$E1*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E1_lon_pos, ratios$E1_lat_pos,],
+                                                                                     ratios$E2*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E2_lon_pos, ratios$E2_lat_pos,],
+                                                                                     ratios$E3*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E3_lon_pos, ratios$E3_lat_pos,],
+                                                                                     ratios$E4*DATA_past1000_SIM_RAW[[run]]$TEMP[ratios$E4_lon_pos, ratios$E4_lat_pos,]), na.rm = T)
     
-    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_",run)]] <- ratios$E1*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E1_lon_pos, ratios$E1_lat_pos,] +
-      ratios$E2*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E2_lon_pos, ratios$E2_lat_pos,] +
-      ratios$E3*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E3_lon_pos, ratios$E3_lat_pos,] +
-      ratios$E4*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E4_lon_pos, ratios$E4_lat_pos,]
+    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("PREC_",run)]] <- rowSums(cbind(ratios$E1*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E1_lon_pos, ratios$E1_lat_pos,],
+                                                                                    ratios$E2*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E2_lon_pos, ratios$E2_lat_pos,],
+                                                                                    ratios$E3*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E3_lon_pos, ratios$E3_lat_pos,],
+                                                                                    ratios$E4*DATA_past1000_SIM_RAW[[run]]$PREC[ratios$E4_lon_pos, ratios$E4_lat_pos,]), na.rm = T)
     
-    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_",run)]] <- ratios$E1*DATA_past1000_SIM_RAW[[run]]$ISOT[ratios$E1_lon_pos, ratios$E1_lat_pos,] +
-      ratios$E2*DATA_past1000_SIM_RAW[[run]]$ISOT[ratios$E2_lon_pos, ratios$E2_lat_pos,] +
-      ratios$E3*DATA_past1000_SIM_RAW[[run]]$ISOT[ratios$E3_lon_pos, ratios$E3_lat_pos,] +
-      ratios$E4*DATA_past1000_SIM_RAW[[run]]$ISOT[ratios$E4_lon_pos, ratios$E4_lat_pos,]
+    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("ISOT_",run)]] <- rowSums(cbind(ratios$E1*DATA_past1000_SIM_RAW[[run]]$ISOT[ratios$E1_lon_pos, ratios$E1_lat_pos,],
+                                                                                     ratios$E2*DATA_past1000_SIM_RAW[[run]]$ISOT[ratios$E2_lon_pos, ratios$E2_lat_pos,],
+                                                                                     ratios$E3*DATA_past1000_SIM_RAW[[run]]$ISOT[ratios$E3_lon_pos, ratios$E3_lat_pos,],
+                                                                                     ratios$E4*DATA_past1000_SIM_RAW[[run]]$ISOT[ratios$E4_lon_pos, ratios$E4_lat_pos,]), na.rm = T)
     
-    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("SLPR_",run)]] <- ratios$E1*DATA_past1000_SIM_RAW[[run]]$SLPR[ratios$E1_lon_pos, ratios$E1_lat_pos,] +
-      ratios$E2*DATA_past1000_SIM_RAW[[run]]$SLPR[ratios$E2_lon_pos, ratios$E2_lat_pos,] +
-      ratios$E3*DATA_past1000_SIM_RAW[[run]]$SLPR[ratios$E3_lon_pos, ratios$E3_lat_pos,] +
-      ratios$E4*DATA_past1000_SIM_RAW[[run]]$SLPR[ratios$E4_lon_pos, ratios$E4_lat_pos,]
-    
-    
+    DATA_past1000$CAVES$sim_data_raw[[name]][[paste0("SLPR_",run)]] <- rowSums(cbind(ratios$E1*DATA_past1000_SIM_RAW[[run]]$SLPR[ratios$E1_lon_pos, ratios$E1_lat_pos,],
+                                                                                     ratios$E2*DATA_past1000_SIM_RAW[[run]]$SLPR[ratios$E2_lon_pos, ratios$E2_lat_pos,],
+                                                                                     ratios$E3*DATA_past1000_SIM_RAW[[run]]$SLPR[ratios$E3_lon_pos, ratios$E3_lat_pos,],
+                                                                                     ratios$E4*DATA_past1000_SIM_RAW[[run]]$SLPR[ratios$E4_lon_pos, ratios$E4_lat_pos,]), na.rm = T)
   }
 }
 

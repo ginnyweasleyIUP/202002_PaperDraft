@@ -52,6 +52,7 @@ for(ii in 1:length(value$a)){
   value$b[ii] <- simpleawmean(DATA_past1000$SIM_yearly_b$TEMP[,,ii])
   value$c[ii] <- simpleawmean(DATA_past1000$SIM_yearly_c$TEMP[,,ii])
 }
+#mean(value$a)*500000/(4419*mean(value$a)-500000) Temp Änderung pro Delta Änderung
 
 Timeseries$HadCM3_TAM <- NULL
 Timeseries$HadCM3_GMST_a <- zoo(x = value$a-mean(value$a[1080:1110]), order.by = seq(from = -1*(1950- DATA_past1000$time[1]), to = -1*(1950 - DATA_past1000$time[2]), by = 1))
@@ -243,7 +244,7 @@ for(plot in 1:1){
   
   # Add proxy name (on left side)
   mtext(side=2,"GMST",                cex = unitscex,    line = unitslinno, las = 1, col = "black", at = 1)
-  mtext(side=2,"[° C]",               cex = unitscex,    line = unitslinno, las = 1, col = "black", at = 0.5)
+  mtext(side=2,"[° C]",               cex = unitscex,    line = unitslinno, las = 1, col = col_hadcm3_temp, at = 0.5)
   mtext(side=2,"anomaly (1961-1990)", cex = unitscex-0.2,line = unitslinno, las = 1, col = "black", at = 0)
   mtext(side=2,"GMST HadCM3", cex=namcex,line=namlin+4,las=1,col=col_hadcm3_temp, at = -0.5)
   mtext(side=2,"PAGES2k",     cex=namcex,line=namlin+4,las=1,col=col_pages2k,     at = -1)
@@ -254,10 +255,10 @@ for(plot in 1:1){
 
   
   # Add axis (on right side)
-  axis(2,at=seq(-1.5,1,by=0.5),labels=FALSE,col="black")
-  mtext(side=2,at=seq(-1,1,by=1),seq(-1,1,by=1),line=axslinno,las=1,cex=axisnumscex,col="black")
+  axis(2,at=seq(-1.5,1,by=0.5),labels=FALSE,col=col_hadcm3_temp)
+  mtext(side=2,at=seq(-1,1,by=1),seq(-1,1,by=1),line=axslinno,las=1,cex=axisnumscex,col=col_hadcm3_temp)
   
-  text(-1100, 0.6, "(a)", cex = namcex+0.5)
+  text(-1100, 0.6, "(a)", cex = namcex+0.5, col = col_hadcm3_temp)
   
   # 2: d18O at Bunker (dripwater equivalent)
   
@@ -271,16 +272,16 @@ for(plot in 1:1){
   lines(gaussdetr(na.omit(Timeseries$SISAL_Bunker_242),tsc.in=100)$Xsmooth, col=col_d18O_242)
   
   #xtkz <-axTicks(2)[seq(1,by=2,length(axTicks(2))-1)]
-  axis(2,col="black",at=seq(-9,-6),labels=FALSE)
-  mtext(side=2,col="black",at=c(-9,-7),c(-9,-7),line=axslinno,las=1,cex=axisnumscex)
+  axis(2,col=col_hadcm3_d18O,at=seq(-9,-6),labels=FALSE)
+  mtext(side=2,col=col_hadcm3_d18O,at=c(-9,-7),c(-9,-7),line=axslinno,las=1,cex=axisnumscex)
   #mtext(side=2,expression(paste("\u0394",bgroup("[","\u2030" ,"]"))),cex=unitscex,col="black",line=unitslinno,las=1)
-  mtext(side=2,expression(paste("[",delta^{plain(18)}, plain(O),"]")),cex=unitscex,col="black",line=unitslinno,las=1, at = -7)
+  mtext(side=2,expression(paste("[",delta^{plain(18)}, plain(O),"]")),cex=unitscex,col=col_hadcm3_d18O,line=unitslinno,las=1, at = -7)
   mtext(side=2,"Bunker cave", cex = unitscex-0.2, col = "black",         las=1, line = unitslinno,  at = -6)
   mtext(side=2,"HadCM3",      cex = namcex,       col = col_hadcm3_d18O, las=1, line = unitslinno+4,at = -7)
   mtext(side=2,"eID240",      cex = namcex,       col = col_d18O_240,    las=1, line = unitslinno+4,at = -8)
   mtext(side=2,"eID242",      cex = namcex,       col = col_d18O_242,    las=1, line = unitslinno+4,at = -9)
   
-  text(-1100, -6.3 , "(b)", cex = namcex+0.5)
+  text(-1100, -6.3 , "(b)", cex = namcex+0.5, col = col_hadcm3_d18O)
   
   
   # FORCINGS
