@@ -53,9 +53,9 @@ for(run in c("a","b","c")){
   C_SIM_p <- ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_ds",run)]]$C
   C_REC_p <- ANALYSIS$NETWORK$GLOBAL$C
   
-  o_sim = order(C_SIM_p, na.last = NA)
+  o_sim = order(abs(C_SIM_p), na.last = F)
   C_SIM_p[o_sim[1:floor((length(o_sim)-link_density*length(C_SIM_p)))]]<- NA
-  o_rec = order(C_REC_p, na.last = NA)
+  o_rec = order(abs(C_REC_p), na.last = F)
   C_REC_p[o_sim[1:floor((length(o_rec)-link_density*length(C_REC_p)))]]<- NA
   
   C_SIM_p[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P>0.1] = NA
@@ -118,7 +118,7 @@ for(run in c("a","b","c")){
        lwd = 0.5, 
        panel.first = grid(), col = adjustcolor("grey", alpha.f = 0.7), xaxt = "n")
   for(ii in 1:20){
-    boxplot(boxes_sim[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n")  
+    boxplot(boxes_sim[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n", axes = F, outline = F)  
   }
   
   lo <- loess(lowess_c_sim_sorted ~ lowess_dist_sorted, span = 0.2)
@@ -149,7 +149,7 @@ for(run in c("a","b","c")){
        lwd = 1, 
        panel.first = grid(), col = adjustcolor("grey", alpha.f = 0.7))
   for(ii in 1:20){
-    boxplot(boxes_rec[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n")  
+    boxplot(boxes_rec[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n", axes = F, outline = F)  
   }
   lo <- loess(lowess_c_rec_sorted ~ lowess_dist_sorted, span = 0.2)
   lines(lo$x, lo$fitted, lwd = 4, col = "#B2182B")
