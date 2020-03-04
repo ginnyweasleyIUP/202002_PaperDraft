@@ -172,17 +172,29 @@ for(run in c("a","b", "c")){
       lat = PLOTTING_DATA$FIG3$CAVElyr_diff$lat[mask_mean],
       value = PLOTTING_DATA$FIG3$CAVElyr_diff$value[mask_mean]
     )
+    PLOTTING_DATA$FIG3$CAVElyr_diff_used$value[57] = NA
     
-    plot_diff <- STACYmap(ptlyr = PLOTTING_DATA$FIG3$CAVElyr_diff_used,
-                          legend_names = list(pt = expression(paste(delta^{plain(18)}, plain(O)[plain(sim)], " - ", delta^{plain(18)}, plain(O)[plain(rec)], " (%)"))),
-                          graticules = TRUE,
-                          colorscheme = rev(RColorBrewer::brewer.pal(11, 'RdBu')),
-                          centercolor = 0) +
-      theme(panel.border = element_blank(),
+    ptlyr <- projection_ptlyr(PLOTTING_DATA$FIG3$CAVElyr_diff_used, as.character('+proj=robin +datum=WGS84'))
+    
+    leg_name = expression(paste(delta^{plain(18)}, plain(O)[plain(sim)]," - ", delta^{plain(18)}, plain(O)[plain(rec)], " (%)"))
+    if(var == "ITPC"){leg_name = expression(paste(delta^{plain(18)}, plain(O)["sim,pw"]," - ", delta^{plain(18)}, plain(O)[plain(rec)], " (%)"))}
+    
+    plot_diff <- STACYmap(coastline = TRUE) +
+      geom_point(data = ptlyr, aes(x = long, y = lat, fill = layer), shape = 21, alpha = 0.7, color = "black",
+                 size = 4, show.legend = c(color =TRUE)) +
+      scale_fill_gradientn(colors = rev(RColorBrewer::brewer.pal(11, 'RdBu')), 
+                           limits = c(-max(abs(ptlyr$layer)), max(abs(ptlyr$layer))),
+                           name = leg_name, 
+                           guide = guide_colorbar(barwidth = 10, barheight = 0.3)) +
+      theme(legend.direction = "horizontal", 
+            panel.border = element_blank(),
             legend.background = element_blank(),
             axis.text = element_blank(),
-            text = element_text(size = 8)) 
+            text = element_text(size = 10),
+            legend.title = element_text(size = 10))
     
+    plot_diff
+
     
     library(ggpubr)
     plot <- ggarrange(plot_temp, plot_prec, plot_isot, plot_diff,
@@ -209,5 +221,5 @@ for(run in c("a","b", "c")){
 
 
 
-remove(plot_temp, plot_prec, plot_itpc, plot_slpr, Plot_lyr1, Plot_lyr3, plot, Point_Lyr)
-remove(temp_lyr, prec_lyr, slpr_lyr, itpc_lyr)
+remove(plot_temp, plot_prec, plot_isot, plot_diff, leg_name, Plot_lyr1, Plot_lyr3, plot, Point_Lyr)
+remove(temp_lyr, prec_lyr)

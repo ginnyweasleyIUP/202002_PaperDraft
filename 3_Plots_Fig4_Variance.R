@@ -108,7 +108,7 @@ for(run in c("a","b","c")){
   mtext(text = "density",side = 2,line = 2.5, cex = 1.5)
   text(1.0, 0.6, "down-sampled", col = "#B2182B", cex = 1.5)
   text(-1.8, 0.6, "full", col = "black", cex = 1.5)
-  text(0, 0.95, "d18O in precipitation", col = "black", cex = 1.5)
+  mtext(text = expression(paste(delta^{plain(18)}, plain(O))), side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = -2.5)
   
   
   hist(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_itpc), 
@@ -128,7 +128,7 @@ for(run in c("a","b","c")){
   lines(density(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_itpc_ds), na.rm = T),
         lwd = 2, col = "#B2182B")
   abline(v=0, col = "grey60", lty = 3)
-  text(0, 0.95, "prec-weighted d18O", col = "black", cex = 1.5)
+  mtext(text = expression(paste(delta^{plain(18)}, plain(O)[plain(pw)])), side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = -2.5)
   
   hist(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_temp), 
        breaks = 9, border = "white", prob = TRUE, 
@@ -149,7 +149,7 @@ for(run in c("a","b","c")){
   abline(v=0, col = "grey60", lty = 3)
   #mtext(text = TeX("$$Var_{Rec}/Var_{Sim}$$"),side = 1,line = 2.5, cex = 1.5)
   mtext(text = "density",side = 2,line = 2.5, cex = 1.5)
-  text(0, 0.95, "Temperature", col = "black", cex = 1.5)
+  mtext(text = "Temperature", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = -2.5)
   mtext(text = TeX("$$Var_{Rec}/Var_{Sim}$$"),side = 1,line = 2.7, cex = 1.5)
   
   hist(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_prec), 
@@ -169,7 +169,7 @@ for(run in c("a","b","c")){
   lines(density(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_prec_ds), na.rm = T),
         lwd = 2, col = "#B2182B")
   abline(v=0, col = "grey60", lty = 3)
-  text(0, 0.95, "Precipitation", col = "black", cex = 1.5)
+  mtext(text = "Precipitation", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = -2.5)
   mtext(text = TeX("$$Var_{Rec}/Var_{Sim}$$"),side = 1,line = 2.7, cex = 1.5)
   #mtext(text = TeX("$$Var_{Rec}/Var_{Sim}$$"),side = 1,line = 2.5, cex = 1.5)
   
