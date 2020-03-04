@@ -27,17 +27,6 @@ for (entity in DATA_past1000$CAVES$entity_info$entity_id[mask_spec]){
   longs = c(longs, DATA_past1000$CAVES$site_info$longitude[DATA_past1000$CAVES$site_info$site_id == site])
 }
 
-
-source("Functions/Plotting/networkmap_simple2.R")
-
-networkmap_simple3(CMAT = ANALYSIS$NETWORK$GLOBAL$C, 
-                   lat = lats, 
-                   lon = longs, 
-                   title = "Correlation HadCM3, sig level = 0.1", 
-                   thresh = 0.6)
-
-
-
 ###################################################################################################
 
 source("Functions/Plotting/networkmap_simple3.R")
@@ -53,9 +42,9 @@ for(run in c("a","b","c")){
   C_SIM_p <- ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C
   C_REC_p <- ANALYSIS$NETWORK$GLOBAL$C
   
-  o_sim = order(C_SIM_p, na.last = NA)
+  o_sim = order(abs(C_SIM_p), na.last = F)
   C_SIM_p[o_sim[1:floor((length(o_sim)-link_density*length(C_SIM_p)))]]<- NA
-  o_rec = order(C_REC_p, na.last = NA)
+  o_rec = order(abs(C_REC_p), na.last = F)
   C_REC_p[o_sim[1:floor((length(o_rec)-link_density*length(C_REC_p)))]]<- NA
   
   C_SIM_p[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P>0.1] = NA
