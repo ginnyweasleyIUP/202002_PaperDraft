@@ -78,8 +78,8 @@ for(ii in 1:length(scatter_data$entity_id)){
 
 ##diff_full
 
-#pdf(file = "Plots/Appendix/A1_ScatterMean_diff_full.pdf", width = 8, height = 10)
-png(file = "Plots/Appendix/A1_ScatterMean_diff_full.png", width = 50*8, height = 50*10)
+pdf(file = "Plots/Appendix/A1_ScatterMean_diff_full.pdf", width = 8, height = 10)
+#png(file = "Plots/Appendix/A1_ScatterMean_diff_full.png", width = 50*8, height = 50*10)
 par(mfrow=c(4,2),oma = c(1,3,0,0) + 0.1,mar = c(3,0,1,1) + 0.1)
 # elevation
 plot(scatter_data$elevation[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
@@ -153,10 +153,10 @@ mtext(text = "d18O-d18Oc",side = 2,line = 2)
 
 plot(c(0,4), c(-10,10), type = "n", xlab = "", ylab = "", yaxt = 'n', xaxt = 'n')
 abline(h=0)
-boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "limestone"]), add = T, at = 0.5, yaxt ="n")
-boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "dolomite"]), add = T, at = 1.5, yaxt ="n")
-boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "marble"]), add = T, at = 2.5, yaxt ="n")
-boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "unknown"]), add = T, at = 3.5, yaxt ="n")
+boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "limestone"]), add = T, at = 0.5, yaxt ="n", axes = F)
+boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "dolomite"]), add = T, at = 1.5, yaxt ="n", axes = F)
+boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "marble"]), add = T, at = 2.5, yaxt ="n", axes = F)
+boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "unknown"]), add = T, at = 3.5, yaxt ="n", axes = F)
 mtext(text = "geology", side = 1, line = 2)
 axis(1,at=c(0.5,1.5,2.5,3.5),labels=c("limestone", "dolomite", "marble", "unknown"))
 
@@ -165,8 +165,8 @@ dev.off()
 
 ##diff_down
 
-#pdf(file = "Plots/Appendix/A1_ScatterMean_diff_down.pdf", width = 8, height = 10)
-png(file = "Plots/Appendix/A1_ScatterMean_diff_down.png", width = 50*8, height = 50*10)
+pdf(file = "Plots/Appendix/A1_ScatterMean_diff_down.pdf", width = 8, height = 10)
+#png(file = "Plots/Appendix/A1_ScatterMean_diff_down.png", width = 50*8, height = 50*10)
 par(mfrow=c(4,2),oma = c(1,3,0,0) + 0.1,mar = c(3,0,1,1) + 0.1)
 # elevation
 plot(scatter_data$elevation[mask_mean_calcite], scatter_data$diff_down[mask_mean_calcite], 
@@ -240,10 +240,10 @@ mtext(text = "d18O-d18Oc",side = 2,line = 2)
 
 plot(c(0,4), c(-10,10), type = "n", xlab = "", ylab = "", yaxt = 'n', xaxt = 'n')
 abline(h=0)
-boxplot(as.numeric(scatter_data$diff_down[scatter_data$geology == "limestone"]), add = T, at = 0.5, yaxt ="n")
-boxplot(as.numeric(scatter_data$diff_down[scatter_data$geology == "dolomite"]), add = T, at = 1.5, yaxt ="n")
-boxplot(as.numeric(scatter_data$diff_down[scatter_data$geology == "marble"]), add = T, at = 2.5, yaxt ="n")
-boxplot(as.numeric(scatter_data$diff_down[scatter_data$geology == "unknown"]), add = T, at = 3.5, yaxt ="n")
+boxplot(as.numeric(scatter_data$diff_down[scatter_data$geology == "limestone"]), add = T, at = 0.5, yaxt ="n", axes = F)
+boxplot(as.numeric(scatter_data$diff_down[scatter_data$geology == "dolomite"]), add = T, at = 1.5, yaxt ="n", axes = F)
+boxplot(as.numeric(scatter_data$diff_down[scatter_data$geology == "marble"]), add = T, at = 2.5, yaxt ="n", axes = F)
+boxplot(as.numeric(scatter_data$diff_down[scatter_data$geology == "unknown"]), add = T, at = 3.5, yaxt ="n", axes = F)
 mtext(text = "geology", side = 1, line = 2)
 axis(1,at=c(0.5,1.5,2.5,3.5),labels=c("limestone", "dolomite", "marble", "unknown"))
 
