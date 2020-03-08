@@ -54,9 +54,9 @@ for(run in c("a","b","c")){
   C_REC_p <- ANALYSIS$NETWORK$GLOBAL$C
   
   o_sim = order(abs(C_SIM_p), na.last = F)
-  C_SIM_p[o_sim[1:floor((length(o_sim)-link_density*length(C_SIM_p)))]]<- NA
   o_rec = order(abs(C_REC_p), na.last = F)
-  C_REC_p[o_sim[1:floor((length(o_rec)-link_density*length(C_REC_p)))]]<- NA
+  C_SIM_p[o_sim[1:floor((length(o_sim)-link_density*length(o_sim)))]]<- NA
+  C_REC_p[o_rec[1:floor((length(o_rec)-link_density*length(o_rec)))]]<- NA
   
   C_SIM_p[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P>0.1] = NA
   C_REC_p[ANALYSIS$NETWORK$GLOBAL$P>0.1] = NA

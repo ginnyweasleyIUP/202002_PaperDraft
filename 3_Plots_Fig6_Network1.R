@@ -38,17 +38,18 @@ o <- order(lowess_dist)
 lowess_dist_sorted <- lowess_dist[o]
 
 for(run in c("a","b","c")){
-  link_density = 0.15
+  link_density = 0.05
+
   C_SIM_p <- ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C
   C_REC_p <- ANALYSIS$NETWORK$GLOBAL$C
   
-  o_sim = order(abs(C_SIM_p), na.last = F)
-  C_SIM_p[o_sim[1:floor((length(o_sim)-link_density*length(C_SIM_p)))]]<- NA
-  o_rec = order(abs(C_REC_p), na.last = F)
-  C_REC_p[o_sim[1:floor((length(o_rec)-link_density*length(C_REC_p)))]]<- NA
-  
   C_SIM_p[ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$P>0.1] = NA
   C_REC_p[ANALYSIS$NETWORK$GLOBAL$P>0.1] = NA
+  
+  o_sim = order(abs(C_SIM_p), na.last = F)
+  o_rec = order(abs(C_REC_p), na.last = F)
+  C_SIM_p[o_sim[1:floor((length(o_sim)-link_density*length(o_sim)))]]<- NA
+  C_REC_p[o_rec[1:floor((length(o_rec)-link_density*length(o_rec)))]]<- NA
   
   plot_c_sim <- ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C
   plot_c_sim[lower.tri(ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_",run)]]$C, diag = FALSE)] = NA
