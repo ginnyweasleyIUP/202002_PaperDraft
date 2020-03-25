@@ -45,18 +45,20 @@ mtext(side = 2, "gridbox (45/18)", cex = 1, line = line_names, las = 1, col = "b
 abline(h=21.75, lty = 3)
 
 
-position <- list(cluster1 = c(17, 16.5, 16, 15.5)+4,
+position <- list(cluster6 = c(17, 16.5, 16, 15.5)+4,
                  cluster2 = c(14, 13.5, 13, 12.5)+4,
                  cluster3 = c(11, 10.5, 10, 9.5)+4,
-                 cluster5 = c(8, 7.5, 7, 6.5)+4,
-                 cluster6 = c(5, 4.5, 4, 3.5)+4,
-                 cluster7 = c(2, 1.5, 1, 0.5)+4)
+                 cluster7 = c(8, 7.5, 7, 6.5)+4,
+                 cluster1 = c(5, 4.5, 4, 3.5)+4,
+                 cluster5 = c(2, 1.5, 1, 0.5)+4)
 text <- list(cluster1 = "India", cluster2 = "SouthAm", cluster3 = "Europe", cluster4 = "Africa", 
              cluster5 = "Asia", cluster6 = "NorthAm", cluster7 = "Arabia", cluster8 = "NZ")
 cluster_list <- ANALYSIS$NETWORK$entity_meta %>% select(cluster_id, entity_id) %>% group_by(cluster_id) %>% count() %>% filter(n>1)
+cluster_number <- c(6,2,3,4,7,1,5,8)
 
 ## CLUSTER
-for(cluster in c(1,2,3,5,6,7)){
+#for(cluster in c(1,2,3,5,6,7)){
+for(cluster in c(6,2,3,7,1,5)){
   corr <- list(full = as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P<0.1]), 
                gauss = list(as.numeric(ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER[[paste0("CLUSTER",cluster)]]$P_gauss<0.1])),
                full_sim = list(as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P<0.1],
@@ -71,7 +73,7 @@ for(cluster in c(1,2,3,5,6,7)){
   boxplot(corr$full_sim, add = TRUE, at = position[[paste0("cluster",cluster)]][3]  ,boxwex = 1, names = "n", horizontal = T, col = "dodgerblue3", axes = F, outline = F) 
   boxplot(corr$gauss_sim, add = TRUE, at = position[[paste0("cluster",cluster)]][4] , boxwex = 1, names = "n", horizontal = T, col = adjustcolor("dodgerblue3", alpha.f = 0.5), axes = F, outline = F)
   
-  mtext(side = 2, paste0("c",cluster,"(",text[[cluster]],") (",cluster_list$n[cluster],")"), cex = 1, line = line_names, las = 1, col = "black", at = position[[paste0("cluster",cluster)]][1])
+  mtext(side = 2, paste0("c",cluster_number[cluster],"(",text[[cluster]],") (",cluster_list$n[cluster],")"), cex = 1, line = line_names, las = 1, col = "black", at = position[[paste0("cluster",cluster)]][1])
   
 }
 

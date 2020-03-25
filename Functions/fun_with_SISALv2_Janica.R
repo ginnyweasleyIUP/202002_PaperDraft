@@ -10,8 +10,8 @@ library(tidyverse)
 
 load_sisal_data_janica <- function(prefix = "", year_start, year_stop){
   prefix = ""
-  path = "/stacywork/ginnyweasley/02_SISAL/SISAL_v2/"
-  #path = "/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/02_SISAL/SISAL_v2/"
+  #path = "/stacywork/ginnyweasley/02_SISAL/SISAL_v2/"
+  path = "/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/02_SISAL/SISAL_v2/"
   composite_link_entity <- read.csv(paste(path, prefix,'composite_link_entity.csv',sep = ''), header = T,stringsAsFactors = F)
   d13C <- read.csv(paste(path, prefix,'d13c.csv',sep='') ,header = T, stringsAsFactors = F)
   d13C <- plyr::rename(d13C, c("iso_std" = "iso_std_d13C"))
@@ -67,8 +67,8 @@ load_sisal_data_janica <- function(prefix = "", year_start, year_stop){
   # the available dating information, hiatus depths and the chronologies and ensembles for the 6 different AM.
 
   # load entity object and assign name for, e.g. entity_id = 1
-  eID_1 <- get(load('/stacywork/ginnyweasley/02_SISAL/SISAL_v2_CARLA/1-BT-1'))
-  #eID_1 <- get(load('/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/02_SISAL/SISAL_v2_CARLA/1-BT-1'))
+  #eID_1 <- get(load('/stacywork/ginnyweasley/02_SISAL/SISAL_v2_CARLA/1-BT-1'))
+  eID_1 <- get(load('/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/02_SISAL/SISAL_v2_CARLA/1-BT-1'))
   
 
 

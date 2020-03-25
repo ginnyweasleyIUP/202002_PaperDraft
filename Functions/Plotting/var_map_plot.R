@@ -57,7 +57,8 @@ var_map_plot <- function(Point_Lyr,
           legend.background = element_blank(),
           axis.text = element_blank(),
           text = element_text(size = txt_size),
-          legend.title = element_text(size = txt_size))
+          legend.title = element_text(size = txt_size),
+          panel.ontop = F)
   
   return(plot)
 }

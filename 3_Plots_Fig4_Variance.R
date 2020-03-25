@@ -83,13 +83,15 @@ for(run in c("a","b","c")){
 
 #lines(c(median(log10(PLOTTING_DATA$FIG4$VAR_RATIOS$VR_sim_temp)),median(log10(PLOTTING_DATA$FIG4$VAR_RATIOS$VR_sim_temp))), c(0, ))
 for(run in c("a","b","c")){
-  #pdf(file = paste0("Plots/Paper_Plot_4_Variance_2_histo_xnap",run,".pdf"), width = 2*6, height = 2*PLOTTING_VARIABLES$HEIGHT/1.5)
-  png(file = paste0("Plots/Paper_Plot_4_Variance_2_histo_xnap",run,".png"), width = 50*2*6, height = 50*2*PLOTTING_VARIABLES$HEIGHT/1.5)
+  xlimz = c(-2.2,2.2)
+  title_pos = -2.2
+  pdf(file = paste0("Plots/Paper_Plot_4_Variance_2_histo_xnap",run,".pdf"), width = 2*6, height = 2*PLOTTING_VARIABLES$HEIGHT/1.5)
+  #png(file = paste0("Plots/Paper_Plot_4_Variance_2_histo_xnap",run,".png"), width = 50*2*6, height = 50*2*PLOTTING_VARIABLES$HEIGHT/1.5)
   par(mfrow=c(2,2),oma = c(1,3,0,0) + 0.1,mar = c(3,1,0,1) + 0.1, new = FALSE)
   
   hist(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_isot), 
        breaks = 9, border = "white", prob = TRUE, 
-       ylim = c(0,1), xlim = c(-2.5, 2.5), xlab = "",xaxt = 'n',
+       ylim = c(0,1), xlim = xlimz, xlab = "",xaxt = 'n',
        main = "", cex.main = 1.5, cex.axis = 1.5)
   axis(side = 1, at = c(log10(0.01), log10(0.1), 0, log10(10), log10(100)), 
        labels = c(0.01, 0.1, 1, 10, 100), cex.axis = 1.5)
@@ -101,19 +103,19 @@ for(run in c("a","b","c")){
   lines(c(median(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_isot_ds)),median(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_isot_ds))), 
         c(0, max(density(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_isot_ds), na.rm = T)$y)-0.01),
         lwd = 2, col = "#B2182B", lty = 2)
-  lines(density(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_isot_ds), na.rm = T),
+  lines(density(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_isot_ds),na.rm = T),
         lwd = 2, col = "#B2182B")
   abline(v=0, col = "grey60", lty = 3)
   #mtext(text = TeX("$$Var_{Rec}/Var_{Sim}$$"),side = 1,line = 2.5, cex = 1.5)
   mtext(text = "density",side = 2,line = 2.5, cex = 1.5)
   text(1.0, 0.6, "down-sampled", col = "#B2182B", cex = 1.5)
   text(-1.8, 0.6, "full", col = "black", cex = 1.5)
-  mtext(text = expression(paste(delta^{plain(18)}, plain(O))), side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = -2.5)
+  mtext(text = expression(paste(delta^{plain(18)}, plain(O))), side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = title_pos)
   
   
   hist(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_itpc), 
        breaks = 9, border = "white", prob = TRUE, 
-       ylim = c(0,1), xlim = c(-2.5, 2.5), xlab = "",xaxt = 'n',
+       ylim = c(0,1), xlim = xlimz, xlab = "",xaxt = 'n',
        main = "", cex.main = 1.5, cex.axis = 1.5)
   axis(side = 1, at = c(log10(0.01), log10(0.1), 0, log10(10), log10(100)), 
        labels = c(0.01, 0.1, 1, 10, 100), cex.axis = 1.5)
@@ -128,11 +130,11 @@ for(run in c("a","b","c")){
   lines(density(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_itpc_ds), na.rm = T),
         lwd = 2, col = "#B2182B")
   abline(v=0, col = "grey60", lty = 3)
-  mtext(text = expression(paste(delta^{plain(18)}, plain(O)[plain(pw)])), side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = -2.5)
+  mtext(text = expression(paste(delta^{plain(18)}, plain(O)[plain(pw)])), side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = title_pos)
   
   hist(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_temp), 
        breaks = 9, border = "white", prob = TRUE, 
-       ylim = c(0,1), xlim = c(-2.5, 2.5), xlab = "",xaxt = 'n',
+       ylim = c(0,1), xlim = xlimz, xlab = "",xaxt = 'n',
        cex.axis = 1.5, main = NULL)
   axis(side = 1, at = c(log10(0.01), log10(0.1), 0, log10(10), log10(100)), 
        labels = c(0.01, 0.1, 1, 10, 100), cex.axis = 1.5)
@@ -149,12 +151,12 @@ for(run in c("a","b","c")){
   abline(v=0, col = "grey60", lty = 3)
   #mtext(text = TeX("$$Var_{Rec}/Var_{Sim}$$"),side = 1,line = 2.5, cex = 1.5)
   mtext(text = "density",side = 2,line = 2.5, cex = 1.5)
-  mtext(text = "Temperature", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = -2.5)
+  mtext(text = "Temperature", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = title_pos)
   mtext(text = TeX("$$Var_{Rec}/Var_{Sim}$$"),side = 1,line = 2.7, cex = 1.5)
   
   hist(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_prec), 
        breaks = 9, border = "white", prob = TRUE, 
-       ylim = c(0,1), xlim = c(-2.5, 2.5), xlab = "",xaxt = 'n',
+       ylim = c(0,1), xlim = xlimz, xlab = "",xaxt = 'n',
        main = "", cex.main = 1.5, cex.axis = 1.5)
   axis(side = 1, at = c(log10(0.01), log10(0.1), 0, log10(10), log10(100)), 
        labels = c(0.01, 0.1, 1, 10, 100), cex.axis = 1.5)
@@ -169,7 +171,7 @@ for(run in c("a","b","c")){
   lines(density(log10(PLOTTING_DATA$FIG4$VAR_RATIOS[[run]]$VR_sim_prec_ds), na.rm = T),
         lwd = 2, col = "#B2182B")
   abline(v=0, col = "grey60", lty = 3)
-  mtext(text = "Precipitation", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = -2.5)
+  mtext(text = "Precipitation", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = title_pos)
   mtext(text = TeX("$$Var_{Rec}/Var_{Sim}$$"),side = 1,line = 2.7, cex = 1.5)
   #mtext(text = TeX("$$Var_{Rec}/Var_{Sim}$$"),side = 1,line = 2.5, cex = 1.5)
   

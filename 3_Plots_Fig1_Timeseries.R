@@ -309,7 +309,7 @@ for(plot in 1:1){
   #text(x = 1980-1950-20, y = 0.25, "Mt Pinatubo", col = "black", cex = namcex)
   text(x = -100, y = 0.5, "Tambora", col = "black", cex = namcex)
   text(x = -620, y = 0.55, "Samalas", col = "black", cex = namcex)
-  text(x = -485, y = 0.4, "1465 mystery", col = "black", cex = namcex)
+  #text(x = -485, y = 0.4, "1465 mystery", col = "black", cex = namcex)
   mtext(side=2,col=col_volc,at=c(0,0.25,0.5),c(0.0,0.25,0.5),line=axslinno,las=1,cex=axisnumscex)
   mtext(side=2,expression(paste("volcanic forcing")),cex=namcex,  col=col_volc,line=unitslinno,las=1, at = 0.5)
   mtext(side=2,expression(paste("[",plain(AOD),"]")),cex=unitscex,col=col_volc,line=unitslinno,las=1, at = 0.375)

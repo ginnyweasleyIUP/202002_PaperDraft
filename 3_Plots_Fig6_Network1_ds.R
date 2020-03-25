@@ -28,15 +28,6 @@ for (entity in DATA_past1000$CAVES$entity_info$entity_id[mask_spec]){
 }
 
 
-source("Functions/Plotting/networkmap_simple2.R")
-
-networkmap_simple3(CMAT = ANALYSIS$NETWORK$GLOBAL$C, 
-                   lat = lats, 
-                   lon = longs, 
-                   title = "Correlation HadCM3, sig level = 0.1", 
-                   thresh = 0.6)
-
-
 
 ###################################################################################################
 
@@ -49,7 +40,7 @@ o <- order(lowess_dist)
 lowess_dist_sorted <- lowess_dist[o]
 
 for(run in c("a","b","c")){
-  link_density = 0.10
+  link_density = 0.05
   C_SIM_p <- ANALYSIS$NETWORK[[paste0("GLOBAL_SIM_ds",run)]]$C
   C_REC_p <- ANALYSIS$NETWORK$GLOBAL$C
   
@@ -117,6 +108,7 @@ for(run in c("a","b","c")){
        cex = 1, 
        lwd = 0.5, 
        panel.first = grid(), col = adjustcolor("grey", alpha.f = 0.7), xaxt = "n")
+  abline(h=0)
   for(ii in 1:20){
     boxplot(boxes_sim[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n", axes = F, outline = F)  
   }
@@ -148,6 +140,7 @@ for(run in c("a","b","c")){
        cex = 1, 
        lwd = 1, 
        panel.first = grid(), col = adjustcolor("grey", alpha.f = 0.7))
+  abline(h=0)
   for(ii in 1:20){
     boxplot(boxes_rec[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n", axes = F, outline = F)  
   }

@@ -107,6 +107,7 @@ for(run in c("a","b","c")){
        cex = 1, 
        lwd = 0.5, 
        panel.first = grid(), col = adjustcolor("grey", alpha.f = 0.7), xaxt = "n")
+  abline(h=0)
   for(ii in 1:20){
     boxplot(boxes_sim[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n", axes = F, outline = F)  
   }
@@ -138,6 +139,7 @@ for(run in c("a","b","c")){
        cex = 1, 
        lwd = 1, 
        panel.first = grid(), col = adjustcolor("grey", alpha.f = 0.7))
+  abline(h=0)
   for(ii in 1:20){
     boxplot(boxes_rec[[paste0(ii*1000)]], add = TRUE, at = c(ii*1000-500),boxwex = 1000, names = "n", axes = F, outline = F)  
   }
