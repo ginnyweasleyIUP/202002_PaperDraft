@@ -146,11 +146,12 @@ for(run in c("a", "b","c")){
       
       plot(c(plot_data$map_window[1], plot_data$map_window[2]),c(plot_data$map_window[3], plot_data$map_window[4]), 
            type = "n", xlab = "", ylab= "")
-      maps::map("world", add = TRUE, col = "grey", interior = FALSE)
+      maps::map("world", add = TRUE, fill = T, col = adjustcolor("grey", alpha.f = 0.5), interior = FALSE, border = NA)
+      maps::map("world", add = TRUE, col = "black", interior = FALSE)
       for (i in 1:(noPts - 1)) {
         for (j in (i + 1):(noPts)) {
           if (!is.na(network_lyr_sim[i, j])) {
-            lines(c(point_lyr$long[i], point_lyr$long[j]), c(point_lyr$lat[i], point_lyr$lat[j]), col = COLZ_sim[i,j], lwd = 8*abs(network_lyr_sim[i,j]))
+            lines(c(point_lyr$long[i], point_lyr$long[j]), c(point_lyr$lat[i], point_lyr$lat[j]), col = COLZ_sim[i,j], lwd = 10*abs(network_lyr_sim[i,j]))
           }
         }
       }
@@ -186,11 +187,12 @@ for(run in c("a", "b","c")){
       
       plot(c(plot_data$map_window[1], plot_data$map_window[2]),c(plot_data$map_window[3], plot_data$map_window[4]),
            type = "n", xlab = "", ylab= "")
-      maps::map("world", add = TRUE, col = "grey", interior = FALSE)
+      maps::map("world", add = TRUE, fill = T, col = adjustcolor("grey", alpha.f = 0.5), interior = FALSE, border = NA)
+      maps::map("world", add = TRUE, col = "black", interior = FALSE)
       for (i in 1:(noPts - 1)) {
         for (j in (i + 1):(noPts)) {
           if (!is.na(network_lyr_rec[i, j])) {
-            lines(c(point_lyr$long[i], point_lyr$long[j]), c(point_lyr$lat[i], point_lyr$lat[j]), col = COLZ_rec[i,j] , lwd = 8*abs(network_lyr_rec[i,j]))
+            lines(c(point_lyr$long[i], point_lyr$long[j]), c(point_lyr$lat[i], point_lyr$lat[j]), col = COLZ_rec[i,j] , lwd = 10*abs(network_lyr_rec[i,j]))
           }
         }
       }
