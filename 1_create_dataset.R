@@ -73,10 +73,11 @@ for(run in c("a", "b", "c")){
   ncdf4::nc_close(ncf)
 
   ncf<-ncdf4::nc_open(paste0("/stacywork/hadcm3/precipitation/monthly_fixed/xnap",run,".nc"))
+  #ncf<-ncdf4::nc_open(paste0("/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/05_HadCM3/xnap/xnap",run,"_precipitation.nc"))
   DATA_past1000_SIM_RAW[[run]]$PREC <- clear_data_matrix(ncdf4::ncvar_get(ncf),2)
   DATA_past1000_SIM_RAW[[run]]$PREC_t <- ncf$dim$t$vals
-  DATA_past1000_SIM_RAW$lon <- ncf$dim$longitude$vals
-  DATA_past1000_SIM_RAW$lat <- ncf$dim$latitude$vals
+  DATA_past1000$SIM_mean$lon <- ncf$dim$longitude$vals
+  DATA_past1000$SIM_mean$lat <- ncf$dim$latitude$vals
   ncdf4::nc_close(ncf)
   print("ISOT")
   ncf<-ncdf4::nc_open(paste0("/stacywork/hadcm3/isotopes/monthly_fixed/xnap",run,".nc"))
@@ -208,7 +209,7 @@ for (ii in 1:(length(DATA_past1000$CAVES$entity_info$entity_id))){
   if(lon_cave<0){lon_cave = 360+lon_cave}
   lat_cave = DATA_past1000$CAVES$site_info$latitude[DATA_past1000$CAVES$site_info$site_id == site_id]
 
-  ratios <- extract_gridboxes(lon_cave, lat_cave)
+  ratios <- extract_gridboxes_new(lon_cave, lat_cave)
 
   elevation_cave_sim[ii,1] <- site_id
   elevation_cave_sim[ii,2] <- DATA_past1000$CAVES$entity_info$entity_id[ii]
