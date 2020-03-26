@@ -209,7 +209,7 @@ for (ii in 1:(length(DATA_past1000$CAVES$entity_info$entity_id))){
   if(lon_cave<0){lon_cave = 360+lon_cave}
   lat_cave = DATA_past1000$CAVES$site_info$latitude[DATA_past1000$CAVES$site_info$site_id == site_id]
 
-  ratios <- extract_gridboxes(lon_cave, lat_cave)
+  ratios <- extract_gridboxes_new(lon_cave, lat_cave)
 
   elevation_cave_sim[ii,1] <- site_id
   elevation_cave_sim[ii,2] <- DATA_past1000$CAVES$entity_info$entity_id[ii]
