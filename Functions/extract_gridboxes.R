@@ -23,54 +23,32 @@ extract_gridboxes <- function(lon_cave, lat_cave){
   edges$E1_lon_pos <- which.min(abs(DATA_past1000$SIM_mean$lon-edges$E1_lon))
   if(DATA_past1000$SIM_mean$lon[edges$E1_lon_pos]>edges$E1_lon){edges$E1_lon_pos = edges$E1_lon_pos -1}
   edges$E1_lat_pos <- which.min(abs(DATA_past1000$SIM_mean$lat-edges$E1_lat))
-<<<<<<< HEAD
   if(DATA_past1000$SIM_mean$lat[edges$E1_lat_pos]>edges$E1_lat){edges$E1_lat_pos = edges$E1_lat_pos +1}
-=======
-  if(DATA_past1000$SIM_mean$lon[edges$E1_lat_pos]<edges$E1_lat){edges$E1_lat_pos = edges$E1_lat_pos +1}
->>>>>>> 583d32084663cfe5585817e59ce17b8b8dfe5211
   
   edges$E2_lon_pos <- which.min(abs(DATA_past1000$SIM_mean$lon-edges$E2_lon))
   if(DATA_past1000$SIM_mean$lon[edges$E2_lon_pos]>edges$E2_lon){edges$E2_lon_pos = edges$E2_lon_pos -1}
   edges$E2_lat_pos <- which.min(abs(DATA_past1000$SIM_mean$lat-edges$E2_lat))
-<<<<<<< HEAD
   if(DATA_past1000$SIM_mean$lat[edges$E2_lat_pos]>edges$E2_lat){edges$E2_lat_pos = edges$E2_lat_pos +1}
-=======
-  if(DATA_past1000$SIM_mean$lon[edges$E2_lat_pos]<edges$E2_lat){edges$E2_lat_pos = edges$E2_lat_pos +1}
->>>>>>> 583d32084663cfe5585817e59ce17b8b8dfe5211
-  
+
   edges$E3_lon_pos <- which.min(abs(DATA_past1000$SIM_mean$lon-edges$E3_lon))
   if(DATA_past1000$SIM_mean$lon[edges$E3_lon_pos]>edges$E3_lon){edges$E3_lon_pos = edges$E3_lon_pos -1}
   edges$E3_lat_pos <- which.min(abs(DATA_past1000$SIM_mean$lat-edges$E3_lat))
-<<<<<<< HEAD
   if(DATA_past1000$SIM_mean$lat[edges$E3_lat_pos]>edges$E3_lat){edges$E3_lat_pos = edges$E3_lat_pos +1}
-=======
-  if(DATA_past1000$SIM_mean$lon[edges$E3_lat_pos]<edges$E3_lat){edges$E3_lat_pos = edges$E3_lat_pos +1}
->>>>>>> 583d32084663cfe5585817e59ce17b8b8dfe5211
-  
+
   edges$E4_lon_pos <- which.min(abs(DATA_past1000$SIM_mean$lon-edges$E4_lon))
   if(DATA_past1000$SIM_mean$lon[edges$E4_lon_pos]>edges$E4_lon){edges$E4_lon_pos = edges$E4_lon_pos -1}
   edges$E4_lat_pos <- which.min(abs(DATA_past1000$SIM_mean$lat-edges$E4_lat))
-<<<<<<< HEAD
   if(DATA_past1000$SIM_mean$lat[edges$E4_lat_pos]>edges$E4_lat){edges$E4_lat_pos = edges$E4_lat_pos +1}
-=======
-  if(DATA_past1000$SIM_mean$lon[edges$E4_lat_pos]<edges$E4_lat){edges$E4_lat_pos = edges$E4_lat_pos +1}
->>>>>>> 583d32084663cfe5585817e59ce17b8b8dfe5211
-  
+
   ratio <- list()
   
   ratio$E1 <- (edges$E1_lon - DATA_past1000$SIM_mean$lon[edges$E1_lon_pos])*(edges$E1_lat - DATA_past1000$SIM_mean$lat[edges$E1_lat_pos])/(3.75*2.5)
-<<<<<<< HEAD
   ratio$E2 <- (DATA_past1000$SIM_mean$lon[edges$E2_lon_pos]+3.75-edges$E2_lon)*(edges$E2_lat - DATA_past1000$SIM_mean$lat[edges$E2_lat_pos])/(3.75*2.5)
   ratio$E3 <- (edges$E3_lon - DATA_past1000$SIM_mean$lon[edges$E3_lon_pos])*(DATA_past1000$SIM_mean$lat[edges$E3_lat_pos-1]-edges$E3_lat)/(3.75*2.5)
   ratio$E4 <- (DATA_past1000$SIM_mean$lon[edges$E4_lon_pos]+3.75-edges$E4_lon)*(DATA_past1000$SIM_mean$lat[edges$E4_lat_pos-1]-edges$E4_lat)/(3.75*2.5)
   #ratio$E1+ratio$E2+ratio$E3+ratio$E4
-=======
-  ratio$E2 <- (3.75-(edges$E2_lon - DATA_past1000$SIM_mean$lon[edges$E2_lon_pos]))*(edges$E2_lat - DATA_past1000$SIM_mean$lat[edges$E2_lat_pos])/(3.75*2.5)
-  ratio$E3 <- (edges$E3_lon - DATA_past1000$SIM_mean$lon[edges$E3_lon_pos])*(2.5-(edges$E3_lat-DATA_past1000$SIM_mean$lat[edges$E3_lat_pos]))/(3.75*2.5)
-  ratio$E4 <- (3.75-(edges$E4_lon - DATA_past1000$SIM_mean$lon[edges$E4_lon_pos]))*(2.5-(edges$E4_lat- DATA_past1000$SIM_mean$lat[edges$E4_lat_pos]))/(3.75*2.5)
-  
->>>>>>> 583d32084663cfe5585817e59ce17b8b8dfe5211
-  result_list <- c(edges, ratio)
+
+    result_list <- c(edges, ratio)
   
   return(result_list)
 }
