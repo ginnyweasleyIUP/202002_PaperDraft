@@ -12,6 +12,7 @@ library(maps)
 
 #time_caves <- seq(from = -49, to = 1100, by = 1)
 # blabla
+#ANALYSIS <- list()
 
 ANALYSIS$NETWORK <- list()
 
@@ -60,14 +61,18 @@ plot(hc)
 ANALYSIS$hc <- hc
 
 cluster <-cutree(hc,k=8)
-#Point_Lyr <- list(
-#  lat = ANALYSIS$NETWORK$entity_meta$lat,
-#  long = ANALYSIS$NETWORK$entity_meta$long,
-#  value =cluster
-#)
+Point_Lyr <- list(
+  lat = ANALYSIS$NETWORK$entity_meta$lat,
+  long = ANALYSIS$NETWORK$entity_meta$long,
+  value =ANALYSIS$NETWORK$entity_meta$cluster_id
+)
 
-#map(database='world')
-#points(Point_Lyr$long,Point_Lyr$lat,col=Point_Lyr$value+1,pch=3)
+map(database='world')
+points(Point_Lyr$long,Point_Lyr$lat,col=Point_Lyr$value+1,pch=3)
+
+# make a 9th cluster --> dividing cluster for china and indonesia
+
+
 
 #asigning
 
@@ -80,6 +85,8 @@ for(ii in 1:sum(mask_spec)){
   ANALYSIS$NETWORK$entity_meta$gridbox_id[ii]  = (ceiling((-1*e.lat+90)/180*73)-1)*96 + ceiling((e.long+180)/3.75)
   ANALYSIS$NETWORK$entity_meta$cluster_id[ii] = cluster[ii]
 }
+
+ANALYSIS$NETWORK$entity_meta$cluster_id[c(31, 32, 45, 51)] = 9
 
 rm(e.lat, e.long, entity, ii, dist, cluster, site)
 

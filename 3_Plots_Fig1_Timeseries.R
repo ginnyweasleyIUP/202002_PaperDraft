@@ -62,8 +62,8 @@ Timeseries$HadCM3_GMST_c <- zoo(x = value$c-mean(value$c[1080:1110]), order.by =
 ##Bunker site_id = 117, entity_id = 240,242
 # HadCM3 Bunker cave --> site 117
 
-Timeseries$SISAL_Bunker_240 <- zoo(x = DATA_past1000$CAVES$record_data$ENTITY240$d18O_dw_eq, order.by = -1*DATA_past1000$CAVES$record_data$ENTITY240$interp_age)
-Timeseries$SISAL_Bunker_242 <- zoo(x = DATA_past1000$CAVES$record_data$ENTITY242$d18O_dw_eq, order.by = -1*DATA_past1000$CAVES$record_data$ENTITY242$interp_age)
+Timeseries$SISAL_Bunker_240 <- zoo(x = DATA_past1000$CAVES$record_data$ENTITY240$d18O_dw_eq_a, order.by = -1*DATA_past1000$CAVES$record_data$ENTITY240$interp_age)
+Timeseries$SISAL_Bunker_242 <- zoo(x = DATA_past1000$CAVES$record_data$ENTITY242$d18O_dw_eq_a, order.by = -1*DATA_past1000$CAVES$record_data$ENTITY242$interp_age)
 Timeseries$HadCM3_Bunker_a <- zoo(x = DATA_past1000$CAVES$sim_data_yearly$CAVE117$ISOT_a, order.by = seq(from = -1*(1950- DATA_past1000$time[1]), to = -1*(1950 - DATA_past1000$time[2]), by = 1)) 
 Timeseries$HadCM3_Bunker_b <- zoo(x = DATA_past1000$CAVES$sim_data_yearly$CAVE117$ISOT_b, order.by = seq(from = -1*(1950- DATA_past1000$time[1]), to = -1*(1950 - DATA_past1000$time[2]), by = 1))
 Timeseries$HadCM3_Bunker_c <- zoo(x = DATA_past1000$CAVES$sim_data_yearly$CAVE117$ISOT_c, order.by = seq(from = -1*(1950- DATA_past1000$time[1]), to = -1*(1950 - DATA_past1000$time[2]), by = 1))
@@ -81,78 +81,78 @@ Timeseries$HadCM3_Bunker_c <- zoo(x = DATA_past1000$CAVES$sim_data_yearly$CAVE11
 #Timeseries$epica <- prxlist[[107]]
 
 #PAGES2k DATA
-temp <- read.table('pages2k_temp.txt', header = F)
-colnames(temp) <- c('Year','Cowtan & Way instrumental target','Full ensemble median','Full ensemble 2.5th percentile',    'Full ensemble 97.5th percentile',
-                    'Cowtan & Way instrumental target 31-year filtered',    '31-year filtered full ensemble median',    '31-year filtered full ensemble 2.5th percentile',
-                    '31-year filtered full ensemble 97.5th percentile')
-
-Timeseries$pages2k <- list()# zoo(temp$`Full ensemble median`, order.by = temp$Year-1950)
-Timeseries$pages2k$time <- temp$Year-1950
-Timeseries$pages2k$value <- temp$`Full ensemble median`
-Timeseries$pages2k$q_2.5th <- temp$`Full ensemble 2.5th percentile`
-Timeseries$pages2k$q_97.5th <- temp$`Full ensemble 97.5th percentile`
-
-rm(temp)
+# temp <- read.table('pages2k_temp.txt', header = F)
+# colnames(temp) <- c('Year','Cowtan & Way instrumental target','Full ensemble median','Full ensemble 2.5th percentile',    'Full ensemble 97.5th percentile',
+#                     'Cowtan & Way instrumental target 31-year filtered',    '31-year filtered full ensemble median',    '31-year filtered full ensemble 2.5th percentile',
+#                     '31-year filtered full ensemble 97.5th percentile')
+# 
+# Timeseries$pages2k <- list()# zoo(temp$`Full ensemble median`, order.by = temp$Year-1950)
+# Timeseries$pages2k$time <- temp$Year-1950
+# Timeseries$pages2k$value <- temp$`Full ensemble median`
+# Timeseries$pages2k$q_2.5th <- temp$`Full ensemble 2.5th percentile`
+# Timeseries$pages2k$q_97.5th <- temp$`Full ensemble 97.5th percentile`
+# 
+# rm(temp)
 
 # HadCRUT4 Data
 
-temp <- read.table('HadCRUT4_global_mean_yearly.txt')
-colnames(temp) <- c("date", "median")
-Timeseries$HadCRUT4 <- zoo(x = temp$median, order.by = -1*(1950-temp$date))
+# temp <- read.table('HadCRUT4_global_mean_yearly.txt')
+# colnames(temp) <- c("date", "median")
+# Timeseries$HadCRUT4 <- zoo(x = temp$median, order.by = -1*(1950-temp$date))
+# 
+# 
+# rm(temp)
 
-
-rm(temp)
-
-library(stacy.hadcm.tools)
-# FORCING DATA
-# Summer insolation
-# Seasonality
-# CO2
-co2 <- TS$co2
-#co2 <- rev.zoo(co2)
-#index(co2) <- sort(-index(co2))
-Timeseries$co2 <- co2
-Timeseries$co2_100Gsmooth <- gaussdetr(Timeseries$co2[index(Timeseries$co2)>-1100],tsc.in=100)$Xsmooth
-
-# Solar forcing
-solar <- read.csv("/stacywork/hadcm3/hadcm3_solar_forcing.csv")
-Timeseries$solar <- zoo(x = solar$TSI, order.by = -1*(1950-DaysSinceToAD(solar$daysSince_1.1.year_hadcm3)))
-
-# volcanic forcing
-#path <- "/stacydata/data/squirrel/R_data/CMIP5/Forcing/Crowley2008/"
-
-locs<-c("3090S","030S","030N","3090N")
-latsects<-c(-90, -30, 0, 30, 90)
-files<-paste("/stacydata/data/squirrel/R_data/CMIP5/Forcing/Crowley2008/ICI5_",locs,"_AOD_c.txt",sep="")
-
-# read the zonal bands of AOD in. The area is equivalent.
-D<-matrix(NA,ncol=4,nrow=45001)
-for (i in 1:length(files)) {
-  tmp<-read.table(files[i])
-  D[,i]<-tmp[,2]
-}
-
-# time is in the first column
-tAD <- list()
-tAD$volc<-tmp[,1]
-colnames(D)<-locs
-rownames(D)<-tAD$volc
-# D is now a matrix with the AOD for each band, time in rows (36/year)
-
-volc_mean <- apply(D,1,mean) #D[,1]#[30200:30400]
-ind.plot <- tAD$volc>=850 & tAD$volc<2000
-
-Timeseries$volcanic <- zoo(x = volc_mean[ind.plot], order.by = -1*(1950-tAD$volc[ind.plot]))
-
-# orbit forcing
-library(palinsol)
-
-INS <- list()
-INS$tts <- seq(from = -1100, to = 50, by = 1) #take car of time units
-insolation <- function(times, astrosol=la04, long=pi/2, lat=65*pi/180){sapply(times, function(tt) Insol(orbit=astrosol(tt), long=long, lat=lat))}
-INS$summer<- insolation(INS$tts, la04, long=pi/2, lat=65*pi/180) 
-INS$rel_INS <- INS$summer - mean(INS$summer)
-Timeseries$orbit <- data.frame(yrs = INS$tts, dR = INS$rel_INS)
+# library(stacy.hadcm.tools)
+# # FORCING DATA
+# # Summer insolation
+# # Seasonality
+# # CO2
+# co2 <- TS$co2
+# #co2 <- rev.zoo(co2)
+# #index(co2) <- sort(-index(co2))
+# Timeseries$co2 <- co2
+# Timeseries$co2_100Gsmooth <- gaussdetr(Timeseries$co2[index(Timeseries$co2)>-1100],tsc.in=100)$Xsmooth
+# 
+# # Solar forcing
+# solar <- read.csv("/stacywork/hadcm3/hadcm3_solar_forcing.csv")
+# Timeseries$solar <- zoo(x = solar$TSI, order.by = -1*(1950-DaysSinceToAD(solar$daysSince_1.1.year_hadcm3)))
+# 
+# # volcanic forcing
+# #path <- "/stacydata/data/squirrel/R_data/CMIP5/Forcing/Crowley2008/"
+# 
+# locs<-c("3090S","030S","030N","3090N")
+# latsects<-c(-90, -30, 0, 30, 90)
+# files<-paste("/stacydata/data/squirrel/R_data/CMIP5/Forcing/Crowley2008/ICI5_",locs,"_AOD_c.txt",sep="")
+# 
+# # read the zonal bands of AOD in. The area is equivalent.
+# D<-matrix(NA,ncol=4,nrow=45001)
+# for (i in 1:length(files)) {
+#   tmp<-read.table(files[i])
+#   D[,i]<-tmp[,2]
+# }
+# 
+# # time is in the first column
+# tAD <- list()
+# tAD$volc<-tmp[,1]
+# colnames(D)<-locs
+# rownames(D)<-tAD$volc
+# # D is now a matrix with the AOD for each band, time in rows (36/year)
+# 
+# volc_mean <- apply(D,1,mean) #D[,1]#[30200:30400]
+# ind.plot <- tAD$volc>=850 & tAD$volc<2000
+# 
+# Timeseries$volcanic <- zoo(x = volc_mean[ind.plot], order.by = -1*(1950-tAD$volc[ind.plot]))
+# 
+# # orbit forcing
+# library(palinsol)
+# 
+# INS <- list()
+# INS$tts <- seq(from = -1100, to = 50, by = 1) #take car of time units
+# insolation <- function(times, astrosol=la04, long=pi/2, lat=65*pi/180){sapply(times, function(tt) Insol(orbit=astrosol(tt), long=long, lat=lat))}
+# INS$summer<- insolation(INS$tts, la04, long=pi/2, lat=65*pi/180) 
+# INS$rel_INS <- INS$summer - mean(INS$summer)
+# Timeseries$orbit <- data.frame(yrs = INS$tts, dR = INS$rel_INS)
 
 save(Timeseries, file = "Timeseries.RData")
 
@@ -358,7 +358,7 @@ for(plot in 1:1){
 
 
 
-#rm(namcex, namlin, num_ts, range_co2, range_d18O, range_solar, range_temp, range_volc, tmp.y, tmp.y2, unitscex, unitslinno, xlimz)
-#rm(col_co2, col_d18O_240, col_orbit, range_orbit, col_d18O_242, col_hadcm3_d18O, col_hadcm3_temp, col_pages2k, col_solar, col_volc, axisnumscex, axslinno)
-#rm(INS, ORB, value, ii, insolation)
+rm(namcex, namlin, num_ts, range_co2, range_d18O, range_solar, range_temp, range_volc, tmp.y, tmp.y2, unitscex, unitslinno, xlimz)
+rm(col_co2, col_d18O_240, col_orbit, range_orbit, col_d18O_242, col_hadcm3_d18O, col_hadcm3_temp, col_pages2k, col_solar, col_volc, axisnumscex, axslinno)
+rm(INS, ORB, value, ii, insolation)
 

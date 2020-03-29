@@ -95,7 +95,7 @@ for(run in c("a","b","c")){
   
   
   
-  GLOBAL_STACY_OPTIONS$GLOBAL_POINT_SIZE <- 3
+  GLOBAL_STACY_OPTIONS$GLOBAL_POINT_SIZE <- 4
   
   NA_plot_lyr <- Plot_lyr_temp
   NA_plot_lyr[!is.na(NA_plot_lyr)] <- 0

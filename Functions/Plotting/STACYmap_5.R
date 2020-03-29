@@ -49,8 +49,8 @@ title_and_axis <- function(){
   return(ax)
 }
 
-load_natural_earth_data <- function(file, dir = '/home/ginnyweasley/07_R_Code/naturalearth_10m_physical', ...) {
-  NAT_EARTH_PATH <- '/home/ginnyweasley/07_R_Code/naturalearth_10m_physical'
+load_natural_earth_data <- function(file, dir = '/home/ginnyweasley/Dokumente/01_Promotion/07_R_Code/naturalearth_10m_physical', ...) {
+  NAT_EARTH_PATH <- '/home/ginnyweasley/Dokumente/01_Promotion/07_R_Code/naturalearth_10m_physical'
   if (dir == NAT_EARTH_PATH & str_detect(file, '.shp')) {
     data <- readOGR(dsn = file.path(NAT_EARTH_PATH, file), verbose = FALSE, ...)
   } else if (str_detect(file, '.shp')) {
@@ -60,6 +60,18 @@ load_natural_earth_data <- function(file, dir = '/home/ginnyweasley/07_R_Code/na
   }
   return(data)
 }
+
+# load_natural_earth_data <- function(file, dir = '/home/ginnyweasley/07_R_Code/naturalearth_10m_physical', ...) {
+#   NAT_EARTH_PATH <- '/home/ginnyweasley/07_R_Code/naturalearth_10m_physical'
+#   if (dir == NAT_EARTH_PATH & str_detect(file, '.shp')) {
+#     data <- readOGR(dsn = file.path(NAT_EARTH_PATH, file), verbose = FALSE, ...)
+#   } else if (str_detect(file, '.shp')) {
+#     data <- readOGR(dsn = file.path(dir, file), verbose = FALSE, ...)
+#   } else if (str_detect(file, '.tif')) {
+#     data <- raster::raster(x = file.path(NAT_EARTH_PATH, file))
+#   }
+#   return(data)
+# }
 
 
 transform_shapefile <- function(data, transform) {
