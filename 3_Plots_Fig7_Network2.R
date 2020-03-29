@@ -7,10 +7,11 @@ order <- list(
   cluster_2 = c(2,3,12,4,8,9,10,1,5,6,7,11,13),
   cluster_3 = c(4,6,7,16,17,20,21,13,14,1,12,2,3,5,8,9,10,11,15,18,19,22),
   cluster_4 = c(1,2),
-  cluster_5 = c(5,8,14,17,10,11,19,20,16,21,1,2,3,4,6,7,9,12,13,15,18,22,23),
+  cluster_5 = c(5,6,10,13,8,9,15,16,12,17,18,14,3,1,2,7,4,11,19),
   cluster_6 = c(7,9,4,5,2,3,1,6,8,10,11,12),
   cluster_7 = c(3,4,5,1,2,6),
-  cluster_8 = c(1,3,2)
+  cluster_8 = c(1,3,2),
+  cluster_9 = c(1,2,3,4)
 )
 
 map_window <- list(
@@ -18,10 +19,11 @@ map_window <- list(
   cluster_2 = c(-80, -40,-25, 20),
   cluster_3 = c(-10,  25, 30, 70),
   cluster_4 = c(15,50, -40, -10),
-  cluster_5 = c(100, 140, -15, 40),
+  cluster_5 = c(100, 140, 20, 40),
   cluster_6 = c(-130, -80, 15, 45),
   cluster_7 = c(30, 60, 10, 45),
-  cluster_8 = c(165, 180, -50, -32)
+  cluster_8 = c(165, 180, -50, -32),
+  cluster_9 = c(105,130,10,-20)
 )
 
 box_map <- list(
@@ -32,7 +34,8 @@ box_map <- list(
   cluster_5 = c((77-0.5)*3.75-180, 77.5*3.75-180, 90-23.5*2.5, 90-24.5*2.5),
   cluster_6 = c(-82.5,  -86.25, 22.5, 20.0),
   cluster_7 = c(52.50,  56.25, 12.5, 15.0),
-  cluster_8 = c(168.75, 172.50, -42.5, -40.0)
+  cluster_8 = c(168.75, 172.50, -42.5, -40.0),
+  cluster_9 = c(NA,NA,NA,NA)
 )
 
 box_corr <- list(
@@ -40,10 +43,11 @@ box_corr <- list(
   cluster_2 = c(0.5, 3.5, 10.5, 13.5),
   cluster_3 = c(0.5, 4.5, 18.5, 22.5),
   cluster_4 = c(NA,NA,NA,NA),
-  cluster_5 = c(0.5, 4.5, 19.5, 23.5),
+  cluster_5 = c(0.5, 4.5, 19.5-4, 23.5-4),
   cluster_6 = c(0.5, 2.5, 10.5, 12.5),
   cluster_7 = c(0.5, 3.5, 3.5, 6.5),
-  cluster_8 = c(0.5, 2.5, 1.5, 3.5)
+  cluster_8 = c(0.5, 2.5, 1.5, 3.5),
+  cluster_9 = c(NA,NA,NA,NA)
 )
 
 line_x = 2
@@ -54,17 +58,19 @@ names_move <- list(
   cluster_2 = list(x = c(1,1,1,0,0,0,0,0,0,0,0,0,0)*line_x, y = c(1,0,-1,0,0,1,0,0,0,0,0,1,0)*line_y),
   cluster_3 = list(x = c(0,0,1.2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)*line_x, y = c(0.8,0.5,0,0,1,0,-1,1,0,0,0,0,0,0,-0.5,0,0,0,0,0,0,0)*line_y),
   cluster_4 = list(x = c(0,0)*line_x, y = c(0,0)*line_y),
-  cluster_5 = list(x = c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)*line_x, y = c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)*line_y),
+  cluster_5 = list(x = c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)*line_x, y = c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)*line_y),
   cluster_6 = list(x = c(0,0,0,0,0,0,0,0,0,0,0,0)*line_x, y = c(0.5,0,0.5,0,0.5,0,0,0,0,0.5,0,-0.5)*line_y),
   cluster_7 = list(x = c(0.3,0.3,0.3,0,0,0)*line_x, y = c(1,0,-1,0,0,0)*line_y),
-  cluster_8 = list(x = c(-0.3,-0.3,-0.3)*line_x, y = c(0,0,0)*line_y)
+  cluster_8 = list(x = c(-0.3,-0.3,-0.3)*line_x, y = c(0,0,0)*line_y),
+  cluster_9 = list(x = c(0,0,0,0)*line_x, y = c(0,0,0,0)*line_y)
 )
 
 
 
 
+
 for(run in c("a", "b","c")){
-  for(cluster in 1:8){
+  for(cluster in 1:9){
     
     plot_data <- list(
       order = order[[paste0("cluster_",cluster)]],

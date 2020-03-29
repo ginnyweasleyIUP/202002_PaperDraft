@@ -62,6 +62,8 @@ scatter_data$elevation_diff = as.numeric(scatter_data$elevation_diff)
 scatter_data$dist_entrance = as.numeric(scatter_data$dist_entrance)
 scatter_data$cover_thickness = as.numeric(scatter_data$cover_thickness)
 
+scatter_data$winter_mean_prec[57] = NA
+
 #View(scatter_data)
 # mask for aragonite and calcite
 
@@ -81,6 +83,46 @@ for(ii in 1:length(scatter_data$entity_id)){
 pdf(file = "Plots/Appendix/A1_ScatterMean_diff_full.pdf", width = 8, height = 10)
 #png(file = "Plots/Appendix/A1_ScatterMean_diff_full.png", width = 50*8, height = 50*10)
 par(mfrow=c(4,2),oma = c(1,3,0,0) + 0.1,mar = c(3,0,1,1) + 0.1)
+#latitude
+plot(scatter_data$latitude[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
+     xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
+     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
+points(scatter_data$latitude[mask_mean_aragonite], scatter_data$diff_full[mask_mean_aragonite], 
+       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
+abline(h=0)
+lines(lowess(scatter_data$latitude, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$latitude, na.rm = T))), lwd = 4, col = "#B2182B")
+mtext(text = "latitude",side = 1,line = 2)
+mtext(text = "d18O-d18Oc",side = 2,line = 2)
+text(10, 6.7, "calcite", cex = 1.5)
+text(-5, -7., "aragonite", col = "blue", cex = 1.5)
+#temperature
+plot(scatter_data$mean_temp[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
+     yaxt = 'n', xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
+     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
+abline(h=0)
+points(scatter_data$mean_temp[mask_mean_aragonite], scatter_data$diff_full[mask_mean_aragonite], 
+       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
+lines(lowess(scatter_data$mean_temp, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$mean_temp, na.rm = T))), lwd = 4, col = "#B2182B")
+mtext(text = "mean temp",side = 1,line = 2)
+#prec
+plot(scatter_data$mean_prec[mask_mean_calcite]*8.6148e4, scatter_data$diff_full[mask_mean_calcite], 
+     xlab = "", ylab = "", log = "x", ylim = c(-10,10), xlim = c(0.2,15), panel.first = grid(equilogs = FALSE),
+     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
+abline(h=0)
+points(scatter_data$mean_prec[mask_mean_aragonite]*8.6148e4, scatter_data$diff_full[mask_mean_aragonite], 
+       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
+lines(lowess(scatter_data$mean_prec*8.6148e4, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$winter_mean_prec, na.rm = T))), lwd = 4, col = "#B2182B")
+mtext(text = "mean prec",side = 1,line = 2)
+mtext(text = "d18O-d18Oc",side = 2,line = 2)
+#DJF prec
+plot(scatter_data$winter_mean_prec[mask_mean_calcite]*8.6148e4, scatter_data$diff_full[mask_mean_calcite], 
+     yaxt = 'n', xlab = "", ylab = "", xlim = c(0.4,15), log = "x", ylim = c(-10,10), yaxt = "n", panel.first = grid(equilogs = FALSE),
+     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
+abline(h=0)
+points(scatter_data$winter_mean_prec[mask_mean_aragonite]*8.6148e4, scatter_data$diff_full[mask_mean_aragonite],
+       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
+lines(lowess(scatter_data$winter_mean_prec*8.6148e4, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$winter_mean_prec, na.rm = T))), lwd = 4, col = "#B2182B")
+mtext(text = "DJF prec",side = 1,line = 2)
 # elevation
 plot(scatter_data$elevation[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
      xlab = "", ylab = "", ylim = c(-10,10), xlim = c(0,4000), panel.first = grid(),
@@ -91,8 +133,6 @@ points(scatter_data$elevation[mask_mean_aragonite], scatter_data$diff_full[mask_
 lines(lowess(na.omit(as.numeric(scatter_data$elevation)), scatter_data$diff_full[!is.na(as.numeric(scatter_data$elevation))], f = 2/3, delta = 0.01*diff(range(scatter_data$elevation, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "elevation",side = 1,line = 2)
 mtext(text = "d18O-d18Oc",side = 2,line = 2)
-text(350, 6.7, "calcite", cex = 1.5)
-text(1300, -7., "aragonite", col = "blue", cex = 1.5)
 
 plot(scatter_data$elevation_diff[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
      yaxt = 'n', xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
@@ -102,45 +142,7 @@ points(scatter_data$elevation_diff[mask_mean_aragonite], scatter_data$diff_full[
        pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
 lines(lowess(na.omit(scatter_data$elevation_diff), scatter_data$diff_full[!is.na(scatter_data$diff_full)], f = 2/5, delta = 0.01*diff(range(scatter_data$elevation, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "elevation diff. (sim-rec)",side = 1,line = 2)
-
-plot(scatter_data$latitude[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
-     xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
-     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
-points(scatter_data$latitude[mask_mean_aragonite], scatter_data$diff_full[mask_mean_aragonite], 
-       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
-abline(h=0)
-lines(lowess(scatter_data$latitude, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$latitude, na.rm = T))), lwd = 4, col = "#B2182B")
-mtext(text = "latitude",side = 1,line = 2)
-mtext(text = "d18O-d18Oc",side = 2,line = 2)
-
-plot(scatter_data$mean_temp[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
-     yaxt = 'n', xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
-     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
-abline(h=0)
-points(scatter_data$mean_temp[mask_mean_aragonite], scatter_data$diff_full[mask_mean_aragonite], 
-       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
-lines(lowess(scatter_data$mean_temp, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$mean_temp, na.rm = T))), lwd = 4, col = "#B2182B")
-mtext(text = "mean temp",side = 1,line = 2)
-
-plot(scatter_data$mean_prec[mask_mean_calcite]*8.6148e4, scatter_data$diff_full[mask_mean_calcite], 
-     xlab = "", ylab = "", log = "x", ylim = c(-10,10), xlim = c(0.2,15), panel.first = grid(equilogs = FALSE),
-     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
-abline(h=0)
-points(scatter_data$mean_prec[mask_mean_aragonite]*8.6148e4, scatter_data$diff_full[mask_mean_aragonite], 
-       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
-lines(lowess(scatter_data$mean_prec*8.6148e4, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$winter_mean_prec, na.rm = T))), lwd = 4, col = "#B2182B")
-mtext(text = "mean prec",side = 1,line = 2)
-mtext(text = "d18O-d18Oc",side = 2,line = 2)
-
-plot(scatter_data$winter_mean_prec[mask_mean_calcite]*8.6148e4, scatter_data$diff_full[mask_mean_calcite], 
-     yaxt = 'n', xlab = "", ylab = "", xlim = c(0.2,15), log = "x", ylim = c(-10,10), yaxt = "n", panel.first = grid(equilogs = FALSE),
-     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
-abline(h=0)
-points(scatter_data$winter_mean_prec[mask_mean_aragonite]*8.6148e4, scatter_data$diff_full[mask_mean_aragonite],
-       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
-lines(lowess(scatter_data$winter_mean_prec*8.6148e4, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$winter_mean_prec, na.rm = T))), lwd = 4, col = "#B2182B")
-mtext(text = "DJF prec",side = 1,line = 2)
-
+#cover thickness
 plot(scatter_data$cover_thickness[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
      xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
      pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
@@ -168,28 +170,7 @@ dev.off()
 pdf(file = "Plots/Appendix/A1_ScatterMean_diff_down.pdf", width = 8, height = 10)
 #png(file = "Plots/Appendix/A1_ScatterMean_diff_down.png", width = 50*8, height = 50*10)
 par(mfrow=c(4,2),oma = c(1,3,0,0) + 0.1,mar = c(3,0,1,1) + 0.1)
-# elevation
-plot(scatter_data$elevation[mask_mean_calcite], scatter_data$diff_down[mask_mean_calcite], 
-     xlab = "", ylab = "", ylim = c(-10,10), xlim = c(0,4000), panel.first = grid(),
-     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
-abline(h=0)
-points(scatter_data$elevation[mask_mean_aragonite], scatter_data$diff_down[mask_mean_aragonite], 
-       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
-lines(lowess(na.omit(as.numeric(scatter_data$elevation)), scatter_data$diff_down[!is.na(as.numeric(scatter_data$elevation))], f = 2/3, delta = 0.01*diff(range(scatter_data$elevation, na.rm = T))), lwd = 4, col = "#B2182B")
-mtext(text = "elevation",side = 1,line = 2)
-mtext(text = "d18O-d18Oc",side = 2,line = 2)
-text(350, 6.7, "calcite", cex = 1.5)
-text(1300, -7., "aragonite", col = "blue", cex = 1.5)
-
-plot(scatter_data$elevation_diff[mask_mean_calcite], scatter_data$diff_down[mask_mean_calcite], 
-     yaxt = 'n', xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
-     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
-abline(h=0)
-points(scatter_data$elevation_diff[mask_mean_aragonite], scatter_data$diff_down[mask_mean_aragonite], 
-       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
-lines(lowess(na.omit(scatter_data$elevation_diff), scatter_data$diff_down[!is.na(scatter_data$diff_down)], f = 2/5, delta = 0.01*diff(range(scatter_data$elevation, na.rm = T))), lwd = 4, col = "#B2182B")
-mtext(text = "elevation diff. (sim-rec)",side = 1,line = 2)
-
+#latitude
 plot(scatter_data$latitude[mask_mean_calcite], scatter_data$diff_down[mask_mean_calcite], 
      xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
      pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
@@ -199,6 +180,8 @@ abline(h=0)
 lines(lowess(scatter_data$latitude, scatter_data$diff_down, f = 2/3, delta = 0.01*diff(range(scatter_data$latitude, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "latitude",side = 1,line = 2)
 mtext(text = "d18O-d18Oc",side = 2,line = 2)
+text(10, 6.7, "calcite", cex = 1.5)
+text(-5, -7., "aragonite", col = "blue", cex = 1.5)
 
 plot(scatter_data$mean_temp[mask_mean_calcite], scatter_data$diff_down[mask_mean_calcite], 
      yaxt = 'n', xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
@@ -220,14 +203,32 @@ mtext(text = "mean prec",side = 1,line = 2)
 mtext(text = "d18O-d18Oc",side = 2,line = 2)
 
 plot(scatter_data$winter_mean_prec[mask_mean_calcite]*8.6148e4, scatter_data$diff_down[mask_mean_calcite], 
-     yaxt = 'n', xlab = "", ylab = "", xlim = c(0.2,15), log = "x", ylim = c(-10,10), yaxt = "n", panel.first = grid(equilogs = FALSE),
+     yaxt = 'n', xlab = "", ylab = "", xlim = c(0.4,15), log = "x", ylim = c(-10,10), yaxt = "n", panel.first = grid(equilogs = FALSE),
      pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
 abline(h=0)
 points(scatter_data$winter_mean_prec[mask_mean_aragonite]*8.6148e4, scatter_data$diff_down[mask_mean_aragonite],
        pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
 lines(lowess(scatter_data$winter_mean_prec*8.6148e4, scatter_data$diff_down, f = 2/3, delta = 0.01*diff(range(scatter_data$winter_mean_prec, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "DJF prec",side = 1,line = 2)
+# elevation
+plot(scatter_data$elevation[mask_mean_calcite], scatter_data$diff_down[mask_mean_calcite], 
+     xlab = "", ylab = "", ylim = c(-10,10), xlim = c(0,4000), panel.first = grid(),
+     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
+abline(h=0)
+points(scatter_data$elevation[mask_mean_aragonite], scatter_data$diff_down[mask_mean_aragonite], 
+       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
+lines(lowess(na.omit(as.numeric(scatter_data$elevation)), scatter_data$diff_down[!is.na(as.numeric(scatter_data$elevation))], f = 2/3, delta = 0.01*diff(range(scatter_data$elevation, na.rm = T))), lwd = 4, col = "#B2182B")
+mtext(text = "elevation",side = 1,line = 2)
+mtext(text = "d18O-d18Oc",side = 2,line = 2)
 
+plot(scatter_data$elevation_diff[mask_mean_calcite], scatter_data$diff_down[mask_mean_calcite], 
+     yaxt = 'n', xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
+     pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)
+abline(h=0)
+points(scatter_data$elevation_diff[mask_mean_aragonite], scatter_data$diff_down[mask_mean_aragonite], 
+       pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
+lines(lowess(na.omit(scatter_data$elevation_diff), scatter_data$diff_down[!is.na(scatter_data$diff_down)], f = 2/5, delta = 0.01*diff(range(scatter_data$elevation, na.rm = T))), lwd = 4, col = "#B2182B")
+mtext(text = "elevation diff. (sim-rec)",side = 1,line = 2)
 plot(scatter_data$cover_thickness[mask_mean_calcite], scatter_data$diff_down[mask_mean_calcite], 
      xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
      pch = 16, col = adjustcolor("black", alpha.f = 0.5), cex = 2)

@@ -25,6 +25,8 @@ library(PaleoSpec)
 library(nest)
 library(tidyverse)
 
+LOCAL = TRUE
+
 
 #################################################
 ##0.1) Set Data-Structure?#######################
@@ -41,7 +43,12 @@ for(run in c("a","b","c")){
 }
 
 DATA_past1000$CAVES <- list()
-DATA_past1000$CAVES$site_info <- read.csv("/stacywork/ginnyweasley/02_SISAL/SISAL_v2/site_countries.csv")
+if(LOCAL){
+  DATA_past1000$CAVES$site_info <- read.csv("/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/02_SISAL/SISAL_v2/site_countries.csv")
+}else{
+  DATA_past1000$CAVES$site_info <- read.csv("/stacywork/ginnyweasley/02_SISAL/SISAL_v2/site_countries.csv")  
+}
+
 DATA_past1000$CAVES$entity_info <- list()
 DATA_past1000$CAVES$record_data <- list()
 DATA_past1000$CAVES$sim_data_yearly <- list()
@@ -58,6 +65,8 @@ for(run in c("a","b","c")){
   )
 }
 
+DATA_past1000$SIM_mean <- list()
+
 #################################################
 ## 1) Read in DATA ##############################
 #################################################
@@ -67,34 +76,55 @@ source("Functions/clear_data_matrix.R")
 for(run in c("a", "b", "c")){
   print(run)
   print("TEMP")
-  ncf <- (ncdf4::nc_open(paste0("/stacywork/hadcm3/surface_temperature/monthly_fixed/xnap", run, ".nc")))
+  if(LOCAL){
+    ncf <- (ncdf4::nc_open(paste0("/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/05_HadCM3/xnap/xnap", run, "_surface_temperature.nc")))
+  }else{
+    ncf <- (ncdf4::nc_open(paste0("/stacywork/hadcm3/surface_temperature/monthly_fixed/xnap", run, ".nc"))) 
+  }
   DATA_past1000_SIM_RAW[[run]]$TEMP <- clear_data_matrix(ncdf4::ncvar_get(ncf),1)
   DATA_past1000_SIM_RAW[[run]]$TEMP_t <- ncf$dim$t$vals
   ncdf4::nc_close(ncf)
-
-  ncf<-ncdf4::nc_open(paste0("/stacywork/hadcm3/precipitation/monthly_fixed/xnap",run,".nc"))
-  #ncf<-ncdf4::nc_open(paste0("/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/05_HadCM3/xnap/xnap",run,"_precipitation.nc"))
+  
+  print("PREC")
+  if(LOCAL){
+    ncf<-ncdf4::nc_open(paste0("/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/05_HadCM3/xnap/xnap",run,"_precipitation.nc")) 
+  }else{
+    ncf<-ncdf4::nc_open(paste0("/stacywork/hadcm3/precipitation/monthly_fixed/xnap",run,".nc")) 
+  }
   DATA_past1000_SIM_RAW[[run]]$PREC <- clear_data_matrix(ncdf4::ncvar_get(ncf),2)
   DATA_past1000_SIM_RAW[[run]]$PREC_t <- ncf$dim$t$vals
   DATA_past1000$SIM_mean$lon <- ncf$dim$longitude$vals
   DATA_past1000$SIM_mean$lat <- ncf$dim$latitude$vals
   ncdf4::nc_close(ncf)
   print("ISOT")
-  ncf<-ncdf4::nc_open(paste0("/stacywork/hadcm3/isotopes/monthly_fixed/xnap",run,".nc"))
+  if(LOCAL){
+    ncf<-ncdf4::nc_open(paste0("/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/05_HadCM3/xnap/xnap",run,"_isotopes.nc"))
+  }else{
+    ncf<-ncdf4::nc_open(paste0("/stacywork/hadcm3/isotopes/monthly_fixed/xnap",run,".nc"))
+  }
   DATA_past1000_SIM_RAW[[run]]$ISOT <- clear_data_matrix(ncdf4::ncvar_get(ncf, 'dO18'),3)
   DATA_past1000_SIM_RAW[[run]]$ISOT_t <- ncf$dim$t$vals
   ncdf4::nc_close(ncf)
   
-  ncf<-ncdf4::nc_open(paste0("/stacywork/hadcm3/sea_level_pressure/monthly_fixed/xnap",run,".nc"))
+  if(LOCAL){
+    ncf<-ncdf4::nc_open(paste0("/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/05_HadCM3/xnap/xnap",run,"_sea_level_pressure.nc"))
+  }else{
+    ncf<-ncdf4::nc_open(paste0("/stacywork/hadcm3/sea_level_pressure/monthly_fixed/xnap",run,".nc"))
+  }
   DATA_past1000_SIM_RAW[[run]]$SLPR <- ncdf4::ncvar_get(ncf)
   DATA_past1000_SIM_RAW[[run]]$SLPR_t <- ncf$dim$t$vals
   ncdf4::nc_close(ncf)
   
 }
 
-DATA_past1000$SIM_mean <- list()
 
-ncf<-ncdf4::nc_open("/stacywork/hadcm3/hadcm_oro_001cyr.nc")
+
+if(LOCAL){
+  ncf<-ncdf4::nc_open("/home/ginnyweasley/Dokumente/01_Promotion/06_Daten/05_HadCM3/hadcm_oro_001cyr.nc")
+}else{
+  ncf<-ncdf4::nc_open("/stacywork/hadcm3/hadcm_oro_001cyr.nc")
+}
+
 DATA_past1000$SIM_mean$OROG <- ncdf4::ncvar_get(ncf)
 ncdf4::nc_close(ncf)
 
@@ -147,9 +177,9 @@ for (ii in DATA_past1000$CAVES$entity_info$entity_id){
   #if(ii%%10 == 0){
   print(name)
   #}
-  #site <- DATA_past1000$CAVES$entity_info %>% filter(entity_id == ii) %>% distinct(site_id)
-  #DATA_past1000$CAVES$record_data[[name]] <- data[[2]] %>% filter(entity_id == ii) %>% distinct(entity_id, mineralogy, arag_corr, interp_age, d18O_measurement) %>%
-  #  mutate(site_id = (site$site_id))
+  site <- DATA_past1000$CAVES$entity_info %>% filter(entity_id == ii) %>% distinct(site_id)
+  DATA_past1000$CAVES$record_data[[name]] <- data[[2]] %>% filter(entity_id == ii) %>% distinct(entity_id, mineralogy, arag_corr, interp_age, d18O_measurement) %>%
+   mutate(site_id = (site$site_id))
   if(ii == 144 | ii == 226){next}
   DATA_past1000$CAVES$record_data[[name]]$chron <- as.tibble(data[[5]] %>% filter(entity_id == ii))
 }
@@ -209,7 +239,7 @@ for (ii in 1:(length(DATA_past1000$CAVES$entity_info$entity_id))){
   if(lon_cave<0){lon_cave = 360+lon_cave}
   lat_cave = DATA_past1000$CAVES$site_info$latitude[DATA_past1000$CAVES$site_info$site_id == site_id]
 
-  ratios <- extract_gridboxes_new(lon_cave, lat_cave)
+  ratios <- extract_gridboxes(lon_cave, lat_cave)
 
   elevation_cave_sim[ii,1] <- site_id
   elevation_cave_sim[ii,2] <- DATA_past1000$CAVES$entity_info$entity_id[ii]
@@ -338,42 +368,6 @@ for(run in c("a", "b", "c")){
 
 remove(ii, name, pos_start, pos_stop, year, site_id, run)
 
-# #################################################
-# ## 6.0) CLIMATE INFO ############################
-# #################################################
-# 
-# source("Functions/aw_mean.R")
-# 
-# DATA_past1000$CAVES$climate_info <- list(
-#   mean_temp = numeric((dim(DATA_past1000$CAVES$site_info)[1])), max_temp = numeric((dim(DATA_past1000$CAVES$site_info)[1])), min_temp = numeric((dim(DATA_past1000$CAVES$site_info)[1])),
-#   mean_prec = numeric((dim(DATA_past1000$CAVES$site_info)[1])), max_prec = numeric((dim(DATA_past1000$CAVES$site_info)[1])), min_prec = numeric((dim(DATA_past1000$CAVES$site_info)[1])),
-#   mean_isot = numeric((dim(DATA_past1000$CAVES$site_info)[1])), max_isot = numeric((dim(DATA_past1000$CAVES$site_info)[1])), min_isot = numeric((dim(DATA_past1000$CAVES$site_info)[1])),
-#   mean_slpr = numeric((dim(DATA_past1000$CAVES$site_info)[1])), max_slpr = numeric((dim(DATA_past1000$CAVES$site_info)[1])), min_slpr = numeric((dim(DATA_past1000$CAVES$site_info)[1]))
-# )
-# 
-# for (ii in 1:(dim(DATA_past1000$CAVES$site_info)[1])){
-#   site_id = DATA_past1000$CAVES$site_info$site_id[ii]
-#   name = paste0("CAVE", site_id)
-#   DATA_past1000$CAVES$climate_info$mean_temp[ii] = mean(DATA_past1000$CAVES$sim_data_raw[[name]]$TEMP, na.rm = T)
-#   DATA_past1000$CAVES$climate_info$max_temp[ii] = max(DATA_past1000$CAVES$sim_data_raw[[name]]$TEMP, na.rm = T)
-#   DATA_past1000$CAVES$climate_info$min_temp[ii] = min(DATA_past1000$CAVES$sim_data_raw[[name]]$TEMP, na.rm = T)
-# 
-#   DATA_past1000$CAVES$climate_info$mean_prec[ii] = mean(DATA_past1000$CAVES$sim_data_raw[[name]]$PREC, na.rm = T)
-#   DATA_past1000$CAVES$climate_info$max_prec[ii] = max(DATA_past1000$CAVES$sim_data_raw[[name]]$PREC, na.rm = T)
-#   DATA_past1000$CAVES$climate_info$min_prec[ii] = min(DATA_past1000$CAVES$sim_data_raw[[name]]$PREC, na.rm = T)
-#   
-#   DATA_past1000$CAVES$climate_info$mean_isot[ii] = mean(DATA_past1000$CAVES$sim_data_raw[[name]]$ISOT, na.rm = T)
-#   DATA_past1000$CAVES$climate_info$max_isot[ii] = max(DATA_past1000$CAVES$sim_data_raw[[name]]$ISOT, na.rm = T)
-#   DATA_past1000$CAVES$climate_info$min_isot[ii] = min(DATA_past1000$CAVES$sim_data_raw[[name]]$ISOT, na.rm = T)
-#   
-#   DATA_past1000$CAVES$climate_info$mean_slpr[ii] = mean(DATA_past1000$CAVES$sim_data_raw[[name]]$SLPR, na.rm = T)
-#   DATA_past1000$CAVES$climate_info$max_slpr[ii] = max(DATA_past1000$CAVES$sim_data_raw[[name]]$SLPR, na.rm = T)
-#   DATA_past1000$CAVES$climate_info$min_slpr[ii] = min(DATA_past1000$CAVES$sim_data_raw[[name]]$SLPR, na.rm = T)
-# }
-# 
-#   remove(ii, name, site_id)
-#   
-
 #################################################
 ## 7.0) DOWNSAMPELING ###########################
 #################################################
@@ -485,142 +479,4 @@ for(entity in 1:length(DATA_past1000$CAVES$entity_info$entity_id)){
   if(DATA_past1000$CAVES$entity_info$n[entity] > 30 & DATA_past1000$CAVES$entity_info$period[entity] > 600){mask_spec[entity] = T}
 }
 
-#   #################################################
-#   ## 8.0) SIMULATION SEASONS ######################
-#   #################################################
-#   
-#   DATA_past1000$SIM_seasonal <- list(
-#     SUMMER = list(
-#       TEMP = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       PREC = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       ISOT = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       ITPC = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       SLPR = array(dim = c(96,73,diff(DATA_past1000$time)))
-#     ),
-#     AUTUMN = list(
-#       TEMP = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       PREC = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       ISOT = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       ITPC = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       SLPR = array(dim = c(96,73,diff(DATA_past1000$time)))
-#     ),
-#     WINTER = list(
-#       TEMP = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       PREC = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       ISOT = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       ITPC = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       SLPR = array(dim = c(96,73,diff(DATA_past1000$time)))
-#     ),
-#     SPRING = list(
-#       TEMP = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       PREC = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       ISOT = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       ITPC = array(dim = c(96,73,diff(DATA_past1000$time))),
-#       SLPR = array(dim = c(96,73,diff(DATA_past1000$time)))
-#     )
-#   )
-#   
-#   #################################################
-#   ##Calc
-#   
-#   for(lon in 1:96){
-#     for(lat in 1:73){
-#       print(paste(lon,lat,sep = " "))
-#         for(year in 1:diff(DATA_past1000$time)){
-#         #SUMMER
-#         pos_start = 12*(year-1)+1
-#         pos_stop  = 12*(year-1)+12
-#         
-#         DATA_past1000$SIM_seasonal$SUMMER$TEMP[lon,lat,year] = mean(DATA_past1000_SIM_RAW$TEMP[lon,lat, pos_start:pos_stop]*summer_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$SUMMER$PREC[lon,lat,year] = mean(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*summer_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$SUMMER$ISOT[lon,lat,year] = mean(DATA_past1000_SIM_RAW$ISOT[lon,lat, pos_start:pos_stop]*summer_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$SUMMER$ITPC[lon,lat,year] = sum(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*DATA_past1000_SIM_RAW$ISOT[lon,lat, pos_start:pos_stop]*summer_mask,
-#                                                           na.rm = T)/sum(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*summer_mask, na.rm = T)
-#         if(year<diff(DATA_past1000$time)){DATA_past1000$SIM_seasonal$SUMMER$SLPR[lon,lat,year] = mean(DATA_past1000_SIM_RAW$SLPR[lon,lat, pos_start:pos_stop]*summer_mask, na.rm = T)}
-#         else{DATA_past1000$SIM_seasonal$SUMMER$SLPR[lon,lat,year] = DATA_past1000$SIM_seasonal$SUMMER$SLPR[lon,lat,year-1]}
-#         
-#         #AUTUMN
-#         DATA_past1000$SIM_seasonal$AUTUMN$TEMP[lon,lat,year] = mean(DATA_past1000_SIM_RAW$TEMP[lon,lat, pos_start:pos_stop]*autumn_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$AUTUMN$PREC[lon,lat,year] = mean(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*autumn_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$AUTUMN$ISOT[lon,lat,year] = mean(DATA_past1000_SIM_RAW$ISOT[lon,lat, pos_start:pos_stop]*autumn_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$AUTUMN$ITPC[lon,lat,year] = sum(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*DATA_past1000_SIM_RAW$ISOT[lon,lat, pos_start:pos_stop]*autumn_mask,
-#                                                                   na.rm = T)/sum(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*autumn_mask, na.rm = T)
-#         if(year<diff(DATA_past1000$time)){DATA_past1000$SIM_seasonal$AUTUMN$SLPR[lon,lat,year] = mean(DATA_past1000_SIM_RAW$SLPR[lon,lat, pos_start:pos_stop]*autumn_mask, na.rm = T)}
-#         else{DATA_past1000$SIM_seasonal$AUTUMN$SLPR[lon,lat,year] = DATA_past1000$SIM_seasonal$AUTUMN$SLPR[lon,lat,year-1]}
-#         
-#         #WINTER
-#         DATA_past1000$SIM_seasonal$WINTER$TEMP[lon,lat,year] = mean(DATA_past1000_SIM_RAW$TEMP[lon,lat, pos_start:pos_stop]*winter_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$WINTER$PREC[lon,lat,year] = mean(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*winter_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$WINTER$ISOT[lon,lat,year] = mean(DATA_past1000_SIM_RAW$ISOT[lon,lat, pos_start:pos_stop]*winter_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$WINTER$ITPC[lon,lat,year] = sum(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*DATA_past1000_SIM_RAW$ISOT[lon,lat, pos_start:pos_stop]*winter_mask,
-#                                                                   na.rm = T)/sum(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*winter_mask, na.rm = T)
-#         
-#         if(year<diff(DATA_past1000$time)){DATA_past1000$SIM_seasonal$WINTER$SLPR[lon,lat,year] = mean(DATA_past1000_SIM_RAW$SLPR[lon,lat, pos_start:pos_stop]*winter_mask, na.rm = T)}
-#         else{DATA_past1000$SIM_seasonal$WINTER$SLPR[lon,lat,year] = DATA_past1000$SIM_seasonal$WINTER$SLPR[lon,lat,year-1]}
-#         
-#         #SPRING
-#         DATA_past1000$SIM_seasonal$SPRING$TEMP[lon,lat,year] = mean(DATA_past1000_SIM_RAW$TEMP[lon,lat, pos_start:pos_stop]*spring_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$SPRING$PREC[lon,lat,year] = mean(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*spring_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$SPRING$ISOT[lon,lat,year] = mean(DATA_past1000_SIM_RAW$ISOT[lon,lat, pos_start:pos_stop]*spring_mask, na.rm = T)
-#         DATA_past1000$SIM_seasonal$SPRING$ITPC[lon,lat,year] = sum(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*DATA_past1000_SIM_RAW$ISOT[lon,lat, pos_start:pos_stop]*spring_mask,
-#                                                                   na.rm = T)/sum(DATA_past1000_SIM_RAW$PREC[lon,lat, pos_start:pos_stop]*spring_mask, na.rm = T)
-#         
-#         if(year<diff(DATA_past1000$time)){DATA_past1000$SIM_seasonal$SPRING$SLPR[lon,lat,year] = mean(DATA_past1000_SIM_RAW$SLPR[lon,lat, pos_start:pos_stop]*spring_mask, na.rm = T)}
-#         else{DATA_past1000$SIM_seasonal$SPRING$SLPR[lon,lat,year] = DATA_past1000$SIM_seasonal$SPRING$SLPR[lon,lat,year-1]}
-#       }
-#     }
-#   }
-#   
-#   remove(lat,lon, pos_start, pos_stop, year)
-#   
-#   #################################################
-#   ## SIMULATION MEAN ##############################
-#   #################################################
-#   
-#   DATA_past1000$SIM_mean <- list(
-#     TEMP = array(dim = c(96,73)),
-#     PREC = array(dim = c(96,73)),
-#     ISOT = array(dim = c(96,73)),
-#     ITPC = array(dim = c(96,73)),
-#     SLPR = array(dim = c(96,73))
-#   )
-#   
-#   for(lon in 1:96){
-#     for(lat in 1:73){
-#       DATA_past1000$SIM_mean$TEMP[lon,lat] = mean(DATA_past1000$SIM_yearly$TEMP[lon,lat,], na.rm = T)
-#       DATA_past1000$SIM_mean$PREC[lon,lat] = mean(DATA_past1000$SIM_yearly$PREC[lon,lat,], na.rm = T)
-#       DATA_past1000$SIM_mean$ISOT[lon,lat] = mean(DATA_past1000$SIM_yearly$ISOT[lon,lat,], na.rm = T)
-#       DATA_past1000$SIM_mean$ITPC[lon,lat] = mean(DATA_past1000$SIM_yearly$ITPC[lon,lat,], na.rm = T)
-#       DATA_past1000$SIM_mean$SLPR[lon,lat] = mean(DATA_past1000$SIM_yearly$SLPR[lon,lat,], na.rm = T)
-#       #DATA_past1000$SIM_mean$EVAP[lon,lat] = mean(DATA_past1000$SIM_yearly$EVAP[lon,lat,], na.rm = T)
-#     }
-#   }
-#   
-#   remove(lon,lat, year, pos_start, pos_stop)
-#   
-#   remove(DATA_past1000_SIM_RAW, autumn_mask, spring_mask, summer_mask, winter_mask)
-#   
-#   
-#   #################################################
-#   ## ENTITY in LAT band ###########################
-#   #################################################
-#   
-# lat_band <- as.numeric(c(90,80,70,60,50,40,30,20,10,0,-10,-20,-30,-40,-50,-60,-70,-80))
-#   entity_lat <- array(dim = c(length(DATA_past1000$CAVES$entity_info$entity_id),2))
-#   entity_lat[,1] <- DATA_past1000$CAVES$entity_info$entity_id
-#   
-#   for(ii in 1:length(DATA_past1000$CAVES$entity_info$entity_id)){
-#     entity = entity_lat[ii,1]
-#     site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
-#     lat = DATA_past1000$CAVES$site_info$latitude[DATA_past1000$CAVES$site_info$site_id == site]
-#     for(jj in length(lat_band):1){
-#       if(lat < lat_band[jj]){
-#         entity_lat[ii,2] = lat_band[jj]
-#         break
-#       }
-#     }
-#   }
-#   
-#   colnames(entity_lat) <- c("entity_id", "lat_band")
-#   
-#   DATA_past1000$CAVES$entity_lat <- entity_lat
+rm(entity)

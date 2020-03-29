@@ -33,6 +33,7 @@ source("Functions/Plotting/STACYmap_5.R")
 #source("Functions/Plotting/STACYmap_5_1_NAgrid.R")
 source("Functions/Plotting/STACYmap_5_2_logscale.R")
 source("Functions/aw_mean.R")
+source("Functions/projection_ptlyr.R")
 
 GLOBAL_STACY_OPTIONS$GLOBAL_FONT_SIZE = 10
 color_slpr = c("#edf7fb", "#ddedf4", "#cfe2ef", "#c1d6e8", "#b3cde2", "#a8bfdb", "#9eb1d4", "#95a3cd",
@@ -183,7 +184,7 @@ for(run in c("a","b", "c")){
       geom_point(data = ptlyr, aes(x = long, y = lat, fill = layer), shape = 21, alpha = 0.7, color = "black",
                  size = 4, show.legend = c(color =TRUE)) +
       scale_fill_gradientn(colors = rev(RColorBrewer::brewer.pal(11, 'RdBu')), 
-                           limits = c(-max(abs(ptlyr$layer)), max(abs(ptlyr$layer))),
+                           limits = c(-max(abs(ptlyr$layer), na.rm = T), max(abs(ptlyr$layer), na.rm = T)),
                            name = leg_name, 
                            guide = guide_colorbar(barwidth = 10, barheight = 0.3)) +
       theme(legend.direction = "horizontal", 
@@ -191,7 +192,8 @@ for(run in c("a","b", "c")){
             legend.background = element_blank(),
             axis.text = element_blank(),
             text = element_text(size = 10),
-            legend.title = element_text(size = 10))
+            legend.title = element_text(size = 10),
+            panel.ontop = F)
     
     plot_diff
 
@@ -205,6 +207,54 @@ for(run in c("a","b", "c")){
                      width = 2*12, height = 2*12/8.3*PLOTTING_VARIABLES$HEIGHT, units = 'cm', dpi = 'print', device = "pdf")
     plot  %>% ggsave(filename = paste0('Paper_Plot_3_Mean_',var,'_xnap',run, '.png'), plot = ., path = 'Plots', 
                      width = 2*12, height = 2*12/8.3*PLOTTING_VARIABLES$HEIGHT, units = 'cm', dpi = 'print', device = "png")
+    
+  
+    ####### DWEQ Plots to double check
+    
+    PLOTTING_DATA$FIG3$CAVElyr <- data.frame(
+      lon = numeric(length(DATA_past1000$CAVES$entity_info$entity_id)),
+      lat = numeric(length(DATA_past1000$CAVES$entity_info$entity_id)), 
+      value = numeric(length(DATA_past1000$CAVES$entity_info$entity_id))
+    )
+    
+    
+    for(ii in 1:length(DATA_past1000$CAVES$entity_info$entity_id)){
+      site = DATA_past1000$CAVES$entity_info$site_id[ii]
+      entity = DATA_past1000$CAVES$entity_info$entity_id[ii]
+      PLOTTING_DATA$FIG3$CAVElyr$lon[ii]   = DATA_past1000$CAVES$site_info$longitude[DATA_past1000$CAVES$site_info$site_id == site]
+      PLOTTING_DATA$FIG3$CAVElyr$lat[ii]   = DATA_past1000$CAVES$site_info$latitude[DATA_past1000$CAVES$site_info$site_id == site]
+      PLOTTING_DATA$FIG3$CAVElyr$value[ii] = mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]][[paste0("d18O_dw_eq_",run)]], na.rm = T)
+    }
+    
+    PLOTTING_DATA$FIG3$CAVElyr_used <- data.frame(
+      lon = PLOTTING_DATA$FIG3$CAVElyr$lon[mask_mean],
+      lat = PLOTTING_DATA$FIG3$CAVElyr$lat[mask_mean],
+      value = PLOTTING_DATA$FIG3$CAVElyr$value[mask_mean]
+    )
+    
+    ptlyr <- projection_ptlyr(PLOTTING_DATA$FIG3$CAVElyr_used, as.character('+proj=robin +datum=WGS84'))
+    
+    leg_name = expression(paste(delta^{plain(18)}, plain(O)[plain(rec)], " (%)"))
+    
+    plot_caves <- STACYmap(coastline = TRUE) +
+      geom_point(data = ptlyr, aes(x = long, y = lat, fill = layer), shape = 21, alpha = 0.7, color = "black",
+                 size = 4, show.legend = c(color =TRUE)) +
+      scale_fill_gradientn(colors = rev(RColorBrewer::brewer.pal(9, 'YlGnBu')), 
+                           limits = c(min(ptlyr$layer, na.rm = T), max(ptlyr$layer, na.rm = T)),
+                           name = leg_name, 
+                           guide = guide_colorbar(barwidth = 10, barheight = 0.3)) +
+      theme(legend.direction = "horizontal", 
+            panel.border = element_blank(),
+            legend.background = element_blank(),
+            axis.text = element_blank(),
+            text = element_text(size = 10),
+            legend.title = element_text(size = 10),
+            panel.ontop = F)
+    
+    plot_caves  %>% ggsave(filename = paste0('Appendix/Paper_Plot_3_Mean_CAVESONLY',var,'_xnap',run, '.pdf'), plot = ., path = 'Plots', 
+                     width = 12, height = 12/8.3*PLOTTING_VARIABLES$HEIGHT, units = 'cm', dpi = 'print', device = "pdf")
+    plot_caves  %>% ggsave(filename = paste0('Appendix/Paper_Plot_3_Mean_CAVESONLY',var,'_xnap',run, '.png'), plot = ., path = 'Plots', 
+                           width = 12, height = 12/8.3*PLOTTING_VARIABLES$HEIGHT, units = 'cm', dpi = 'print', device = "png")
   }
 }
 

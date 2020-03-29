@@ -32,7 +32,7 @@ ANALYSIS$MEAN$global_mean_full <- mean(as.numeric(mean_bias_full), na.rm = T)
 
 cluster_mean <- list()
 
-for(cluster in 1:8){
+for(cluster in 1:9){
   entity_list <- ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == cluster)
   entity_list <- entity_list$entity_id
   
