@@ -17,12 +17,12 @@ mean_bias_full <- list()
 mean_bias_ds <- list()
 for(entity in DATA_past1000$CAVES$entity_info$entity_id[mask_mean]){
   site = DATA_past1000$CAVES$entity_info$site_id[match(entity, DATA_past1000$CAVES$entity_info$entity_id)]
-  mean_bias_full <- c(mean_bias_full, mean(c(mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_a) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a),
-                                             mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_b) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_b),
-                                             mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_c) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_c))))
-  mean_bias_ds <- c(mean_bias_ds, mean(c(mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_a) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a),
-                                         mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_b) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_b),
-                                         mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_c) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_c))))
+  mean_bias_full <- c(mean_bias_full, mean(c(mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_a, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a, na.rm = T),
+                                             mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_b, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_b, na.rm = T),
+                                             mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_c, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_c, na.rm = T)), na.rm = T))
+  mean_bias_ds <- c(mean_bias_ds, mean(c(mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_a, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a, na.rm = T),
+                                         mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_b, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_b, na.rm = T),
+                                         mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_c, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_c, na.rm = T)), na.rm = T))
 }
 
 ANALYSIS$MEAN$global_mean_ds <- mean(as.numeric(mean_bias_ds), na.rm = T)
@@ -33,6 +33,7 @@ ANALYSIS$MEAN$global_mean_full <- mean(as.numeric(mean_bias_full), na.rm = T)
 cluster_mean <- list()
 
 for(cluster in 1:9){
+  print(cluster)
   entity_list <- ANALYSIS$NETWORK$entity_meta %>% filter(cluster_id == cluster)
   entity_list <- entity_list$entity_id
   
@@ -40,14 +41,14 @@ for(cluster in 1:9){
   mean_bias_ds <- list()
   for(entity in entity_list){
     site = DATA_past1000$CAVES$entity_info$site_id[match(entity, DATA_past1000$CAVES$entity_info$entity_id)]
-    mean_bias_full <- c(mean_bias_full, mean(c(mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_a) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a),
-                                               mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_b) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_b),
-                                               mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_c) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_c))))
-    mean_bias_ds <- c(mean_bias_ds, mean(c(mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_a) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a),
-                                           mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_b) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_b),
-                                           mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_c) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_c))))
+    mean_bias_full <- c(mean_bias_full, mean(c(mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_a, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a, na.rm = T),
+                                               mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_b, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_b, na.rm = T),
+                                               mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_c, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_c, na.rm = T)), na.rm = T))
+    mean_bias_ds <- c(mean_bias_ds, mean(c(mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_a, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a, na.rm = T),
+                                           mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_b, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_b, na.rm = T),
+                                           mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_c, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_c, na.rm = T)), na.rm = T))
   }
-  
+  print(quantile(as.numeric(mean_bias_ds), prob = seq(0,1,0.05)))
   cluster_mean[paste0("CLUSTER", cluster, "_ds")] <- mean(as.numeric(mean_bias_ds), na.rm = T)
   cluster_mean[paste0("CLUSTER", cluster, "_full")] <- mean(as.numeric(mean_bias_full), na.rm = T)
 }
@@ -147,5 +148,18 @@ for(run in c("a", "b", "c")){
   }  
 }
 
+vr_tracker <- data.frame(
+  entity_id = DATA_past1000$CAVES$entity_info$entity_id[mask_spec],
+  var_itpc_ds = ANALYSIS$VARIANCE$POINTS$CAVElyr$a$value_VR_isot_ds[mask_spec],
+  cluster_id = ANALYSIS$NETWORK$entity_meta$cluster_id
+)
+
+cluster_mean <- numeric(9)
+for(cluster in 1:9){
+  cluster_var = vr_tracker %>% filter(cluster_id == cluster)
+  cluster_mean[cluster] = mean(cluster_var$var_itpc_ds, na.rm = T) 
+}
+
+ANALYSIS$VARIANCE$CLUSTER_MEAN <- cluster_mean
 
 remove(entity, ii, site, Var_isot_norm, Var_itpc_norm, Var_prec_norm, Var_temp_norm, run)

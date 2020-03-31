@@ -174,7 +174,7 @@ for(run in c("a", "b","c")){
       lines(c(plot_data$box_map[1], plot_data$box_map[1]), c(plot_data$box_map[3],  plot_data$box_map[4]), col = "black", lwd = "2")
       lines(c(plot_data$box_map[2], plot_data$box_map[2]), c(plot_data$box_map[3],  plot_data$box_map[4]), col = "black", lwd = "2")
       
-      mtext(" A", side = 3, adj = 0, cex = 1.5, col = "black", line = -2)
+      mtext(" (a)", side = 3, adj = 0, cex = 1.5, col = "black", line = -2)
       mtext("°N", side = 2, cex = 1, col = "black", line = 2)
       mtext("°E", side = 1, cex = 1, col = "black", line = 2)
       
@@ -187,7 +187,7 @@ for(run in c("a", "b","c")){
       segments(plot_data$box_corr[1],plot_data$box_corr[3],plot_data$box_corr[1],plot_data$box_corr[4], lwd=3, col="black")
       segments(plot_data$box_corr[2],plot_data$box_corr[3],plot_data$box_corr[2],plot_data$box_corr[4], lwd=3, col="black")
       segments(length(entity_list)+0.5,0.5, 0.5, length(entity_list)+0.5, lwd=5, col="black")
-      mtext(" B", side = 3, adj = 0, cex = 1.5, col = "black", line = -2)
+      mtext(" (b)", side = 3, adj = 0, cex = 1.5, col = "black", line = -2)
       
       plot(c(plot_data$map_window[1], plot_data$map_window[2]),c(plot_data$map_window[3], plot_data$map_window[4]),
            type = "n", xlab = "", ylab= "")
@@ -213,7 +213,7 @@ for(run in c("a", "b","c")){
       lines(c(plot_data$box_map[1], plot_data$box_map[2]), c(plot_data$box_map[4], plot_data$box_map[4]), col = "black", lwd = "2")
       lines(c(plot_data$box_map[1], plot_data$box_map[1]), c(plot_data$box_map[3],  plot_data$box_map[4]), col = "black", lwd = "2")
       lines(c(plot_data$box_map[2], plot_data$box_map[2]), c(plot_data$box_map[3],  plot_data$box_map[4]), col = "black", lwd = "2")
-      mtext(" C", side = 3, adj = 0, cex = 1.5, col = "black", line = -2)
+      mtext(" (c)", side = 3, adj = 0, cex = 1.5, col = "black", line = -2)
       mtext("°N", side = 2, cex = 1, col = "black", line = 2)
       mtext("°E", side = 1, cex = 1, col = "black", line = 2)
       

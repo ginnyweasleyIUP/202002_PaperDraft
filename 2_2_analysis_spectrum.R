@@ -255,8 +255,8 @@ ANALYSIS$SPECTRA$SIM_filter_full_rec <- list(TEMP = list(), PREC = list(), ISOT 
 ANALYSIS$SPECTRA$SIM_filter_down_rec <- list(TEMP = list(), PREC = list(), ISOT = list(), ITPC = list())
 
 filter <- list(
-  ISOT = c(2.0, 20.0, 10.0),
-  ITPC = c(3.0, 12.0, 4.0)
+  ISOT = c(2.0, 16.0, 8.0),
+  ITPC = c(3.0, 9.0, 3.0)
 )
 
 for(ii in 1:length(ANALYSIS$SPECTRA$entities_spec_rec)){

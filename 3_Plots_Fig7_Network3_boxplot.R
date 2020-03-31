@@ -32,7 +32,7 @@ corr <- list(full = list(), gauss = list())
 list <- ANALYSIS$NETWORK$entity_meta %>% select(gridbox_id, entity_id) %>% group_by(gridbox_id) %>% count() %>% filter(n>1)
 for(gridbox in list$gridbox_id){
   corr$full <- c(corr$full, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P<0.1])
-  corr$gauss <- c(corr$full, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C_gauss[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P_gauss<0.1])
+  corr$gauss <- c(corr$gauss, ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$C_gauss[ANALYSIS$NETWORK$GRIDBOX[[paste0("GRIDBOX",gridbox)]]$P_gauss<0.1])
 }
 corr$full = as.numeric(corr$full)
 corr$gauss = as.numeric(corr$gauss)
@@ -68,7 +68,10 @@ for(cluster in c(6,2,3,7,1,5,9)){
                gauss_sim = list(as.numeric(c(ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_a[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
                                              ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_b[[paste0("CLUSTER",cluster)]]$P_gauss<0.1],
                                              ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$C_gauss[ANALYSIS$NETWORK$CLUSTER_SIM_c[[paste0("CLUSTER",cluster)]]$P_gauss<0.1]))))
-  
+  quantile(as.numeric(corr$full), prob = seq(0,1,0.05), na.rm = T)[c(2,11,20)]
+  quantile(as.numeric(corr$gauss[[1]]), prob = seq(0,1,0.05), na.rm = T)[c(2,11,20)]  
+  quantile(as.numeric(corr$full_sim[[1]]), prob = seq(0,1,0.05), na.rm = T)[c(2,11,20)]
+  quantile(as.numeric(corr$gauss_sim[[1]]), prob = seq(0,1,0.05), na.rm = T)[c(2,11,20)]
   boxplot(corr$full, add = TRUE, at = position[[paste0("cluster",cluster)]][1] ,boxwex = 1, names = "n", horizontal = T, axes = F, outline = F) 
   boxplot(corr$gauss, add = TRUE, at = position[[paste0("cluster",cluster)]][2] , boxwex = 1, names = "n", horizontal = T, col = "grey", axes = F, outline = F)
   boxplot(corr$full_sim, add = TRUE, at = position[[paste0("cluster",cluster)]][3]  ,boxwex = 1, names = "n", horizontal = T, col = "dodgerblue3", axes = F, outline = F) 

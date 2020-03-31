@@ -173,7 +173,7 @@ for(run in c("a","b", "c")){
       lat = PLOTTING_DATA$FIG3$CAVElyr_diff$lat[mask_mean],
       value = PLOTTING_DATA$FIG3$CAVElyr_diff$value[mask_mean]
     )
-    PLOTTING_DATA$FIG3$CAVElyr_diff_used$value[57] = NA
+    #PLOTTING_DATA$FIG3$CAVElyr_diff_used$value[57] = NA
     
     ptlyr <- projection_ptlyr(PLOTTING_DATA$FIG3$CAVElyr_diff_used, as.character('+proj=robin +datum=WGS84'))
     
@@ -181,7 +181,7 @@ for(run in c("a","b", "c")){
     if(var == "ITPC"){leg_name = expression(paste(delta^{plain(18)}, plain(O)["sim,pw"]," - ", delta^{plain(18)}, plain(O)[plain(rec)], " (%)"))}
     
     plot_diff <- STACYmap(coastline = TRUE) +
-      geom_point(data = ptlyr, aes(x = long, y = lat, fill = layer), shape = 21, alpha = 0.7, color = "black",
+      geom_point(data = ptlyr, aes(x = long, y = lat, fill = layer), shape = 21, alpha = 0.8, color = "black",
                  size = 4, show.legend = c(color =TRUE)) +
       scale_fill_gradientn(colors = rev(RColorBrewer::brewer.pal(11, 'RdBu')), 
                            limits = c(-max(abs(ptlyr$layer), na.rm = T), max(abs(ptlyr$layer), na.rm = T)),

@@ -95,6 +95,8 @@ mtext(text = "latitude",side = 1,line = 2)
 mtext(text = "d18O-d18Oc",side = 2,line = 2)
 text(10, 6.7, "calcite", cex = 1.5)
 text(-5, -7., "aragonite", col = "blue", cex = 1.5)
+mtext(text = "a)", side = 3, line = -1.5, adj = 0.02, cex = 1)
+
 #temperature
 plot(scatter_data$mean_temp[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
      yaxt = 'n', xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
@@ -104,6 +106,8 @@ points(scatter_data$mean_temp[mask_mean_aragonite], scatter_data$diff_full[mask_
        pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
 lines(lowess(scatter_data$mean_temp, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$mean_temp, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "mean temp",side = 1,line = 2)
+mtext(text = "b)", side = 3, line = -1.5, adj = 0.02, cex = 1)
+
 #prec
 plot(scatter_data$mean_prec[mask_mean_calcite]*8.6148e4, scatter_data$diff_full[mask_mean_calcite], 
      xlab = "", ylab = "", log = "x", ylim = c(-10,10), xlim = c(0.2,15), panel.first = grid(equilogs = FALSE),
@@ -114,6 +118,8 @@ points(scatter_data$mean_prec[mask_mean_aragonite]*8.6148e4, scatter_data$diff_f
 lines(lowess(scatter_data$mean_prec*8.6148e4, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$winter_mean_prec, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "mean prec",side = 1,line = 2)
 mtext(text = "d18O-d18Oc",side = 2,line = 2)
+mtext(text = "c)", side = 3, line = -1.5, adj = 0.02, cex = 1)
+
 #DJF prec
 plot(scatter_data$winter_mean_prec[mask_mean_calcite]*8.6148e4, scatter_data$diff_full[mask_mean_calcite], 
      yaxt = 'n', xlab = "", ylab = "", xlim = c(0.4,15), log = "x", ylim = c(-10,10), yaxt = "n", panel.first = grid(equilogs = FALSE),
@@ -123,6 +129,8 @@ points(scatter_data$winter_mean_prec[mask_mean_aragonite]*8.6148e4, scatter_data
        pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
 lines(lowess(scatter_data$winter_mean_prec*8.6148e4, scatter_data$diff_full, f = 2/3, delta = 0.01*diff(range(scatter_data$winter_mean_prec, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "DJF prec",side = 1,line = 2)
+mtext(text = "d)", side = 3, line = -1.5, adj = 0.02, cex = 1)
+
 # elevation
 plot(scatter_data$elevation[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
      xlab = "", ylab = "", ylim = c(-10,10), xlim = c(0,4000), panel.first = grid(),
@@ -133,6 +141,7 @@ points(scatter_data$elevation[mask_mean_aragonite], scatter_data$diff_full[mask_
 lines(lowess(na.omit(as.numeric(scatter_data$elevation)), scatter_data$diff_full[!is.na(as.numeric(scatter_data$elevation))], f = 2/3, delta = 0.01*diff(range(scatter_data$elevation, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "elevation",side = 1,line = 2)
 mtext(text = "d18O-d18Oc",side = 2,line = 2)
+mtext(text = "e)", side = 3, line = -1.5, adj = 0.02, cex = 1)
 
 plot(scatter_data$elevation_diff[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
      yaxt = 'n', xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
@@ -142,6 +151,8 @@ points(scatter_data$elevation_diff[mask_mean_aragonite], scatter_data$diff_full[
        pch = 16, col = adjustcolor("blue", alpha.f = 0.5), cex = 2)
 lines(lowess(na.omit(scatter_data$elevation_diff), scatter_data$diff_full[!is.na(scatter_data$diff_full)], f = 2/5, delta = 0.01*diff(range(scatter_data$elevation, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "elevation diff. (sim-rec)",side = 1,line = 2)
+mtext(text = "f)", side = 3, line = -1.5, adj = 0.02, cex = 1)
+
 #cover thickness
 plot(scatter_data$cover_thickness[mask_mean_calcite], scatter_data$diff_full[mask_mean_calcite], 
      xlab = "", ylab = "", ylim = c(-10,10), panel.first = grid(),
@@ -152,6 +163,7 @@ points(scatter_data$cover_thickness[mask_mean_aragonite], scatter_data$diff_full
 lines(lowess(na.omit(scatter_data$cover_thickness), scatter_data$diff_full[!is.na(scatter_data$cover_thickness)], f = 2/3, delta = 0.01*diff(range(scatter_data$mean_temp, na.rm = T))), lwd = 4, col = "#B2182B")
 mtext(text = "cover thickness",side = 1,line = 2)
 mtext(text = "d18O-d18Oc",side = 2,line = 2)
+mtext(text = "g)", side = 3, line = -1.5, adj = 0.02, cex = 1)
 
 plot(c(0,4), c(-10,10), type = "n", xlab = "", ylab = "", yaxt = 'n', xaxt = 'n')
 abline(h=0)
@@ -161,6 +173,7 @@ boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "marble"]), ad
 boxplot(as.numeric(scatter_data$diff_full[scatter_data$geology == "unknown"]), add = T, at = 3.5, yaxt ="n", axes = F)
 mtext(text = "geology", side = 1, line = 2)
 axis(1,at=c(0.5,1.5,2.5,3.5),labels=c("limestone", "dolomite", "marble", "unknown"))
+mtext(text = "h)", side = 3, line = -1.5, adj = 0.02, cex = 1)
 
 
 dev.off()
