@@ -27,6 +27,9 @@ for (entity in DATA_past1000$CAVES$entity_info$entity_id[mask_spec]){
   longs = c(longs, DATA_past1000$CAVES$site_info$longitude[DATA_past1000$CAVES$site_info$site_id == site])
 }
 
+load("C_ensemble_max.RData")
+c_ensemble <- C
+
 
 
 ###################################################################################################
@@ -64,6 +67,11 @@ for(run in c("a","b","c")){
   plot_c_rec_max[lower.tri(ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max)] = NA
   lowess_c_rec_max <- as.vector(ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max[upper.tri(ANALYSIS$NETWORK$GLOBAL_CHRONO$C_max)])
   lowess_c_rec_max_sorted <- lowess_c_rec_max[o]
+  
+  plot_c_rec_max_e <- c_ensemble
+  plot_c_rec_max_e[lower.tri(c_ensemble)] = NA
+  lowess_c_rec_max_e <- as.vector(c_ensemble[upper.tri(c_ensemble)])
+  lowess_c_rec_max_e_sorted <- lowess_c_rec_max_e[o]
   
   lo <- loess(lowess_c_rec_sorted ~ lowess_dist_sorted)
   
@@ -147,11 +155,14 @@ for(run in c("a","b","c")){
   lo <- loess(lowess_c_rec_sorted ~ lowess_dist_sorted, span = 0.2)
   lines(lo$x, lo$fitted, lwd = 4, col = "#B2182B")
   lo <- loess(lowess_c_rec_max_sorted ~ lowess_dist_sorted, span = 0.2)
-  lines(lo$x, lo$fitted, lwd = 4, col = "darkblue")
+  lines(lo$x, lo$fitted, lwd = 4, col = "#1D3461")
+  lo <- loess(lowess_c_rec_max_e_sorted ~ lowess_dist_sorted, span = 0.2)
+  lines(lo$x, lo$fitted, lwd = 4, col = "#0068C4")
   mtext("Distance between pairs (km)", side= 1, line = 2)
   mtext("(d)", side = 3, adj = 0, cex = namcex, line = -1.5, at = 0)
   text(20000, 0.9, "original chron.", col = "#B2182B", adj = 1, font = 2)
-  text(20000, 0.77, "sisal chron.", col = "darkblue", adj = 1, font = 2)
+  text(20000, 0.77, "sisal chron.", col = "#1D3461", adj = 1, font = 2)
+  text(20000, 0.64, "sisal ensemble", col = "#0068C4", adj = 1, font = 2)
   
   dev.off()
 }

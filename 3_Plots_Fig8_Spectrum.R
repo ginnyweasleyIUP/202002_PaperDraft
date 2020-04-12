@@ -202,33 +202,33 @@ for(var in c("ISOT", "ITPC")){
   layout(matrix(c(1,2,3,4,4,4), 3, 2, byrow = F))
   
   plot(DATA_past1000$CAVES$record_data$ENTITY240$interp_age, DATA_past1000$CAVES$record_data$ENTITY240$d18O_dw_eq_a,
-       col = "black", type = "l", ylim = c(-10,-5.5), xlim = c(0,1100), xaxt = "n", yaxt = "n",ylab = "", xlab = "")
+       col = "black", type = "l", ylim = c(-10,-5.0), xlim = c(0,1100), xaxt = "n", yaxt = "n",ylab = "", xlab = "")
   axis(2,at=seq(-10,-6,by=1),labels=FALSE,col=COLZ[6])
   mtext(side=2,at=seq(-10,-6,by=1),line = 1, seq(-10,-6,by=1),las=1,col=COLZ[6], cex = cex_axis)
-  text(1050, -6, TeX("Example: eID 240 (Bunker Cave)"), col = COLZ[6], adj = 1, cex = cex_text)
-  mtext("a)", side = 3, line = -1.3, adj = 0.025, cex = cex_axis_text)
+  text(1050, -5.5, TeX("Example: eID 240 (Bunker Cave)"), col = COLZ[6], adj = 1, cex = cex_text)
+  mtext("(a)", side = 3, line = -1.3, adj = 0.025, cex = cex_axis_text)
   
   plot(seq(from = 1950 - DATA_past1000$time[[1]], to = 1950 - DATA_past1000$time[[2]]+1, by = -1), DATA_past1000$CAVES$sim_data_yearly$CAVE117[[paste0(var,"_a")]], 
-       col = COLZ[1], type = "l", ylim = c(-10,-5.5), xlim = c(0,1100), xaxt = "n", yaxt = "n",ylab = "", xlab = "")
+       col = COLZ[1], type = "l", ylim = c(-10,-5.0), xlim = c(0,1100), xaxt = "n", yaxt = "n",ylab = "", xlab = "")
   lines(window(TS_full_down, start = 30, end = 1100), col = COLZ[2])
   lines(window(TS_full_rec, start = 30, end = 1030), col = COLZ[3])
   axis(2,at=seq(-10,-6,by=1),labels=FALSE,col=COLZ[1])
   mtext(side=2,at=seq(-10,-6,by=1),line = 1, seq(-10,-6,by=1),col=COLZ[1], cex = cex_axis)
-  text(1050, -6, TeX("HadCM3 at eID 240"), col = COLZ[1], adj = 1, cex = cex_text)
-  text(1050, -6.5, paste0(filter[[var]][1], "y filter"), col = COLZ[2], adj = 1, cex = cex_text)
+  text(1050, -5.5, TeX("HadCM3 at eID 240"), col = COLZ[1], adj = 1, cex = cex_text)
+  text(1050, -6.0, paste0(filter[[var]][1], "y filter"), col = COLZ[2], adj = 1, cex = cex_text)
   text(1050, -9.5, paste0(filter[[var]][2], "y filter"), col = COLZ[3], adj = 1, cex = cex_text)
   mtext(TeX("$\\delta^{18}O$"),side=2, at = -8, line = 2.5, las = 1, col = COLZ[1], cex = cex_axis_text)
   mtext(text = "[‰]", side = 2, at = -9, line = 2.5, las = 1, col = COLZ[1], cex = cex_axis_text)
-  mtext("b)", side = 3, line = -1.3, adj = 0.025, cex = cex_axis_text)
+  mtext("(b)", side = 3, line = -1.3, adj = 0.025, cex = cex_axis_text)
   
   plot(DATA_past1000$CAVES$sim_data_downsampled$ENTITY240$interp_age, DATA_past1000$CAVES$sim_data_downsampled$ENTITY240[[paste0(var,"_a")]],
-       col = COLZ[4], type = "l", ylim = c(-10,-5.5), xlim = c(0,1100), xaxt = "n", yaxt = "n",ylab = "", xlab = "")
+       col = COLZ[4], type = "l", ylim = c(-10,-5.0), xlim = c(0,1100), xaxt = "n", yaxt = "n",ylab = "", xlab = "")
   lines(window(TS_down_rec, start = 150, end = 1100), col = COLZ[5])
   axis(2,at=seq(-10,-6,by=1),labels=FALSE,col=COLZ[4])
   mtext(side=2,at=seq(-10,-6,by=1),line = 1, seq(-10,-6,by=1),las=1,col=COLZ[4], cex = cex_axis)
-  text(1050, -6, TeX("HadCM3 at eID 240 down-sampled"), col = COLZ[4], adj = 1, cex = cex_text)
-  text(1050, -6.5, paste0(filter[[var]][3], "y filter"), col = COLZ[5], adj = 1, cex = cex_text)
-  mtext("c)", side = 3, line = -1.3, adj = 0.025, cex = cex_axis_text)
+  text(1050, -5.5, TeX("HadCM3 at eID 240 down-sampled"), col = COLZ[4], adj = 1, cex = cex_text)
+  text(1050, -6.0, paste0(filter[[var]][3], "y filter"), col = COLZ[5], adj = 1, cex = cex_text)
+  mtext("(c)", side = 3, line = -1.3, adj = 0.025, cex = cex_axis_text)
   
   
   
@@ -237,20 +237,20 @@ for(var in c("ISOT", "ITPC")){
   mtext("years BP", side = 1, line = 2, at = 500, cex = cex_axis_text)
   
   #png(file = paste0("Plots/Paper_Plot_7_Spectra_",var,".png"), width = 70*PLOTTING_VARIABLES$WIDTH*2/3, height = 70*PLOTTING_VARIABLES$HEIGHT*1.2*2/3)
-  LPlot(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_",var)]]$spec, col = adjustcolor(COLZ[1], alpha = 0.5), 
+  LPlot(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_",var)]]$spec, col = adjustcolor(COLZ[1], alpha = 0.5), 
         ylim = c(0.00005,1000), xlim = c(1/300, 0.5),
         ylab = "",
         xaxt = 'n',
         yaxt = "n",
         xlab = "", lwd = 2)
-  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_",var)]]$spec), col = COLZ[1], lw = 3)#,
+  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_",var)]]$spec), col = COLZ[1], lw = 3)#,
   #main = TeX("Mean Spectra from cave locations (res>8)"))
   mtext("Period (y)", side = 1, line= 2, cex = cex_axis_text)
   mtext("PSD", side = 4, line= 1.5, at = 0.5, las = 1, cex = cex_axis_text)
-  LLines(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_down_",var)]]$spec, col = COLZ[2], lty = 3, lw = 2)
-  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_down_",var)]]$spec), col = COLZ[2], lw = 2)
-  LLines(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_rec_",var)]]$spec, col = COLZ[3], lty = 3, lw = 2)
-  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_full_rec_",var)]]$spec), col = COLZ[3], lw = 2)
+  LLines(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_down_",var)]]$spec, col = COLZ[2], lty = 3, lw = 2)
+  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_down_",var)]]$spec), col = COLZ[2], lw = 2)
+  LLines(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_rec_",var)]]$spec, col = COLZ[3], lty = 3, lw = 2)
+  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_full_rec_",var)]]$spec), col = COLZ[3], lw = 2)
   #text(0.2, 8e2, "HadCM3 yearly res.", col = "#074893")
   #text(0.3, 3e2, "5y filter", col = "#074893")
   #text(0.3, 1e2, "50y filter", col = "#074893")
@@ -261,15 +261,15 @@ for(var in c("ISOT", "ITPC")){
   axis(side = 4, at = c(1e-3, 1e-1, 1e1, 1e3), labels = FALSE)
   mtext(side=4,at=c(1e-3, 1e-1, 1e1, 1e3),line = 1, c(1e-3, 0.1, 10, 1000),las=1,col="black", cex = cex_axis)
   
-  LLines(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_ds_",var)]]$spec, col = adjustcolor(COLZ[4], alpha = 0.5), lw = 2)
-  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_ds_",var)]]$spec), col = COLZ[4], lw = 2)
-  LLines(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_down_rec_",var)]]$spec, col = COLZ[5], lty = 3, lw = 2)
-  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC[[paste0("SIM_down_rec_",var)]]$spec), col = COLZ[5], lw = 2)
+  LLines(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_ds_",var)]]$spec, col = adjustcolor(COLZ[4], alpha = 0.5), lw = 2)
+  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_ds_",var)]]$spec), col = COLZ[4], lw = 2)
+  LLines(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_down_rec_",var)]]$spec, col = COLZ[5], lty = 3, lw = 2)
+  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH[[paste0("SIM_down_rec_",var)]]$spec), col = COLZ[5], lw = 2)
   #text(0.02, 0.01, "HadCM3 down-sampled", col = COLZ[4])
   #text(0.02, 0.001, "10y filter", col = COLZ[4])
   
-  LLines(ANALYSIS$SPECTRA$MEAN_SPEC$Record$spec, col = adjustcolor(COLZ[6], alpha = 0.5), lw = 2)
-  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC$Record$spec), col = COLZ[6], lw = 3)
+  LLines(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$Record$spec, col = adjustcolor(COLZ[6], alpha = 0.5), lw = 2)
+  LLines(LogSmooth(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$Record$spec), col = COLZ[6], lw = 3)
   #text(0.02, 0.0005, "Records", col = "black")
   
   legend("bottomleft", legend = c("HadCM3 (full)", paste0(" ...  ",filter[[var]][1],"y filter"), paste0(" ...  ",filter[[var]][2],"y filter"), "HadCM3 (down-sampled)", paste0(" ...  ",filter[[var]][3],"y filter"), "Records"), 

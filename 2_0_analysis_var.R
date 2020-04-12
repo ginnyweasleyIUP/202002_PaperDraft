@@ -15,6 +15,7 @@ ANALYSIS$MEAN <- list()
 
 mean_bias_full <- list()
 mean_bias_ds <- list()
+mean_bias_lat <- list()
 for(entity in DATA_past1000$CAVES$entity_info$entity_id[mask_mean]){
   site = DATA_past1000$CAVES$entity_info$site_id[match(entity, DATA_past1000$CAVES$entity_info$entity_id)]
   mean_bias_full <- c(mean_bias_full, mean(c(mean(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]]$ITPC_a, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a, na.rm = T),
@@ -23,10 +24,18 @@ for(entity in DATA_past1000$CAVES$entity_info$entity_id[mask_mean]){
   mean_bias_ds <- c(mean_bias_ds, mean(c(mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_a, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_a, na.rm = T),
                                          mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_b, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_b, na.rm = T),
                                          mean(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY", entity)]]$ITPC_c, na.rm = T) - mean(DATA_past1000$CAVES$record_data[[paste0("ENTITY", entity)]]$d18O_dw_eq_c, na.rm = T)), na.rm = T))
+  mean_bias_lat <- c(mean_bias_lat, DATA_past1000$CAVES$site_info$latitude[DATA_past1000$CAVES$site_info$site_id == site])
 }
+
+weighing = cos(as.numeric(mean_bias_lat)*pi/180)/sum(cos(as.numeric(mean_bias_lat)*pi/180))
+
+
 
 ANALYSIS$MEAN$global_mean_ds <- mean(as.numeric(mean_bias_ds), na.rm = T)
 ANALYSIS$MEAN$global_mean_full <- mean(as.numeric(mean_bias_full), na.rm = T)
+ANALYSIS$MEAN$global_mean_ds_weighted <- sum(weighing*as.numeric(mean_bias_ds), na.rm = T)
+ANALYSIS$MEAN$global_mean_full_weighted <- sum(weighing*as.numeric(mean_bias_full), na.rm = T)
+
 
 # CLUSTER
 
@@ -54,6 +63,9 @@ for(cluster in 1:9){
 }
 
 ANALYSIS$MEAN$CLUSTER <- cluster_mean
+
+## WEIGHING
+ANALYSIS$MEAN$
 
 #################################################
 

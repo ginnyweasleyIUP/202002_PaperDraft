@@ -4,3 +4,4 @@
 *.RDataTmp
 *.svg
 .Ruserdata
+*.csv
