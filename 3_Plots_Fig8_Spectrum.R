@@ -42,8 +42,8 @@ for(var in c("ISOT", "ITPC")){
   #text(0.3, 3e2, "5y filter", col = "#074893")
   #text(0.3, 1e2, "50y filter", col = "#074893")
   
-  axis(side = 1, at = c(0.002,0.0033333333, 0.005, 0.01, 0.02, 0.05, 0.2, 0.5), 
-       labels = c(1/0.002, 300, 1/0.005, 1/0.01, 1/0.02, 1/0.05, 1/0.2, 1/0.5))
+  axis(side = 1, at = c(0.002, 0.005, 0.01, 0.02, 0.05, 0.2, 0.5), 
+       labels = c(1/0.002, 1/0.005, 1/0.01, 1/0.02, 1/0.05, 1/0.2, 1/0.5))
   axis(side = 2, at = c(1e-3, 1e-1, 1e1, 1e3), 
        labels = c(1e-3, 0.1, 10, 1000))
   
@@ -129,9 +129,9 @@ for(var in c("ISOT", "ITPC")){
   #text(0.3, 3e2, "5y filter", col = "#074893")
   #text(0.3, 1e2, "50y filter", col = "#074893")
   
-  axis(side = 1, at = c(0.002,0.0033333333, 0.005, 0.01, 0.02, 0.05, 0.2, 0.5), labels = FALSE)
-  mtext(side=1,at=c(0.0033333333, 0.005, 0.01, 0.02, 0.05, 0.2, 0.5),line = 1, 
-        c(300, 1/0.005, 1/0.01, 1/0.02, 1/0.05, 1/0.2, 1/0.5),las=1,col="black", cex = cex_axis)
+  axis(side = 1, at = c(0.002, 0.005, 0.01, 0.02, 0.05, 0.2, 0.5), labels = FALSE)
+  mtext(side=1,at=c(0.005, 0.01, 0.02, 0.05, 0.2, 0.5),line = 1, 
+        c(1/0.005, 1/0.01, 1/0.02, 1/0.05, 1/0.2, 1/0.5),las=1,col="black", cex = cex_axis)
   axis(side = 4, at = c(1e-3, 1e-1, 1e1, 1e3), labels = FALSE)
   mtext(side=4,at=c(1e-3, 1e-1, 1e1, 1e3),line = 1, c(1e-3, 0.1, 10, 1000),las=1,col="black", cex = cex_axis)
   
@@ -255,9 +255,9 @@ for(var in c("ISOT", "ITPC")){
   #text(0.3, 3e2, "5y filter", col = "#074893")
   #text(0.3, 1e2, "50y filter", col = "#074893")
   
-  axis(side = 1, at = c(0.002,0.0033333333, 0.005, 0.01, 0.02, 0.05, 0.2, 0.5), labels = FALSE)
-  mtext(side=1,at=c(0.0033333333, 0.005, 0.01, 0.02, 0.05, 0.2, 0.5),line = 1, 
-        c(300, 1/0.005, 1/0.01, 1/0.02, 1/0.05, 1/0.2, 1/0.5),las=1,col="black", cex = cex_axis)
+  axis(side = 1, at = c(0.002, 0.005, 0.01, 0.02, 0.05, 0.2, 0.5), labels = FALSE)
+  mtext(side=1,at=c(0.005, 0.01, 0.02, 0.05, 0.2, 0.5),line = 1, 
+        c(1/0.005, 1/0.01, 1/0.02, 1/0.05, 1/0.2, 1/0.5),las=1,col="black", cex = cex_axis)
   axis(side = 4, at = c(1e-3, 1e-1, 1e1, 1e3), labels = FALSE)
   mtext(side=4,at=c(1e-3, 1e-1, 1e1, 1e3),line = 1, c(1e-3, 0.1, 10, 1000),las=1,col="black", cex = cex_axis)
   

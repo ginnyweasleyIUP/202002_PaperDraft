@@ -53,6 +53,7 @@ for(ii in 1:length(DATA_past1000$CAVES$entity_info$entity_id[mask_mean])){
 }
 
 scatter_data = as.tibble(scatter_data)
+scatter_data$entity_id = as.numeric(scatter_data$entity_id)
 scatter_data$site_id = as.numeric(scatter_data$site_id)
 scatter_data$diff_full = as.numeric(scatter_data$diff_full)
 scatter_data$diff_down = as.numeric(scatter_data$diff_down)
