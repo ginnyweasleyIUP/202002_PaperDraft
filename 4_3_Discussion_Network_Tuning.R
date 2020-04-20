@@ -319,3 +319,10 @@ for(plot in 1:1){
   dev.off()
   
 }
+
+rm(corr, dist, dist_matrix, cluster_list, gridboxes, mask, mask_small, position, sites)
+rm(d18O, data, DATA_EXPORT_ENTITY, DATA_EXPORT_SITE, data_new, double_time, ens_1000, filter, mask_cluster, mask_cluster1, org_chronology, PLOT, plot_c_rec_max_e, Plot_Lyr,
+   ptlyr_china, ptlyr_china_p, ptlyr_rest, ptlyr_rest_p, rm_list, s, sample, temp, TEST, text, TS)
+rm(cluster, cluster_number, col_chrono, col_closest, col_ensemble, col_offset, entity, entity_list, entity_total, gridbox, ii, index, index.c, jj, line_names, offset, site)
+rm(cex_axis, cex_axis_text, cex_text, chronology_2, colorbar_length, COLZ, counter, diff, e_count, e_count2, entity_2, gmd18O,lats, length, longs, lowess_c_rec_max_e, lowess_c_rec_max_e_sorted,
+   name,noE, plot, record, Results, run, season, season_num,start_ts, stop_ts, title, TS_full_down, TS_down_rec, TS_full_rec, var)

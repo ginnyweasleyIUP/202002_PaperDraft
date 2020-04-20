@@ -5,6 +5,7 @@
 library(plyr)
 library(dplyr)
 library(tidyverse)
+library(zoo)
 
 #################################################
 
@@ -21,6 +22,7 @@ for(run in c("a", "b","c")){
   
   for(var in c("TEMP", "PREC", "ISOT")){
     ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]] <- data.frame(
+        entity = numeric(length(entity_list)),
         lon = numeric(length(entity_list)),
         lat = numeric(length(entity_list)),
         value = numeric(length(entity_list)),
@@ -40,6 +42,7 @@ for(run in c("a", "b","c")){
         corr_ISOT_p = numeric(5)
       )
       site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
+      ANALYSIS$SEASONS[[paste0("Plot_Lyr_", var,"_",run)]]$lon[counter] = entity
       ANALYSIS$SEASONS[[paste0("Plot_Lyr_", var,"_",run)]]$lon[counter] = DATA_past1000$CAVES$site_info$longitude[DATA_past1000$CAVES$site_info$site_id == site]
       ANALYSIS$SEASONS[[paste0("Plot_Lyr_", var,"_",run)]]$lat[counter] = DATA_past1000$CAVES$site_info$latitude[DATA_past1000$CAVES$site_info$site_id == site]
       
@@ -72,10 +75,16 @@ for(run in c("a", "b","c")){
       TEST[[paste0("corr_", var)]][season_num] = corr$estimate[[1]]
       TEST[[paste0("corr_", var, "_p")]][season_num] = corr$p.value
       
-      ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]]$value[counter] = max(abs(TEST[[paste0("corr_", var)]]))
+      
+      #sort out non-significant
+      TEST[[paste0("corr_", var)]][TEST[[paste0("corr_", var, "_p")]]>0.1] = NA
+      
+      
       if(all(is.na(TEST[[paste0("corr_", var)]]))){
+        ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]]$value[counter] = NA
         ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]]$season[counter] = NA
       } else {
+        ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]]$value[counter] = TEST[[paste0("corr_", var)]][which.max(abs(TEST[[paste0("corr_", var)]]))]
         ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]]$season[counter] = which.max(abs(TEST[[paste0("corr_", var)]]))
       }
       counter = counter + 1
