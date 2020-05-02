@@ -29,6 +29,11 @@ Timeseries$HadCM3_GMST_a <- zoo(x = value$a-mean(value$a[1080:1110]), order.by =
 
 DISCUSSION$MEAN$std.dev <- sd(gmd18O, na.rm = T)
 
+#################################################
+## Regression var ratio and offset
+
+reg <- lm(log(DISCUSSION$scatter_data_variance$vr_ds_itpc) ~ DISCUSSION$scatter_data_variance$diff_down)
+confint(reg, 'DISCUSSION$scatter_data_variance$diff_down')
 
 
 #################################################

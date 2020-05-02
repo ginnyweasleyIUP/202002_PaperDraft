@@ -52,7 +52,7 @@ for(run in c("a", "b","c")){
       double_time <- s %>% group_by(interp_age) %>% count() %>% filter(n>1)
       s <- s %>% filter(!interp_age %in% double_time$interp_age) %>% filter(!is.na(d18O_measurement))
       
-      TS[["Record"]] <- zoo(x = s[[paste0("d18O_dw_eq_",run)]], order.by = s$interp_age)
+      TS[["Record"]] <- zoo(x = s$d18O_measurement, order.by = s$interp_age)
       season_num = 1
       for(season in c("WINTER", "SPRING", "SUMMER", "AUTUMN")){
         TS[["SIM"]] <- zoo( x= SubsampleTimeseriesBlock_highresNA(ts(data = rev(DATA_past1000$CAVES$sim_data_seasonal[[run]][[paste0("CAVE", site)]][[season]][[paste0(tolower(var), "_mean")]]), 

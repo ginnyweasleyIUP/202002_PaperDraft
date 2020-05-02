@@ -23,7 +23,7 @@ COLZ <- c("#1A2254", "#0A4296", "#278BCE","#91002B", "#BD6B73", "black")
 
 for(var in c("ISOT", "ITPC")){
   pdf(file = paste0("Plots/Discussion/Spectra_1-48_",var,".pdf"), width = 21, height = 29.7)
-  par(mfrow=c(8,6),oma = c(1,3,0,0) + 0.1,mar = c(6,0,1,4) + 0.1)
+  par(mfrow=c(8,6),oma = c(1,3,0,0) + 0.1,mar = c(3,0,1,3) + 0.1)
   for(entity in ANALYSIS$SPECTRA$entities_spec_rec[1:48]){
     LPlot(ANALYSIS$SPECTRA$SIM_full$a[[var]][[paste0("ENTITY",entity)]], col = adjustcolor(COLZ[1], alpha = 0.5), 
           ylim = c(0.00005,1000), xlim = c(1/300, 0.5),
@@ -33,8 +33,8 @@ for(var in c("ISOT", "ITPC")){
           xlab = "", lwd = 2)
     LLines(LogSmooth(ANALYSIS$SPECTRA$SIM_full$a[[var]][[paste0("ENTITY",entity)]]), col = COLZ[1], lw = 3)#,
     #main = TeX("Mean Spectra from cave locations (res>8)"))
-    mtext("Period (y)", side = 1, line= 2)
-    mtext("Power spectral sensity", side = 2, line= 2)
+    mtext("Period (y)", side = 1, line= 2, cex = 0.8)
+    mtext("Power spectral sensity", side = 2, line= 2, cex = 0.8)
     LLines(ANALYSIS$SPECTRA$SIM_filter_full_down[[var]]$a[[paste0("ENTITY",entity)]], col = COLZ[2], lty = 3, lw = 2)
     LLines(LogSmooth(ANALYSIS$SPECTRA$SIM_filter_full_down[[var]]$a[[paste0("ENTITY",entity)]]), col = COLZ[2], lw = 2)
     LLines(ANALYSIS$SPECTRA$SIM_filter_full_rec[[var]]$a[[paste0("ENTITY",entity)]], col = COLZ[3], lty = 3, lw = 2)
@@ -75,7 +75,7 @@ for(var in c("ISOT", "ITPC")){
   dev.off()
   
   pdf(file = paste0("Plots/Discussion/Spectra_49-87_",var,".pdf"), width = 21, height = 29.7)
-  par(mfrow=c(8,6),oma = c(1,3,0,0) + 0.1,mar = c(6,0,1,4) + 0.1)
+  par(mfrow=c(8,6),oma = c(1,3,0,0) + 0.1,mar = c(3,0,1,3) + 0.1)
   for(entity in ANALYSIS$SPECTRA$entities_spec_rec[49:87]){
     if(entity ==351 | entity == 390 ){next}
     LPlot(ANALYSIS$SPECTRA$SIM_full$a[[var]][[paste0("ENTITY",entity)]], col = adjustcolor(COLZ[1], alpha = 0.5), 
@@ -86,8 +86,8 @@ for(var in c("ISOT", "ITPC")){
           xlab = "", lwd = 2)
     LLines(LogSmooth(ANALYSIS$SPECTRA$SIM_full$a[[var]][[paste0("ENTITY",entity)]]), col = COLZ[1], lw = 3)#,
     #main = TeX("Mean Spectra from cave locations (res>8)"))
-    mtext("Period (y)", side = 1, line= 2)
-    mtext("Power spectral sensity", side = 2, line= 2)
+    mtext("Period (y)", side = 1, line= 2, cex = 0.8)
+    mtext("Power spectral sensity", side = 2, line= 2, cex = 0.8)
     LLines(ANALYSIS$SPECTRA$SIM_filter_full_down[[var]]$a[[paste0("ENTITY",entity)]], col = COLZ[2], lty = 3, lw = 2)
     LLines(LogSmooth(ANALYSIS$SPECTRA$SIM_filter_full_down[[var]]$a[[paste0("ENTITY",entity)]]), col = COLZ[2], lw = 2)
     LLines(ANALYSIS$SPECTRA$SIM_filter_full_rec[[var]]$a[[paste0("ENTITY",entity)]], col = COLZ[3], lty = 3, lw = 2)

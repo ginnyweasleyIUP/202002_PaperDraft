@@ -49,9 +49,16 @@ lines(density(c(ANALYSIS$SEASONS$Plot_Lyr_TEMP_a$value,
                 ANALYSIS$SEASONS$Plot_Lyr_TEMP_c$value), na.rm = T),
       lwd = 2, col = "#B2182B")
 mtext(text = "density",side = 2,line = 2.5, cex = 1.5)
-text(-0.5, 3, "Season-Tuning", col = "#B2182B", cex = 1.5)
-text(-0.5, 2, "yearly corr.", col = "black", cex = 1.5)
+text(-0.5, 2.5, "Season-Tuning", col = "#B2182B", cex = 1.5)
+text(-0.5, 2.0, "yearly corr.", col = "black", cex = 1.5)
 mtext(text = TeX("$\\rho (T, \\delta^{18}O)$"), side = 3, line = -2, adj = 1,col = "black", cex = 1.5, at = 1)
+text(1, 2.75, "DJF:   4", col = "black", cex = 1.5, adj = 1)
+text(1, 2.25, "MAM:   7", col = "black", cex = 1.5, adj = 1)
+text(1, 1.75, "JJA:   8", col = "black", cex = 1.5, adj = 1)
+text(1, 1.25, "SON:   7", col = "black", cex = 1.5, adj = 1)
+text(1, 0.75, "YEAR: 10", col = "black", cex = 1.5, adj = 1)
+mtext(text = "(a)", side = 3, line = -2, adj = 0, col = "black", cex = 1.5, at =-1)
+
 
 hist(c(ANALYSIS$CORR$POINTS$a$CORR_PREC[ANALYSIS$CORR$POINTS$a$p_PREC<0.1],
        ANALYSIS$CORR$POINTS$b$CORR_PREC[ANALYSIS$CORR$POINTS$b$p_PREC<0.1],
@@ -69,6 +76,12 @@ lines(density(c(ANALYSIS$SEASONS$Plot_Lyr_PREC_a$value,
                 ANALYSIS$SEASONS$Plot_Lyr_PREC_c$value), na.rm = T),
       lwd = 2, col = "#B2182B")
 mtext(text = TeX("$\\rho (P, \\delta^{18}O)$"), side = 3, line = -2, adj = 1,col = "black", cex = 1.5, at = 1)
+text(1, 2.75, "DJF:  9", col = "black", cex = 1.5, adj = 1)
+text(1, 2.25, "MAM: 13", col = "black", cex = 1.5, adj = 1)
+text(1, 1.75, "JJA: 12", col = "black", cex = 1.5, adj = 1)
+text(1, 1.25, "SON:  8", col = "black", cex = 1.5, adj = 1)
+text(1, 0.75, "YEAR: 4", col = "black", cex = 1.5, adj = 1)
+mtext(text = "(b)", side = 3, line = -2, adj = 0, col = "black", cex = 1.5, at =-1)
 
 dev.off()
 

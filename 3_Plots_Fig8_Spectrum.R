@@ -193,7 +193,7 @@ for(var in c("ISOT", "ITPC")){
   Results <- easy_sensor_wm4(diff, na.omit(rev(record)), filter[[var]][3])
   TS_down_rec = ts(data = Results, start = start_ts-length(Results)+length(record), deltat = diff)
   
-  cairo_pdf(file = paste0("Plots/Appendix/Paper_Plot_7_Spectra_Compare_Filter_",var,".pdf"), width = PLOTTING_VARIABLES$WIDTH*2/3, height = PLOTTING_VARIABLES$HEIGHT*1.2*2/3)
+  cairo_pdf(file = paste0("Plots/Appendix/Paper_Plot_7_Spectra_Compare_Filter_",var,"_BREIT.pdf"), width = PLOTTING_VARIABLES$WIDTH, height = PLOTTING_VARIABLES$HEIGHT*1.2*2/3)
   #par(mfrow=c(1,2))
   cex_text = 1
   cex_axis = 0.6

@@ -44,8 +44,8 @@ for(run in c("a","b","c")){
     
     ptlyr_china_p <- projection_ptlyr(ptlyr_china, as.character('+proj=robin +datum=WGS84'))#
     ptlyr_rest_p <- projection_ptlyr(ptlyr_rest, as.character('+proj=robin +datum=WGS84'))
-    ptlyr_china_p$value <- ptlyr_china$value
-    ptlyr_rest_p$value <- ptlyr_rest$value
+    ptlyr_china_p$value <- abs(ptlyr_china$value)
+    ptlyr_rest_p$value <- abs(ptlyr_rest$value)
     
     ptlyr_china_p$layer <- factor(ptlyr_china$layer)
     ptlyr_rest_p$layer <- factor(ptlyr_rest$layer)
@@ -61,8 +61,9 @@ for(run in c("a","b","c")){
       geom_point(data = ptlyr_rest_p, aes(x = long, y = lat, color = layer, size = value), shape = 19, 
                  show.legend = c(color =TRUE, size = TRUE)) +
       scale_color_manual(name = "Seasons", labels = c("DJF", "MAM", "JJA", "SON", "year"), 
-                         values = c("#0061FF", "#30B700", "#9B1D20", "#FFB600", "#483D3F")) +
-      scale_size(name = "corr.") +
+                         
+                         values = c("#0072b2", "#009e73", "#d55e00", "#f0e442", "#483D3F")) +
+      scale_size(name = "abs. corr.") +
       ggtitle(title) +
       theme(panel.border = element_blank(),
             legend.background = element_blank(),
@@ -82,7 +83,7 @@ for(run in c("a","b","c")){
   
   library(ggpubr)
   plot <- ggarrange(PLOT$TEMP, PLOT$PREC, PLOT$ISOT,
-                    labels = c("A", "B", "C"),
+                    labels = c("(a)", "(b)", "(c)"),
                     ncol = 1, nrow = 3)
   plot
   
