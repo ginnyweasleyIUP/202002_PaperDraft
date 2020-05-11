@@ -196,7 +196,7 @@ for(plot in 1:1){
                ensemble = DISCUSSION$NETWORK_TUNING$SITES$C_rec_ensemble)
   
   boxplot(as.numeric(corr$full), add = TRUE, at = 28, boxwex = 1, names = "n", horizontal = T, outline = F) 
-  boxplot(as.numeric(corr$gauss), add = TRUE, at = 28.5, boxwex = 1, names = "n", horizontal = T, col = "grey", axes = F, outline = F)
+  boxplot(as.numeric(corr$gauss), add = TRUE, at = 27.5, boxwex = 1, names = "n", horizontal = T, col = "grey", axes = F, outline = F)
   boxplot(as.numeric(corr$ensemble), add = TRUE, at = 27, boxwex = 1, names = "n", horizontal = T, col = "#004F00", axes = F, outline = F)
   
   
@@ -281,7 +281,7 @@ for(plot in 1:1){
   
   
   legend(-1.075,34,xpd = T,inset=-0.2, bty='n', x.intersp=0.5,text.width=c(1,0.3,0.4),
-         c("record", "record 100gauss", "record ensemble"), fill = c("white", "grey", col_ensemble), horiz = TRUE, cex = 1)
+         c("record", "record 100gauss", "record best selection"), fill = c("white", "grey", col_ensemble), horiz = TRUE, cex = 1)
   legend(-1.075, 32,xpd = T,inset=-0.2, bty='n', x.intersp=0.5,text.width=c(1,0.3),
          c("simulation", "simulation 100gauss"), fill = c("dodgerblue3", adjustcolor("dodgerblue3", alpha.f = 0.5)), horiz=TRUE, cex=1)
   

@@ -65,11 +65,20 @@ for(run in c("a", "b","c")){
         TEST[[paste0("corr_", var, "_p")]][season_num] = corr$p.value
         season_num = season_num + 1
       }
+      
+      if(var == "ISOT"){
+        TS[["SIM"]] <- zoo( x= SubsampleTimeseriesBlock_highresNA(ts(data = rev(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0("ITPC_",run)]]), 
+                                                                     start = 1950-DATA_past1000$time[2],
+                                                                     end = 1950-DATA_past1000$time[1]),
+                                                                  s$interp_age), order.by = s$interp_age)  
+      }else{
+        TS[["SIM"]] <- zoo( x= SubsampleTimeseriesBlock_highresNA(ts(data = rev(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0(var,"_",run)]]), 
+                                                                     start = 1950-DATA_past1000$time[2],
+                                                                     end = 1950-DATA_past1000$time[1]),
+                                                                  s$interp_age), order.by = s$interp_age)  
+      }
 
-      TS[["SIM"]] <- zoo( x= SubsampleTimeseriesBlock_highresNA(ts(data = rev(DATA_past1000$CAVES$sim_data_yearly[[paste0("CAVE", site)]][[paste0(var,"_",run)]]), 
-                                                                  start = 1950-DATA_past1000$time[2],
-                                                                  end = 1950-DATA_past1000$time[1]),
-                                                                s$interp_age), order.by = s$interp_age)
+      
       
       corr <- cor.test(TS$Record, TS$SIM, conflevel = 0.1)
       TEST[[paste0("corr_", var)]][season_num] = corr$estimate[[1]]

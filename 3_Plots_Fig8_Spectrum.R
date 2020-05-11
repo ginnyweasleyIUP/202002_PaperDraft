@@ -12,6 +12,22 @@ library(latex2exp)
 
 #################################################
 
+GetVarFromSpectra(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$SIM_down_rec_ITPC$spec, c(1/30, 0.5))$var/
+  GetVarFromSpectra(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$SIM_ds_ITPC$spec, c(1/30, 0.5))$var
+
+GetVarFromSpectra(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$Record$spec, c(1/30, 0.5))$var
+
+GetVarFromSpectra(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$SIM_down_rec_ITPC$spec, c(1/300,1/30))$var/
+  GetVarFromSpectra(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$SIM_ds_ITPC$spec, c(1/300,1/30))$var
+
+GetVarFromSpectra(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$SIM_down_rec_ITPC$spec, c(1/300,1/2))$var/
+  GetVarFromSpectra(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$SIM_ds_ITPC$spec, c(1/300,1/2))$var
+
+GetVarFromSpectra(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$SIM_down_rec_ITPC$spec, c(1/300,1/2))$var/
+  GetVarFromSpectra(ANALYSIS$SPECTRA$MEAN_SPEC_WEIGH$Record$spec, c(1/300,1/2))$var
+
+#################################################
+
 ## PLOT
 
 filter <- list(

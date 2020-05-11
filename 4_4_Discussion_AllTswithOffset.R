@@ -17,7 +17,7 @@ library(latex2exp)
 COLZ <- c("#1A2254", "#0A4296", "#278BCE","#91002B", "#BD6B73", "black")
 
 for(var in c("ISOT", "ITPC")){
-  pdf(file = paste0("Plots/Discussion/TS_1-48_",var,".pdf"), width = 21, height = 29.7)
+  cairo_pdf(file = paste0("Plots/Discussion/TS_1-48_",var,".pdf"), width = 21, height = 29.7)
   par(mfrow=c(8,6),oma = c(1,3,0,0) + 0.1,mar = c(3,0,1,3) + 0.1)
   for(entity in DATA_past1000$CAVES$entity_info$entity_id[mask_mean][1:48]){
     site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
@@ -58,9 +58,9 @@ for(var in c("ISOT", "ITPC")){
   
   dev.off()
   
-  pdf(file = paste0("Plots/Discussion/TS_49-76_",var,".pdf"), width = 21, height = 29.7)
+  cairo_pdf(file = paste0("Plots/Discussion/TS_49-76_",var,".pdf"), width = 21, height = 29.7)
   par(mfrow=c(8,6),oma = c(1,3,0,0) + 0.1,mar = c(3,0,1,3) + 0.1)
-  for(entity in DATA_past1000$CAVES$entity_info$entity_id[mask_mean][49:76]){
+  for(entity in DATA_past1000$CAVES$entity_info$entity_id[mask_mean][49:96]){
     site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
     yrange = range(c(range(DATA_past1000$CAVES$record_data[[paste0("ENTITY",entity)]]$d18O_dw_eq_a, na.rm = T), 
                      range(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY",entity)]][[paste0(var, "_a")]], na.rm = T)))
@@ -98,9 +98,9 @@ for(var in c("ISOT", "ITPC")){
   
   dev.off()
   
-  pdf(file = paste0("Plots/Discussion/TS_77-144_",var,".pdf"), width = 21, height = 29.7)
+  cairo_pdf(file = paste0("Plots/Discussion/TS_77-144_",var,".pdf"), width = 21, height = 29.7)
   par(mfrow=c(8,6),oma = c(1,3,0,0) + 0.1,mar = c(3,0,1,3) + 0.1)
-  for(entity in DATA_past1000$CAVES$entity_info$entity_id[mask_mean][77:108]){
+  for(entity in DATA_past1000$CAVES$entity_info$entity_id[mask_mean][97:108]){
     site = DATA_past1000$CAVES$entity_info$site_id[DATA_past1000$CAVES$entity_info$entity_id == entity]
     yrange = range(c(range(DATA_past1000$CAVES$record_data[[paste0("ENTITY",entity)]]$d18O_dw_eq_a, na.rm = T), 
                      range(DATA_past1000$CAVES$sim_data_downsampled[[paste0("ENTITY",entity)]][[paste0(var, "_a")]], na.rm = T)))

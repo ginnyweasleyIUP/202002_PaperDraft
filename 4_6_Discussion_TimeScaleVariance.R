@@ -70,55 +70,90 @@ for(entity_number in 1:length(DATA_past1000$CAVES$entity_info$entity_id[mask_var
   
 }
 
-pdf(file = paste0("Plots/Discussion/Variance_TimeScaleDep.pdf"), width = 1.3*6, height = 3*PLOTTING_VARIABLES$HEIGHT/1.5)
-par(mfrow=c(3,1),oma = c(1,3,0,0) + 0.1,mar = c(3,1,0,1) + 0.1)
-hist(log10(DISCUSSION$VARIANCE$Rec_short), 
-     breaks = 9, border = "white", prob = TRUE, 
-     ylim = c(0,5), xlim = c(-2,0), xlab = "",xaxt = 'n', ylab = "",
-     main = "", cex.main = 1.5, cex.axis = 1.5)
-axis(side = 1, at = c(log10(0.001), log10(0.01), log10(0.1), 0), 
-     labels = c(0.001,0.01, 0.1, 1), cex.axis = 1.5)
-lines(density(log10(DISCUSSION$VARIANCE$Rec_short), na.rm = T),
-      lwd = 2, col = "black")
-lines(density(log10(DISCUSSION$VARIANCE$Rec_long), na.rm = T),
-      lwd = 2, col = "#B2182B")
-mtext(text = "density",side = 2,line = 2.5, cex = 1.5)
-text(log10(0.1), 3, "long (50-200y)", col = "#B2182B", cex = 1.5)
-text(log10(0.1), 2, "short (10-50y)", col = "black", cex = 1.5)
-mtext(text = "Record", side = 3, line = -2, adj = 1,col = "black", cex = 1.5, at = log10(1))
-mtext(text = "(a)", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = log10(0.001))
+cex_text = 1.5
+cex_axis = 2
 
-hist(log10(DISCUSSION$VARIANCE$Sim_full_short), 
-     breaks = 9, border = "white", prob = TRUE, 
-     ylim = c(0,5), xlim = c(-2,0), xlab = "",xaxt = 'n', ylab = "",
-     main = "", cex.main = 1.5, cex.axis = 1.5)
-axis(side = 1, at = c(log10(0.001), log10(0.01), log10(0.1), 0), 
-     labels = c(0.001,0.01, 0.1, 1), cex.axis = 1.5)
-lines(density(log10(DISCUSSION$VARIANCE$Sim_full_short), na.rm = T),
-      lwd = 2, col = "black")
-lines(density(log10(DISCUSSION$VARIANCE$Sim_full_long), na.rm = T),
-      lwd = 2, col = "#B2182B")
-mtext(text = "density",side = 2,line = 2.5, cex = 1.5)
-mtext(text = "Sim full", side = 3, line = -2, adj = 1,col = "black", cex = 1.5, at = log10(1))
-mtext(text = "(b)", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = log10(0.001))
-
-hist(log10(DISCUSSION$VARIANCE$Sim_down_short), 
-     breaks = 9, border = "white", prob = TRUE, 
-     ylim = c(0,5), xlim = c(-2,0), xlab = "",xaxt = 'n', ylab = "",
-     main = "", cex.main = 1.5, cex.axis = 1.5)
-axis(side = 1, at = c(log10(0.001), log10(0.01), log10(0.1), 0), 
-     labels = c(0.001,0.01, 0.1, 1), cex.axis = 1.5)
-lines(density(log10(DISCUSSION$VARIANCE$Sim_down_short), na.rm = T),
-      lwd = 2, col = "black")
-lines(density(log10(DISCUSSION$VARIANCE$Sim_down_long), na.rm = T),
-      lwd = 2, col = "#B2182B")
-mtext(text = "density",side = 2,line = 2.5, cex = 1.5)
-mtext(text = "Sim down", side = 3, line = -2, adj = 1,col = "black", cex = 1.5, at = log10(0.2))
-mtext(text = "var.tsc(d18Opw)/var.tot(d18Opw)",side = 1,line = 2.7, cex = 1.5)
-mtext(text = "(c)", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = log10(0.001))
-
-
-dev.off()
+for(plot in 1:1){
+  pdf(file = paste0("Plots/Discussion/Variance_TimeScaleDep.pdf"), width = 1.3*6, height = 3*PLOTTING_VARIABLES$HEIGHT/1.5)
+  par(mfrow=c(3,1),oma = c(1,3,0,0) + 0.1,mar = c(3,1,0,1) + 0.1)
+  hist(log10(DISCUSSION$VARIANCE$Rec_short), 
+       breaks = 9, border = "white", prob = TRUE, 
+       ylim = c(0,5), xlim = c(-2,0), xlab = "",xaxt = 'n', ylab = "",
+       main = "", cex.main = cex_text, cex.axis = cex_axis)
+  axis(side = 1, at = c(log10(0.001), log10(0.01), log10(0.1), 0), 
+       labels = c(0.001,0.01, 0.1, 1), cex.axis = cex_axis)
+  lines(density(log10(DISCUSSION$VARIANCE$Rec_short), na.rm = T),
+        lwd = 2, col = "black")
+  lines(c(median(log10(DISCUSSION$VARIANCE$Rec_short), na.rm = T),median(log10(DISCUSSION$VARIANCE$Rec_short), na.rm = T)), 
+        c(0, max(density(log10(DISCUSSION$VARIANCE$Rec_short), na.rm = T)$y)-0.01),
+        lwd = 2, col = "black", lty = 2)
+  lines(density(log10(DISCUSSION$VARIANCE$Rec_long), na.rm = T),
+        lwd = 2, col = "#B2182B")
+  lines(c(median(log10(DISCUSSION$VARIANCE$Rec_long), na.rm = T),median(log10(DISCUSSION$VARIANCE$Rec_long), na.rm = T)), 
+        c(0, max(density(log10(DISCUSSION$VARIANCE$Rec_long), na.rm = T)$y)-0.01),
+        lwd = 2, col = "#B2182B", lty = 2)
+  mtext(text = "density",side = 2,line = 2.5, cex = cex_text)
+  text(log10(0.1), 3, "long (50-200y)", col = "#B2182B", cex = cex_axis)
+  text(log10(0.1), 2.5, "short (10-50y)", col = "black", cex = cex_axis)
+  
+  text(log10(0.01), 3, paste0("#Records: ", length(na.omit(DISCUSSION$VARIANCE$Rec_long))), col = "#B2182B", cex = cex_axis, adj = 0)
+  text(log10(0.01), 2.5, paste0("#Records: ", length(na.omit(DISCUSSION$VARIANCE$Rec_short))), col = "black", cex = cex_axis, adj = 0)
+  
+  mtext(text = "Record", side = 3, line = -2, adj = 1,col = "black", cex = cex_text, at = log10(1))
+  mtext(text = "(a)", side = 3, line = -2, adj = 0,col = "black", cex = cex_text, at = log10(0.01))
+  
+  hist(log10(DISCUSSION$VARIANCE$Sim_full_short), 
+       breaks = 9, border = "white", prob = TRUE, 
+       ylim = c(0,5), xlim = c(-2,0), xlab = "",xaxt = 'n', ylab = "",
+       main = "", cex.main = cex_text, cex.axis = cex_axis)
+  axis(side = 1, at = c(log10(0.001), log10(0.01), log10(0.1), 0), 
+       labels = c(0.001,0.01, 0.1, 1), cex.axis = cex_axis)
+  lines(density(log10(DISCUSSION$VARIANCE$Sim_full_short), na.rm = T),
+        lwd = 2, col = "black")
+  lines(c(median(log10(DISCUSSION$VARIANCE$Sim_full_short), na.rm = T),median(log10(DISCUSSION$VARIANCE$Sim_full_short), na.rm = T)), 
+        c(0, max(density(log10(DISCUSSION$VARIANCE$Sim_full_short), na.rm = T)$y)-0.01),
+        lwd = 2, col = "black", lty = 2)
+  lines(density(log10(DISCUSSION$VARIANCE$Sim_full_long), na.rm = T),
+        lwd = 2, col = "#B2182B")
+  lines(c(median(log10(DISCUSSION$VARIANCE$Sim_full_long), na.rm = T),median(log10(DISCUSSION$VARIANCE$Sim_full_long), na.rm = T)), 
+        c(0, max(density(log10(DISCUSSION$VARIANCE$Sim_full_long), na.rm = T)$y)-0.01),
+        lwd = 2, col = "#B2182B", lty = 2)
+  mtext(text = "density",side = 2,line = 2.5, cex = cex_text)
+  mtext(text = "Sim full", side = 3, line = -2, adj = 1,col = "black", cex = cex_text, at = log10(1))
+  mtext(text = "(b)", side = 3, line = -2, adj = 0,col = "black", cex = cex_text, at = log10(0.01))
+  text(log10(0.01), 3, paste0("#Records: ", length(na.omit(DISCUSSION$VARIANCE$Sim_full_long))), col = "#B2182B", cex = cex_axis, adj = 0)
+  text(log10(0.01), 2.5, paste0("#Records: ", length(na.omit(DISCUSSION$VARIANCE$Sim_full_short))), col = "black", cex = cex_axis, adj = 0)
+  
+  
+  hist(log10(DISCUSSION$VARIANCE$Sim_down_short), 
+       breaks = 9, border = "white", prob = TRUE, 
+       ylim = c(0,5), xlim = c(-2,0), xlab = "",xaxt = 'n', ylab = "",
+       main = "", cex.main = cex_text, cex.axis = cex_axis)
+  axis(side = 1, at = c(log10(0.001), log10(0.01), log10(0.1), 0), 
+       labels = c(0.001,0.01, 0.1, 1), cex.axis = cex_axis)
+  lines(density(log10(DISCUSSION$VARIANCE$Sim_down_short), na.rm = T),
+        lwd = 2, col = "black")
+  lines(c(median(log10(DISCUSSION$VARIANCE$Sim_down_short), na.rm = T),median(log10(DISCUSSION$VARIANCE$Sim_down_short), na.rm = T)), 
+        c(0, max(density(log10(DISCUSSION$VARIANCE$Sim_down_short), na.rm = T)$y)-0.01),
+        lwd = 2, col = "black", lty = 2)
+  lines(density(log10(DISCUSSION$VARIANCE$Sim_down_long), na.rm = T),
+        lwd = 2, col = "#B2182B")
+  lines(c(median(log10(DISCUSSION$VARIANCE$Sim_down_long), na.rm = T),median(log10(DISCUSSION$VARIANCE$Sim_down_long), na.rm = T)), 
+        c(0, max(density(log10(DISCUSSION$VARIANCE$Sim_down_long), na.rm = T)$y)-0.01),
+        lwd = 2, col = "#B2182B", lty = 2)
+  mtext(text = "density",side = 2,line = 2.5, cex = cex_text)
+  mtext(text = "Sim down", side = 3, line = -2, adj = 1,col = "black", cex = cex_text, at = log10(1))
+  mtext(text = "var.tsc(d18Opw)/var.tot(d18Opw)",side = 1,line = 2.7, cex = cex_text)
+  mtext(text = "(c)", side = 3, line = -2, adj = 0,col = "black", cex = cex_text, at = log10(0.01))
+  
+  text(log10(0.01), 3, paste0("#Records: ", length(na.omit(DISCUSSION$VARIANCE$Sim_down_long))), col = "#B2182B", cex = cex_axis, adj = 0)
+  text(log10(0.01), 2.5, paste0("#Records: ", length(na.omit(DISCUSSION$VARIANCE$Sim_down_short))), col = "black", cex = cex_axis, adj = 0)
+  
+  
+  dev.off()
+  
+  
+}
 
 pdf(file = paste0("Plots/Discussion/Variance_TimeScaleDep_Example.pdf"), width = 1.3*6, height = 3*PLOTTING_VARIABLES$HEIGHT/1.5)
 par(mfrow=c(3,1),oma = c(1,3,0,0) + 0.1,mar = c(3,1,0,1) + 0.1)
@@ -168,3 +203,23 @@ mtext(text = "var.tsc(d18Opw)/var.tot(d18Opw)",side = 1,line = 2.7, cex = 1.5)
 mtext(text = "(c)", side = 3, line = -2, adj = 0,col = "black", cex = 1.5, at = log10(0.001))
 
 dev.off()
+
+
+median(DISCUSSION$VARIANCE$Rec_short, na.rm = T)
+quantile(DISCUSSION$VARIANCE$Rec_short, probs = seq(0,1,0.05), na.rm = T)[c(2,20)]
+
+median(DISCUSSION$VARIANCE$Rec_long, na.rm = T)
+quantile(DISCUSSION$VARIANCE$Rec_long, probs = seq(0,1,0.05), na.rm = T)[c(2,20)]
+
+median(DISCUSSION$VARIANCE$Sim_full_short, na.rm = T)
+quantile(DISCUSSION$VARIANCE$Sim_full_short, probs = seq(0,1,0.05), na.rm = T)[c(2,20)]
+
+median(DISCUSSION$VARIANCE$Sim_full_long, na.rm = T)
+quantile(DISCUSSION$VARIANCE$Sim_full_long, probs = seq(0,1,0.05), na.rm = T)[c(2,20)]
+
+
+median(DISCUSSION$VARIANCE$Sim_down_short, na.rm = T)
+quantile(DISCUSSION$VARIANCE$Sim_down_short, probs = seq(0,1,0.05), na.rm = T)[c(2,20)]
+
+median(DISCUSSION$VARIANCE$Sim_down_long, na.rm = T)
+quantile(DISCUSSION$VARIANCE$Sim_down_long, probs = seq(0,1,0.05), na.rm = T)[c(2,20)]
