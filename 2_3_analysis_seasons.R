@@ -22,7 +22,7 @@ for(run in c("a", "b","c")){
   
   for(var in c("TEMP", "PREC", "ISOT")){
     ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]] <- data.frame(
-        entity = numeric(length(entity_list)),
+        entity_id = numeric(length(entity_list)),
         lon = numeric(length(entity_list)),
         lat = numeric(length(entity_list)),
         value = numeric(length(entity_list)),
@@ -96,6 +96,7 @@ for(run in c("a", "b","c")){
         ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]]$value[counter] = TEST[[paste0("corr_", var)]][which.max(abs(TEST[[paste0("corr_", var)]]))]
         ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]]$season[counter] = which.max(abs(TEST[[paste0("corr_", var)]]))
       }
+      ANALYSIS$SEASONS[[paste0("Plot_Lyr_",var,"_",run)]]$entity_id[counter] = entity
       counter = counter + 1
     }#höhle
   }#var
